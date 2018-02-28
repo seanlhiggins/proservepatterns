@@ -1,5 +1,5 @@
 view: users {
-  sql_table_name: thelook_events.USERS ;;
+  sql_table_name: public.USERS ;;
 
   dimension: id {
     primary_key: yes
@@ -70,6 +70,7 @@ view: users {
   dimension: state {
     type: string
     sql: ${TABLE}.STATE ;;
+    map_layer_name: us_states
   }
 
   dimension: traffic_source {

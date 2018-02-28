@@ -1,4 +1,4 @@
-connection: "thelook_events"
+connection: "thelook_events_redshift"
 
 # include all the views
 include: "*.view"
@@ -38,6 +38,11 @@ explore: inventory_items {
 }
 
 explore: order_items {
+  join: order_items_repurchase_facts {
+    type: left_outer
+    sql_on: ${order_items.id}=${order_items_repurchase_facts.order_id} ;;
+    relationship: one_to_one
+  }
   join: inventory_items {
     type: left_outer
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
