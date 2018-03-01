@@ -38,6 +38,10 @@ explore: inventory_items {
 }
 
 explore: order_items {
+  always_filter: {filters: {
+    field: sale_price
+    value: "50"
+  }}
   join: order_items_repurchase_facts {
     type: left_outer
     sql_on: ${order_items.id}=${order_items_repurchase_facts.order_id} ;;
