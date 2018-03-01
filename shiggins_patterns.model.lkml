@@ -12,6 +12,8 @@ datagroup: shiggins_patterns_default_datagroup {
 }
 
 persist_with: shiggins_patterns_default_datagroup
+explore: rolling_growth_metrics {}
+explore: interval_windows {}
 
 explore: distribution_centers {}
 
