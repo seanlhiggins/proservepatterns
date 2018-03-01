@@ -1,4 +1,3 @@
-explore: rolling_growth_metrics {}
 view: calendar {
   derived_table: {
     distribution_style: all
@@ -18,60 +17,59 @@ view: rolling_growth_metrics {
     distribution_style: all
 
     sql: SELECT cal_dt
-    ,COUNT(CASE
-        WHEN curr.user_id IS NOT NULL
-        THEN 1 END) AS active_users
-    ,COUNT(CASE
-        WHEN cal_dt <= created_at + 29
-            AND curr.user_id IS NOT NULL
-        THEN 1 END) /
-    NULLIF(COUNT(CASE
-        WHEN cal_dt <= created_at + 29
-        THEN 1 END), 0)::FLOAT AS activation_rate
-    ,COUNT(CASE
-        WHEN prev.user_id IS NOT NULL
-            AND curr.user_id IS NOT NULL
-        THEN 1 END) /
-    NULLIF(COUNT(CASE
-        WHEN prev.user_id IS NOT NULL
-        THEN 1 END), 0)::FLOAT AS retention_rate
-    ,COUNT(CASE
-        WHEN prev.user_id IS NULL
-            AND cal_dt - 30 >= created_at
-            AND curr.user_id IS NOT NULL
-        THEN 1 END) /
-    NULLIF(COUNT(CASE
-        WHEN prev.user_id IS NULL
-            AND cal_dt - 30 >= created_at
-        THEN 1 END), 0)::FLOAT AS reactivation_rate
-FROM ${calendar.SQL_TABLE_NAME}
-JOIN users
-    ON cal_dt >= users.created_at
-LEFT JOIN ${trailing_activity_intervals.SQL_TABLE_NAME} AS prev
-    ON cal_dt - 30 BETWEEN prev.start_dt AND prev.end_dt
-    AND users.id = prev.user_id
-LEFT JOIN ${trailing_activity_intervals.SQL_TABLE_NAME} AS curr
-    ON cal_dt BETWEEN curr.start_dt AND curr.end_dt
-    AND users.id = curr.user_id
-GROUP BY 1
-ORDER BY 1 ;;
+          ,COUNT(CASE
+              WHEN curr.user_id IS NOT NULL
+              THEN 1 END) AS total_active_users
+          ,COUNT(CASE
+              WHEN cal_dt <= created_at + 29
+                  AND curr.user_id IS NOT NULL
+              THEN 1 END) /
+          NULLIF(COUNT(CASE
+              WHEN cal_dt <= created_at + 29
+              THEN 1 END), 0)::FLOAT AS user_activation_rate
+          ,COUNT(CASE
+              WHEN prev.user_id IS NOT NULL
+                  AND curr.user_id IS NOT NULL
+              THEN 1 END) /
+          NULLIF(COUNT(CASE
+              WHEN prev.user_id IS NOT NULL
+              THEN 1 END), 0)::FLOAT AS user_retention_rate
+          ,COUNT(CASE
+              WHEN prev.user_id IS NULL
+                  AND cal_dt - 30 >= created_at
+                  AND curr.user_id IS NOT NULL
+              THEN 1 END) /
+          NULLIF(COUNT(CASE
+              WHEN prev.user_id IS NULL
+                  AND cal_dt - 30 >= created_at
+              THEN 1 END), 0)::FLOAT AS user_reactivation_rate
+      FROM ${calendar.SQL_TABLE_NAME}
+      JOIN users
+          ON cal_dt >= users.created_at
+      LEFT JOIN ${interval_windows.SQL_TABLE_NAME} AS prev
+          ON cal_dt - 30 BETWEEN prev.start AND prev.end
+          AND users.id = prev.user_id
+      LEFT JOIN ${interval_windows.SQL_TABLE_NAME} AS curr
+          ON cal_dt BETWEEN curr.start AND curr.end
+          AND users.id = curr.user_id
+      GROUP BY 1
+      ORDER BY 1 ;;
+
+    }
+    dimension_group: calendar_date {label: "Calendar" sql: ${TABLE}.cal_dt ;; type: time timeframes:[date,week,month,year,day_of_week,week_of_year,month_name]}
+    measure: user_reactivation_rate {type:sum value_format_name:percent_1}
+    measure: user_activation_rate {type:sum value_format_name:percent_1}
+    measure: user_retention_rate {type:sum value_format_name:percent_1}
+    measure: total_active_users {type:sum}
 
   }
-  dimension_group: calendar_date {label: "Calendar" sql: ${TABLE}.cal_dt ;; type: time timeframes:[date,week,month,year,day_of_week,week_of_year,month_name]}
-  measure: reactivation_rate {type:sum value_format_name:percent_1}
-  measure: activation_rate {type:sum value_format_name:percent_1}
-  measure: retention_rate {type:sum value_format_name:percent_1}
-  measure: active_users {type:sum}
 
-}
+  view: interval_windows {
+    derived_table: {
+      persist_for: "24 hours"
+      distribution_style: all
 
-explore: trailing_activity_intervals {}
-view: trailing_activity_intervals {
-  derived_table: {
-    persist_for: "24 hours"
-    distribution_style: all
-
-    sql: WITH daily_activity AS (
+      sql: WITH daily_activity AS (
         -- ## 2 ) Create a table of days and activity by user_id
         SELECT
           user_id
@@ -95,7 +93,7 @@ view: trailing_activity_intervals {
             ,0 AS days_active_delta
         FROM users
     ),
-    rolling_states AS (
+    continuous_status AS (
         SELECT user_id
             ,event_dt
             ,SUM(days_active_delta) OVER (
@@ -111,7 +109,7 @@ view: trailing_activity_intervals {
             GROUP BY 1, 2
         )
     ),
-    deduplicated_states AS (
+    deduplication AS (
         SELECT user_id
             ,event_dt
             ,active
@@ -125,52 +123,35 @@ view: trailing_activity_intervals {
                         ORDER BY event_dt ASC
                     ),
                     FALSE
-                ) AS redundant
-            FROM rolling_states
+                ) AS duplicate
+            FROM continuous_status
         )
-        WHERE NOT redundant
+        WHERE NOT duplicate
     )
     SELECT user_id
-        ,start_dt
-        ,end_dt
+        ,start
+        ,end
     FROM (
         SELECT user_id
-            ,event_dt AS start_dt
+            ,event_dt AS start
             ,COALESCE(
                 LEAD(event_dt, 1) OVER (
                     PARTITION BY user_id
                     ORDER BY event_dt ASC
                 ),
                 CURRENT_DATE
-            ) - 1 AS end_dt
+            ) - 1 AS end
             ,active
-        FROM deduplicated_states
+        FROM deduplication
     )
     WHERE active
  ;;
+    }
+    measure: count {type: count drill_fields: [detail*]}
+    dimension: user_id {type: number sql: ${TABLE}.user_id ;;}
+    dimension_group: start {type: time sql: ${TABLE}.start ;;}
+    dimension_group: end {type: time sql: ${TABLE}.end ;;}
+    set: detail {
+      fields: [user_id, start_time, end_time]
+    }
   }
-
-  measure: count {
-    type: count
-    drill_fields: [detail*]
-  }
-
-  dimension: user_id {
-    type: number
-    sql: ${TABLE}.user_id ;;
-  }
-
-  dimension_group: start_dt {
-    type: time
-    sql: ${TABLE}.start_dt ;;
-  }
-
-  dimension_group: end_dt {
-    type: time
-    sql: ${TABLE}.end_dt ;;
-  }
-
-  set: detail {
-    fields: [user_id, start_dt_time, end_dt_time]
-  }
-}
