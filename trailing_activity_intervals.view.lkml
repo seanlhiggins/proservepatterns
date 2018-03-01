@@ -9,6 +9,10 @@ view: calendar {
         (SELECT ROW_NUMBER() OVER(ORDER BY id) -1 AS d FROM order_items ORDER BY id LIMIT 20000) AS  d
        ;;
   }
+  dimension_group: date {
+    type: time
+    timeframes: [date,week,month,year]
+  }
 }
 
 view: rolling_growth_metrics {
@@ -16,7 +20,7 @@ view: rolling_growth_metrics {
     persist_for: "6 hours"
     distribution_style: all
 
-    sql: SELECT cal_dt
+    sql: SELECT cal_dt,
           ,COUNT(CASE
               WHEN curr.user_id IS NOT NULL
               THEN 1 END) AS total_active_users
@@ -57,6 +61,7 @@ view: rolling_growth_metrics {
 
     }
     dimension_group: calendar_date {label: "Calendar" sql: ${TABLE}.cal_dt ;; type: time timeframes:[date,week,month,year,day_of_week,week_of_year,month_name]}
+    dimension: user_id {sql: ${TABLE}.user_id;; type:number hidden:yes}
     measure: user_reactivation_rate {type:sum value_format_name:percent_1}
     measure: user_activation_rate {type:sum value_format_name:percent_1}
     measure: user_retention_rate {type:sum value_format_name:percent_1}

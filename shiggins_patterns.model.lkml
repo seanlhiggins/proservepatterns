@@ -90,4 +90,27 @@ explore: products {
   }
 }
 
-explore: users {}
+explore: users {
+}
+
+explore: calendar {
+  label: "Interval Active Users"
+  join: users {
+    sql_on: ${calendar.date_date} = ${users.created_date};;
+    type: inner
+    relationship: one_to_many
+  }
+  join: interval_windows_prev {
+    from: interval_windows
+    sql_on: ${calendar.date_date}-30 between ${interval_windows_prev.start_date} AND ${interval_windows_prev.end_time_date}
+    AND ${users.id} = ${interval_windows_prev.user_id};;
+    relationship: one_to_many
+  }
+  join: interval_windows_curr {
+    from: interval_windows
+    sql_on: ${calendar.date_date} between ${interval_windows_curr.start_date} AND ${interval_windows_curr.end_time_date}
+      AND ${users.id} = ${interval_windows_curr.user_id};;
+    relationship: one_to_many
+
+  }
+}
