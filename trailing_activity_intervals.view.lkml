@@ -47,10 +47,10 @@ view: rolling_growth_metrics {
       JOIN users
           ON cal_dt >= users.created_at
       LEFT JOIN ${interval_windows.SQL_TABLE_NAME} AS prev
-          ON cal_dt - 30 BETWEEN prev.start AND prev.end
+          ON cal_dt - 30 BETWEEN prev.start AND prev.end_time
           AND users.id = prev.user_id
       LEFT JOIN ${interval_windows.SQL_TABLE_NAME} AS curr
-          ON cal_dt BETWEEN curr.start AND curr.end
+          ON cal_dt BETWEEN curr.start AND curr.end_time
           AND users.id = curr.user_id
       GROUP BY 1
       ORDER BY 1 ;;
@@ -130,7 +130,7 @@ view: rolling_growth_metrics {
     )
     SELECT user_id
         ,start
-        ,end
+        ,end_time
     FROM (
         SELECT user_id
             ,event_dt AS start
@@ -140,7 +140,7 @@ view: rolling_growth_metrics {
                     ORDER BY event_dt ASC
                 ),
                 CURRENT_DATE
-            ) - 1 AS end
+            ) - 1 AS end_time
             ,active
         FROM deduplication
     )
@@ -150,8 +150,8 @@ view: rolling_growth_metrics {
     measure: count {type: count drill_fields: [detail*]}
     dimension: user_id {type: number sql: ${TABLE}.user_id ;;}
     dimension_group: start {type: time sql: ${TABLE}.start ;;}
-    dimension_group: end {type: time sql: ${TABLE}.end ;;}
+    dimension_group: end_time {type: time sql: ${TABLE}.end_time ;;}
     set: detail {
-      fields: [user_id, start_time, end_time]
+      fields: [user_id, start_time, end_time_date]
     }
   }

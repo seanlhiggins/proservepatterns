@@ -17,6 +17,14 @@ explore: interval_windows {}
 
 explore: distribution_centers {}
 
+explore: active_users {
+  join: users {
+    type: left_outer
+    sql_on: ${active_users.user_id} = ${users.id} ;;
+    relationship: many_to_one
+  }
+}
+
 explore: events {
   join: users {
     type: left_outer
