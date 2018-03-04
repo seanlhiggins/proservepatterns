@@ -6,13 +6,13 @@ include: "*.view"
 # include all the dashboards
 include: "*.dashboard"
 
-datagroup: shiggins_patterns_default_datagroup {
-  # sql_trigger: SELECT MAX(id) FROM etl_log;;
+datagroup: default {
+  sql_trigger: SELECT CURRENT_DATE;;
   max_cache_age: "1 hour"
 }
 
-persist_with: shiggins_patterns_default_datagroup
-explore: rolling_growth_metrics {}
+persist_with: default
+explore: user_growth {}
 explore: interval_windows {}
 
 explore: distribution_centers {}

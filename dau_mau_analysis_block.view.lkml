@@ -37,6 +37,7 @@ view: active_users {
           ON wd.date >= daily_use.activity_date
           AND wd.date < daily_use.activity_date + interval '30 day'
       GROUP BY 1,2
+
        ;;
   }
 
