@@ -2,8 +2,8 @@
 explore: parameter_intervals {}
 view: parameter_intervals {
   derived_table: {
-    datagroup_trigger: default
-    distribution_style: all
+#     datagroup_trigger: default
+#     distribution_style: all
     sql: WITH interval_windows AS (WITH daily_activity AS (
         -- ## 2 ) Create a table of days and activity by user_id
         SELECT
