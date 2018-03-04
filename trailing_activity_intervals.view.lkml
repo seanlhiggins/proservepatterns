@@ -2,8 +2,7 @@
 explore: parameter_intervals {}
 view: parameter_intervals {
   derived_table: {
-#     datagroup_trigger: default
-#     distribution_style: all
+
     sql: WITH interval_windows AS (WITH daily_activity AS (
         -- ## 2 ) Create a table of days and activity by user_id
         SELECT
@@ -35,7 +34,7 @@ view: parameter_intervals {
                 PARTITION BY user_id
                 ORDER BY event_dt ASC
                 ROWS UNBOUNDED PRECEDING
-            ) > 0 AS active
+            ) AS days_active
         FROM (
             SELECT user_id
                 ,event_dt
@@ -47,13 +46,13 @@ view: parameter_intervals {
     deduplication AS (
         SELECT user_id
             ,event_dt
-            ,active
+            ,days_active
         FROM (
             SELECT user_id
                 ,event_dt
-                ,active
+                ,days_active
                 ,COALESCE(
-                    active = LAG(active, 1) OVER (
+                    days_active = LAG(days_active, 1) OVER (
                         PARTITION BY user_id
                         ORDER BY event_dt ASC
                     ),
@@ -66,6 +65,7 @@ view: parameter_intervals {
     SELECT user_id
         ,start
         ,end_time
+        ,days_active
     FROM (
         SELECT user_id
             ,event_dt AS start
@@ -76,10 +76,10 @@ view: parameter_intervals {
                 ),
                 CURRENT_DATE
             ) - 1 AS end_time
-            ,active
+            ,days_active
         FROM deduplication
     )
-    WHERE active
+    WHERE days_active > 0
  )
   SELECT cal_dt
           ,COUNT(CASE
@@ -114,9 +114,11 @@ view: parameter_intervals {
       LEFT JOIN interval_windows AS prev
           ON cal_dt - {% parameter time_interval_range %} BETWEEN prev.start AND prev.end_time
           AND users.id = prev.user_id
+          AND {% condition days_user_active %} prev.days_active {% endcondition %}
       LEFT JOIN interval_windows AS curr
           ON cal_dt BETWEEN curr.start AND curr.end_time
           AND users.id = curr.user_id
+          AND {% condition days_user_active %} curr.days_active {% endcondition %}
       GROUP BY 1
       ORDER BY 1 ;;
   }
@@ -147,8 +149,10 @@ view: parameter_intervals {
       value: "365"
     }
   }
+  filter: days_user_active {
+    type: number
+  }
   dimension_group: calendar_date {label: "Calendar" sql: ${TABLE}.cal_dt ;; type: time timeframes:[date,week,month,year,day_of_week,week_of_year,month_name]}
-#     dimension: user_id {sql: ${TABLE}.user_id;; type:number }
   measure: user_reactivation_rate {type:sum value_format_name:percent_1}
   measure: user_activation_rate {type:sum value_format_name:percent_1}
   measure: user_retention_rate {type:sum value_format_name:percent_1}
