@@ -8,7 +8,7 @@ view: dates {
     sql: -- ## 1) Create a Date table with a row for each date.
       SELECT '2001-01-01'::DATE + d AS date
       FROM
-        (SELECT ROW_NUMBER() OVER(ORDER BY id) -1 AS d FROM order_items ORDER BY id LIMIT 20000) AS  d
+       (SELECT ROW_NUMBER() OVER(ORDER BY id) -1 AS d FROM order_items ORDER BY id LIMIT 20000) AS  d
        ;;
   }
 }
@@ -18,13 +18,13 @@ view: active_users {
     sql_trigger_value: GETDATE();;
     distribution: "user_id"
     sortkeys: ["date"]
-    sql: WITH daily_use AS (
+    sql:WITH daily_use AS (
         -- ## 2 ) Create a table of days and activity by user_id
         SELECT
           user_id
           , DATE_TRUNC('day', created_at) as activity_date
         FROM order_items
-        GROUP BY 1, 2
+        GROUP BY 1,2
       )
       --  ## 3) Cross join activity and dates to build a row for each user/date combo with
       -- days since last activity

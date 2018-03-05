@@ -168,7 +168,7 @@ view: calendar {
     sql: -- ## 1) Create a Date table with a row for each date.
       SELECT '2001-01-01'::DATE + d AS cal_dt
        FROM
-        (SELECT ROW_NUMBER() OVER(ORDER BY id) -1 AS d FROM order_items ORDER BY id LIMIT 20000) AS  d
+       (SELECT ROW_NUMBER() OVER(ORDER BY id) -1 AS d FROM order_items ORDER BY id LIMIT 20000) AS  d
        ;;
   }
   dimension_group: date {
@@ -180,10 +180,10 @@ view: calendar {
 
 view: user_growth {
   derived_table: {
-#     persist_for: "6 hours"
-#     distribution_style: all
+    persist_for: "6 hours"
+    distribution_style: all
 
-    sql: SELECT cal_dt
+    sql:  SELECT cal_dt
           ,COUNT(CASE
               WHEN curr.user_id IS NOT NULL
               THEN 1 END) AS total_active_users
@@ -237,10 +237,10 @@ view: user_growth {
 
   view: interval_windows {
     derived_table: {
-#       persist_for: "24 hours"
-#       distribution_style: all
+      persist_for: "24 hours"
+      distribution_style: all
 
-      sql: WITH daily_activity AS (
+      sql:  WITH daily_activity AS (
         -- ## 2 ) Create a table of days and activity by user_id
         SELECT
           user_id
