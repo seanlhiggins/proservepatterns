@@ -43,6 +43,7 @@ view: active_users {
 
   dimension: date {
     type: date
+    convert_tz: no
     sql: ${TABLE}.date ;;
   }
 

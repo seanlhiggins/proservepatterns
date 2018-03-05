@@ -167,11 +167,12 @@ view: calendar {
     sql_trigger_value:  GETDATE() ;;
     sql: -- ## 1) Create a Date table with a row for each date.
       SELECT '2001-01-01'::DATE + d AS cal_dt
-      FROM
+       FROM
         (SELECT ROW_NUMBER() OVER(ORDER BY id) -1 AS d FROM order_items ORDER BY id LIMIT 20000) AS  d
        ;;
   }
   dimension_group: date {
+    convert_tz: no
     type: time
     timeframes: [date,week,month,year]
   }
@@ -211,7 +212,7 @@ view: user_growth {
               THEN 1 END), 0)::FLOAT AS user_reactivation_rate
       FROM ${calendar.SQL_TABLE_NAME}
       JOIN users
-          ON cal_dt >= users.created_at
+          ON cal_dt >= CAST(users.created_at as DATE)
       LEFT JOIN ${interval_windows.SQL_TABLE_NAME} AS prev
           ON cal_dt - 30 BETWEEN prev.start AND prev.end_time
           AND users.id = prev.user_id
@@ -222,12 +223,15 @@ view: user_growth {
       ORDER BY 1 ;;
 
     }
-    dimension_group: calendar_date {label: "Calendar" sql: ${TABLE}.cal_dt ;; type: time timeframes:[date,week,month,year,day_of_week,week_of_year,month_name]}
-#     dimension: user_id {sql: ${TABLE}.user_id;; type:number }
+    dimension_group: calendar_date {convert_tz: no label: "Calendar" sql: ${TABLE}.cal_dt ;; type: time timeframes:[date,week,month,year,day_of_week,week_of_year,month_name]}
+    dimension: start {convert_tz: no type:date}
+  dimension: end_time {convert_tz: no type:date}
+
+    dimension: user_id {sql: ${TABLE}.user_id;; type:number }
     measure: user_reactivation_rate {type:sum value_format_name:percent_1}
     measure: user_activation_rate {type:sum value_format_name:percent_1}
     measure: user_retention_rate {type:sum value_format_name:percent_1}
-    measure: total_active_users {type:sum}
+    measure: total_active_users {type:sum drill_fields:[user_id]}
 
   }
 
