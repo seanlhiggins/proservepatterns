@@ -12,7 +12,14 @@ datagroup: default {
 }
 
 persist_with: default
-explore: user_growth {}
+
+explore: user_growth_base {
+#   extension: required
+fields: [ALL_FIELDS*]
+  from: user_growth
+  view_name: user_growth
+}
+
 explore: interval_windows {}
 
 explore: distribution_centers {}
