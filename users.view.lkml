@@ -85,7 +85,7 @@ view: users {
 
   filter: first_name_filter {}
   measure: total_number_named {
-    label: "{{ users.first_name_filter._value }}"
+    label: "{{ users.first_name._value }}"
     type: count_distinct
     sql: {% condition first_name %} ${first_name} {% endcondition %} ;;
   }

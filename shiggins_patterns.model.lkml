@@ -49,7 +49,7 @@ explore: events {
 
 explore: order_items {
 
-  sql_always_where: DATEDIFF(days,{% parameter order_items.period_filter %},CURRENT_DATE)<365 ;;
+#   sql_always_where: DATEDIFF(days,{% parameter order_items.period_filter %},CURRENT_DATE)<365 ;;
   join: order_items_repurchase_facts {
     type: left_outer
     sql_on: ${order_items.id}=${order_items_repurchase_facts.order_id} ;;
