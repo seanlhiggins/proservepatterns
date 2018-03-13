@@ -16,6 +16,7 @@ label: "{% if _user_attributes['brand'] == 'Calvin Klein' %} Calvin Klein
             {% else %} OTHER {% endif %}"
 
 persist_with: default
+#test
 
 explore: user_growth_base {
 #   extension: required
