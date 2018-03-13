@@ -83,11 +83,11 @@ view: users {
     sql: ${TABLE}.ZIP ;;
   }
 
-  filter: first_name_filter {}
+  parameter: first_name_filter {}
   measure: total_number_named {
-    label: "{{ users.first_name._value }}"
+    label: "Total Users Named {% parameter first_name_filter %}"
     type: count_distinct
-    sql: {% condition first_name %} ${first_name} {% endcondition %} ;;
+    sql: {% condition first_name_filter %} ${first_name} {% endcondition %} ;;
   }
   measure: count {
     type: count
