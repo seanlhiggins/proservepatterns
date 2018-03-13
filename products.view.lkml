@@ -6,23 +6,36 @@ view: products {
     type: number
     sql: ${TABLE}.ID ;;
   }
+  parameter: view_label {
+    type: string
+    default_value: "The Money Zone"
+  }
 
   dimension: brand {
+    group_label: "{% parameter view_label %}"
     type: string
     sql: ${TABLE}.BRAND ;;
   }
 
   dimension: category {
+    group_label: "{% parameter view_label %}"
+
     type: string
     sql: ${TABLE}.CATEGORY ;;
   }
 
   dimension: cost {
+    group_label: "{% if _explore._name   == 'order_items' %} Product Subcategory
+    {% elsif _explore._name == 'Products' %} Brand
+    {% else %} Products {% endif %}"
     type: number
     sql: ${TABLE}.COST ;;
   }
 
   dimension: department {
+    group_label: "{% if _explore._name   == 'order_items' %} Product Subcategory
+    {% elsif _explore._name == 'Products' %} Brand
+    {% else %} Products {% endif %}"
     type: string
     sql: ${TABLE}.DEPARTMENT ;;
   }
@@ -34,6 +47,9 @@ view: products {
   }
 
   dimension: name {
+    group_label: "{% if _explore._name   == 'order_items' %} Product Subcategory
+    {% elsif _explore._name == 'Products' %} Brand
+    {% else %} Products {% endif %}"
     type: string
     sql: ${TABLE}.NAME ;;
   }

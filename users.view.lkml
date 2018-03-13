@@ -83,6 +83,12 @@ view: users {
     sql: ${TABLE}.ZIP ;;
   }
 
+  filter: first_name_filter {}
+  measure: total_number_named {
+    label: "{{ users.first_name_filter._value }}"
+    type: count_distinct
+    sql: {% condition first_name %} ${first_name} {% endcondition %} ;;
+  }
   measure: count {
     type: count
     drill_fields: [id, last_name, first_name, events.count, order_items.count]

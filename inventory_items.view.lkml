@@ -1,4 +1,8 @@
-view: inventory_items {
+explore: inventory_items_1 {
+  label: "Inventory Items"
+  view_label: "Inventory Items"
+}
+view: inventory_items_1 {
   sql_table_name: public.INVENTORY_ITEMS ;;
 
   dimension: id {
@@ -6,10 +10,27 @@ view: inventory_items {
     type: number
     sql: ${TABLE}.ID ;;
   }
+  parameter: view_label {
+    type: string
+    default_value: "The Money Zone"
+  }
 
   dimension: cost {
+    view_label: "{% parameter view_label %}"
     type: number
-    sql: ${TABLE}.COST ;;
+    sql: 1 ;;
+  }
+
+  dimension: cost_ex_vat {
+    view_label: "{% parameter view_label %}"
+    type: number
+    sql: ${TABLE}.COST_EX_VAT ;;
+  }
+
+  dimension: cost_eur {
+    view_label: "{% parameter view_label %}"
+    type: number
+    sql: ${TABLE}.COST_EUR ;;
   }
 
   dimension_group: created {

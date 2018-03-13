@@ -1,6 +1,9 @@
 view: order_items {
   sql_table_name: public.ORDER_ITEMS ;;
 
+  parameter: period_filter {
+    type: date
+  }
   dimension: id {
     primary_key: yes
     type: number
@@ -80,10 +83,14 @@ view: order_items {
     ]
     sql: ${TABLE}.SHIPPED_AT ;;
   }
+
   dimension: gross_margin {
+    label: "{% if _user_attributes['customer'] == 'A' %} Standard Margin
+    {% elsif _user_attributes['customer'] == 'B' %} Operating Margin
+    {% else %} Gross Margin {% endif %}"
     type: number
     value_format_name: usd
-    sql: ${sale_price} - ${inventory_items.cost} ;;
+    sql: ${sale_price} - ${inventory_items_1.cost} ;;
   }
   dimension: status {
     type: string
@@ -120,7 +127,7 @@ view: order_items {
   }
 
 
-  parameter: metric_selector {
+  parameter: metric_selector {hidden: yes
     type: string
     allowed_value: {
       label: "Total Order Revenue"
@@ -149,7 +156,7 @@ view: order_items {
   }
 
 
-  parameter: month_name {
+  parameter: month_name {hidden: yes
     type: string
     allowed_value: {label: "January" value: "2018-01"}
     allowed_value: {label: "February" value: "2018-02"}
@@ -201,19 +208,20 @@ view: order_items {
     }
   }
 
-  parameter: view_label {
-    type: unquoted
-    default_value: "TEST"
-  }
-
-  dimension: parameter_pass_through {
-    sql: {% parameter view_label %} ;;
-  }
-
-  dimension: test {
-    view_label: "{% parameter view_label %}"
-    sql: 1 ;;
-  }
+#   parameter: view_label {
+#     type: unquoted
+#     hidden: yes
+#     default_value: "TEST"
+#   }
+#
+#   dimension: parameter_pass_through {
+#     sql: {% parameter view_label %} ;;
+#   }
+#
+#   dimension: test {
+#     view_label: "{% parameter view_label %}"
+#     sql: 1 ;;
+#   }
 
   # ----- Sets of fields for drilling ------
   set: detail {

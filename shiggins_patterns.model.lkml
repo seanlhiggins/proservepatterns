@@ -11,6 +11,10 @@ datagroup: default {
   max_cache_age: "1 hour"
 }
 
+label: "{% if _user_attributes['brand'] == 'Calvin Klein' %} Calvin Klein
+            {% elsif _user_attributes['brand'] == 'Calvin Klein Jeans' %} Calvin Klein
+            {% else %} OTHER {% endif %}"
+
 persist_with: default
 
 explore: user_growth_base {
@@ -40,33 +44,19 @@ explore: events {
   }
 }
 
-explore: inventory_items {
-  join: products {
-    type: left_outer
-    sql_on: ${inventory_items.product_id} = ${products.id} ;;
-    relationship: many_to_one
-  }
 
-  join: distribution_centers {
-    type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
-  }
-}
 
 explore: order_items {
-  always_filter: {filters: {
-    field: sale_price
-    value: "50"
-  }}
+
+  sql_always_where: DATEDIFF(days,{% parameter order_items.period_filter %},CURRENT_DATE)<365 ;;
   join: order_items_repurchase_facts {
     type: left_outer
     sql_on: ${order_items.id}=${order_items_repurchase_facts.order_id} ;;
     relationship: one_to_one
   }
-  join: inventory_items {
+  join: inventory_items_1 {
     type: left_outer
-    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
+    sql_on: ${order_items.inventory_item_id} = ${inventory_items_1.id} ;;
     relationship: many_to_one
   }
 
@@ -78,7 +68,7 @@ explore: order_items {
 
   join: products {
     type: left_outer
-    sql_on: ${inventory_items.product_id} = ${products.id} ;;
+    sql_on: ${inventory_items_1.product_id} = ${products.id} ;;
     relationship: many_to_one
   }
 
