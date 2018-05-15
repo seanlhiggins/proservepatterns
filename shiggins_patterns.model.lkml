@@ -11,18 +11,23 @@ datagroup: default {
   max_cache_age: "1 hour"
 }
 
-label: "{% if _user_attributes['brand'] == 'Calvin Klein' %} Calvin Klein
-            {% elsif _user_attributes['brand'] == 'Calvin Klein Jeans' %} Calvin Klein
-            {% else %} OTHER {% endif %}"
+# label: "{% if _user_attributes['brand'] == 'Calvin Klein' %} Calvin Klein
+#             {% elsif _user_attributes['brand'] == 'Calvin Klein Jeans' %} Calvin Klein
+#             {% else %} OTHER {% endif %}"
 
 persist_with: default
 #test
 
+# New User Retention Analyses:
 explore: user_growth_base {
-#   extension: required
-fields: [ALL_FIELDS*]
+  description: "User Retention Analysis. Straight forward explore. No parameters."
+  #   extension: required
   from: user_growth
   view_name: user_growth
+}
+explore: parameter_intervals {
+  description: "User Retention Analysis with dynamic parameters."
+
 }
 
 explore: interval_windows {}
@@ -45,23 +50,42 @@ explore: events {
   }
 }
 
+explore: users_extended {
+
+  view_name: users {
+    sql_table_name: {% if _user_attributes['users_table']=='extended' %}
+  ${users_extended.SQL_TABLE_NAME}
+  {% else %}
+  public.users
+  {% endif %} ;;
+  }
+
+}
 
 
 explore: order_items {
 
-#   sql_always_where: DATEDIFF(days,{% parameter order_items.period_filter %},CURRENT_DATE)<365 ;;
+# access_filter: {
+#   field: products.brand
+#   user_attribute: brand
+# }
   join: order_items_repurchase_facts {
+    view_label: "{% if _user_attributes['customer'] == 'A' %}Don't use these!
+            {% elsif _user_attributes['customer'] == 'B' %}To be Deprecated
+            {% else %}Repurchase Facts {% endif %}"
     type: left_outer
     sql_on: ${order_items.id}=${order_items_repurchase_facts.order_id} ;;
     relationship: one_to_one
   }
   join: inventory_items_1 {
+    view_label: "Inventory"
     type: left_outer
     sql_on: ${order_items.inventory_item_id} = ${inventory_items_1.id} ;;
     relationship: many_to_one
   }
 
   join: users {
+    view_label: "Customers"
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
     relationship: many_to_one
@@ -89,6 +113,8 @@ explore: products {
 }
 
 explore: users {
+  fields: [ALL_FIELDS*, -set_variable]
+
 }
 
 explore: calendar {

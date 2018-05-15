@@ -10,6 +10,10 @@ view: order_items {
     sql: ${TABLE}.ID ;;
   }
 
+filter: consolidated_filter {
+  type: string
+  sql: {% condition consolidated_filter %}LIKE '%' {% endcondition %};;
+}
   dimension_group: created {
     type: time
     timeframes: [
@@ -24,7 +28,7 @@ view: order_items {
     ]
     convert_tz: no
     sql: ${TABLE}.CREATED_AT ;;
-  }
+    }
 
   dimension_group: delivered {
     type: time
@@ -106,6 +110,14 @@ view: order_items {
   measure: count {
     type: count
     drill_fields: [detail*]
+    html:
+    {{ vis }};;
+    # {% if value > 10 and created_date._in_query %}
+    # <p style="color: Red; background-color: grey; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    # {% else %}
+    # {{rendered_value}}
+    # {% endif %}
+    # ;;
   }
 
 
@@ -207,7 +219,47 @@ view: order_items {
       value: "yes"
     }
   }
+  filter: period_length {
+    type: date
+    default_value: "90 days"
+  }
 
+  dimension: num_days {
+    # hidden: yes
+    type: string
+    sql: datediff({% date_end period_length %},{% date_start period_length %}) ;;
+  }
+
+  dimension: period_comparison {
+    # hidden: yes
+    allow_fill: no
+    type: string
+    case: {
+      when: {sql: datediff(days,current_date,${created_date}) < ${num_days};; label: "Current period"}
+      when: {sql: datediff(days,current_date,${created_date}) < (${num_days} + ${num_days}) ;; label: "Prior period"}
+      else: "Out of date period range"
+    }
+  }
+  measure: gross_margin_for_selected_period {
+    type: sum
+    value_format_name: usd
+    sql: ${gross_margin} ;;
+    drill_fields: [detail*]
+    filters: {
+      field: period_comparison
+      value: "Current period"
+    }
+  }
+  measure: gross_margin_for_preceding_period {
+    type: sum
+    value_format_name: usd
+    sql: ${gross_margin} ;;
+    drill_fields: [detail*]
+    filters: {
+      field: period_comparison
+      value: "Prior period"
+    }
+  }
 #   parameter: view_label {
 #     type: unquoted
 #     hidden: yes
