@@ -1,5 +1,4 @@
 #Parameterised View
-explore: parameter_intervals {}
 view: parameter_intervals {
   derived_table: {
 
@@ -228,11 +227,20 @@ view: user_growth {
   dimension: end_time {convert_tz: no type:date}
 
     dimension: user_id {sql: ${TABLE}.user_id;; type:number }
-    measure: user_reactivation_rate {type:sum value_format_name:percent_1}
+measure: user_reactivation_rate {
+  type:sum
+  value_format_name:percent_1
+  drill_fields: [detail*]
+  sql: ${TABLE}.user_reactivation_rate ;;
+  description: "User Reactivation Rate"
+  html: <span title="Reactivation Definition:
+  The rate at which a user re-engages with our platform">{{linked_value}}</span>;;
+  }
+
     measure: user_activation_rate {type:sum value_format_name:percent_1}
     measure: user_retention_rate {type:sum value_format_name:percent_1}
     measure: total_active_users {type:sum drill_fields:[user_id]}
-
+    set: detail { fields: [calendar_date_date,user_activation_rate,user_reactivation_rate,user_retention_rate,start]}
   }
 
   view: interval_windows {

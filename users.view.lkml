@@ -1,17 +1,43 @@
+view: users_extended {
+  extends: [users]
+  dimension: email {
+    hidden: yes
+  }
+}
+
 view: users {
   sql_table_name: public.USERS ;;
+  dimension: email {
+    type: string
+    sql: ${TABLE}.EMAIL ;;
+  }
 
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.ID ;;
   }
-
+  parameter: set_variable {
+    allowed_value: {
+      value: "detail"
+      label: "detal"
+    }
+    default_value: "detail"
+  }
   dimension: age {
     type: number
     sql: ${TABLE}.AGE ;;
   }
 
+  # dimension: age_tier {
+  #   type: tier
+  #   sql: ${age} ;;
+  # }
+
+  measure: average_age {
+    type: average
+    sql: ${age} ;;
+  }
   dimension: city {
     type: string
     sql: ${TABLE}.CITY ;;
@@ -37,10 +63,7 @@ view: users {
     sql: ${TABLE}.CREATED_AT ;;
   }
 
-  dimension: email {
-    type: string
-    sql: ${TABLE}.EMAIL ;;
-  }
+
 
   dimension: first_name {
     type: string
@@ -83,6 +106,12 @@ view: users {
     sql: ${TABLE}.ZIP ;;
   }
 
+  dimension: nr_of_orders {
+    sql: (SELECT count(id)  as nr_of_orders
+   FROM public.ORDER_ITEMS) ;;
+  }
+
+
   parameter: first_name_filter {}
   measure: total_number_named {
     label: "Total Users Named {% parameter first_name_filter %}"
@@ -92,5 +121,10 @@ view: users {
   measure: count {
     type: count
     drill_fields: [id, last_name, first_name, events.count, order_items.count]
+  }
+
+  set: detail {
+    fields: [id, last_name, first_name, events.count, order_items.count]
+
   }
 }
