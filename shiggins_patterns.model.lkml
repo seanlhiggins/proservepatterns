@@ -102,6 +102,13 @@ explore: order_items {
     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
     relationship: many_to_one
   }
+
+  join: top_5_countries {
+    view_label: "Countries"
+    sql_on: ${top_5_countries.country_code} = ${users.country} ;;
+    type: inner
+    relationship: many_to_one
+  }
 }
 
 explore: products {

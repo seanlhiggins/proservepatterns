@@ -110,8 +110,8 @@ filter: consolidated_filter {
   measure: count {
     type: count
     drill_fields: [detail*]
-    html:
-    {{ vis }};;
+#     html:
+#     {{ vis }};;
     # {% if value > 10 and created_date._in_query %}
     # <p style="color: Red; background-color: grey; font-size:100%; text-align:center">{{ rendered_value }}</p>
     # {% else %}
@@ -168,7 +168,7 @@ filter: consolidated_filter {
   }
 
 
-  parameter: month_name {hidden: yes
+  parameter: month_name {hidden: no
     type: string
     allowed_value: {label: "January" value: "2018-01"}
     allowed_value: {label: "February" value: "2018-02"}
