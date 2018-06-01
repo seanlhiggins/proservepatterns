@@ -34,15 +34,16 @@ explore: interval_windows {}
 
 explore: distribution_centers {}
 
-explore: active_users {
-  join: users {
-    type: left_outer
-    sql_on: ${active_users.user_id} = ${users.id} ;;
-    relationship: many_to_one
-  }
-}
+# explore: active_users {
+#   join: users {
+#     type: left_outer
+#     sql_on: ${active_users.user_id} = ${users.id} ;;
+#     relationship: many_to_one
+#   }
+# }
 
 explore: events {
+  fields: [ALL_FIELDS*, -users.etl_date_diff]
   join: users {
     type: left_outer
     sql_on: ${events.user_id} = ${users.id} ;;
@@ -52,6 +53,7 @@ explore: events {
 
 explore: users_extended {
 
+    fields: [ALL_FIELDS*, -users.etl_date_diff]
   view_name: users {
     sql_table_name: {% if _user_attributes['users_table']=='extended' %}
   ${users_extended.SQL_TABLE_NAME}
@@ -64,6 +66,7 @@ explore: users_extended {
 
 
 explore: order_items {
+  fields: [ALL_FIELDS*, -users.etl_date_diff]
 
 # access_filter: {
 #   field: products.brand
@@ -120,11 +123,15 @@ explore: products {
 }
 
 explore: users {
-  fields: [ALL_FIELDS*, -set_variable]
-
+#   sql_always_where: ${users.created_date} <= (SELECT MAX(etl_date) FROM ${etl_checker.SQL_TABLE_NAME}) ;;
+  join: etl_checker {
+    type: cross
+    relationship: many_to_one
+  }
 }
 
 explore: calendar {
+  fields: [ALL_FIELDS*, -users.etl_date_diff]
   label: "Interval Active Users"
   join: users {
     sql_on: ${calendar.date_date} = ${users.created_date};;

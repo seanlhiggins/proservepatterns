@@ -1,3 +1,15 @@
+explore: etl_checker {}
+view: etl_checker {
+  derived_table: {
+    ## Change this to something like sql: SELECT max(etl_date) as etl_date FROM etl_logs ;;
+    sql: SELECT (CURRENT_DATE -4) as etl_date ;;
+  }
+
+  dimension: etl_date {
+    sql: ${TABLE}.etl_date ;;
+  }
+}
+
 view: users_extended {
   extends: [users]
   dimension: email {
@@ -35,8 +47,18 @@ view: users {
   # }
 
   measure: average_age {
+    label: "average_conversion"
     type: average
     sql: ${age} ;;
+    html:
+     <div style="float: left
+          ; width:100%
+          ; background-color: rgba(200,0,0,0.{{100 | times:value}})
+          ; text-align:left
+          ; color: #FFFFFF
+          ; border-radius: 5px"> <p style="margin-bottom: 0; margin-left: 4px;">{{ value }}</p>
+          </div>
+         ;;
   }
   dimension: city {
     type: string
@@ -49,7 +71,40 @@ view: users {
     sql: ${TABLE}.COUNTRY ;;
   }
 
+
+# {% assign today_date = 'now' | date: '%s' %}
+# {% assign pre_date = product.metafields.Release-Date.preOrder | date: '%s' %}
+# {% if today_date > pre_date %}
+
+
+
+
+  filter: date_filter {
+    type: date
+    sql:
+    CASE WHEN
+    DATEDIFF(day, ({% date_start date_filter %})::date,({% date_end date_filter %})::date) = 1 THEN
+    ({% date_start date_filter %})::date = ${created_date}
+    ELSE
+    {% condition date_filter %} DATEADD(day,${etl_date_diff},${created_date}) {% endcondition %}
+    END
+;;
+  }
+
+  dimension: etl_date_diff{
+    type: number
+    sql: datediff(day,${etl_checker.etl_date},{% date_end date_filter %}) ;;
+    }
+
   dimension_group: created {
+    type: time
+    timeframes: [
+      raw,
+      date,
+    ]
+    sql: ${TABLE}.CREATED_AT ;;
+  }
+  dimension_group: unadjusted_created {
     type: time
     timeframes: [
       raw,
@@ -60,9 +115,7 @@ view: users {
       quarter,
       year
     ]
-    sql: ${TABLE}.CREATED_AT ;;
-  }
-
+    sql:${TABLE}.CREATED_AT ;;}
 
 
   dimension: first_name {
