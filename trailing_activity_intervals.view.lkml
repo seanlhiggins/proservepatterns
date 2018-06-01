@@ -233,12 +233,46 @@ measure: user_reactivation_rate {
   drill_fields: [detail*]
   sql: ${TABLE}.user_reactivation_rate ;;
   description: "User Reactivation Rate"
-  html: <span title="Reactivation Definition:
-  The rate at which a user re-engages with our platform">{{linked_value}}</span>;;
+ html:
+  <div style="float: left
+  ; width:100%
+  ; background-color: rgba(0,180,0,0.{{value}})
+  ; text-align:left
+  ; color: #FFFFFF
+  ; border-radius: 5px"> <p style="margin-bottom: 0; margin-left: 4px;">{{ value | times:100 }}%</p>
+  </div>
+
+  ;;
   }
 
-    measure: user_activation_rate {type:sum value_format_name:percent_1}
-    measure: user_retention_rate {type:sum value_format_name:percent_1}
+    measure: user_activation_rate {type:sum value_format_name:percent_1
+      html:
+      <div style="float: left
+          ; width:100%
+          ; background-color: rgba(0,180,0,{{value}})
+          ; text-align:left
+          ; color: #FFFFFF
+          ; border-radius: 5px"> <p style="margin-bottom: 0; margin-left: 4px;">{{ value | times:100 }}%</p>
+          </div>
+
+      ;;
+      }
+    measure: user_retention_rate {type:sum value_format_name:percent_1
+      html:
+      <div style="float: left
+      ; width:100%
+      ; background-color: rgba(0,180,0,0.{{value}})
+      ; text-align:left
+      ; color: #FFFFFF
+      ; border-radius: 5px"> <p style="margin-bottom: 0; margin-left: 4px;">{{ value | times:100 }}%</p>
+      </div>
+      <div style="float: left
+      ; width:100%
+      ; background-color: rgba(0,100,0,0.{{value}})
+      ; text-align:right
+      ; border-radius: 5px"> <p style="margin-bottom: 0; margin-left: 0px; color:rgba(0,0,0,0.0" )>{{rendered_value}}</p>
+      </div>
+      ;;}
     measure: total_active_users {type:sum drill_fields:[user_id]}
     set: detail { fields: [calendar_date_date,user_activation_rate,user_reactivation_rate,user_retention_rate,start]}
   }
