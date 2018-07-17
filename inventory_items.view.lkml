@@ -1,8 +1,5 @@
-explore: inventory_items_1 {
-  label: "Inventory Items"
-  view_label: "Inventory Items"
-}
-view: inventory_items_1 {
+
+view: inventory_items {
   sql_table_name: public.INVENTORY_ITEMS ;;
 
   dimension: id {
