@@ -94,7 +94,7 @@ filter: consolidated_filter {
     {% else %} Gross Margin {% endif %}"
     type: number
     value_format_name: usd
-    sql: ${sale_price} - ${inventory_items_1.cost} ;;
+    sql: ${sale_price} - ${inventory_items.cost} ;;
   }
   dimension: status {
     type: string
@@ -218,6 +218,55 @@ filter: consolidated_filter {
       field: is_selected_month_or_previous_month
       value: "yes"
     }
+  }
+  measure: total_sales_price {
+    sql: ${sale_price} ;;
+    type: sum
+  }
+  measure: ttl_gross_margin {
+    type: sum
+    value_format_name: usd
+    sql: ${gross_margin} ;;
+
+    html: <div style="width:100%; text-align: centre;"> <details>
+      <summary style="outline:none">{{ total_gross_margin._linked_value }}</summary>
+      Sale Price: {{ total_sales_price._linked_value }}
+      <br/>
+      Inventory Costs: {{ inventory_items.total_cost._linked_value }}
+
+      </details>
+      </div>;;
+  }
+
+  measure: total_position {
+    type: sum
+    label: "Overall Position"
+    description: "Sum of position at a given time for a given position label."
+    drill_fields:[detail*]
+    sql: ${sale_price} ;;
+    value_format_name: decimal_2
+     html:
+   <div style="width:100%"><details>
+        <summary style="outline:none">{{ linked_value }}</summary>
+    {% if created_year._value == 2018 %}
+          Gross Margin - {{ ttl_gross_margin._rendered_value }} <br>
+          Total Revenue - {{ total_sales_price._rendered_value}}
+        </details>
+        </div>
+    {% elsif created_year._value == 2017 %}
+        Other thing - 1 <br>
+        Another thing - 2
+        </details>
+        </div>
+    {% else %}
+          Cost - {{ inventory_items.count._linked_value }} <br>
+          User Count - {{ users.count._linked_value }}
+          <br/>
+        </details>
+        </div>
+    {% endif %}
+;;
+
   }
   filter: period_length {
     type: date

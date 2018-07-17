@@ -10,7 +10,73 @@ datagroup: default {
   sql_trigger: SELECT CURRENT_DATE;;
   max_cache_age: "1 hour"
 }
-
+explore: pop {
+#   from:  pop/
+#   view_name: pop
+  join: within_periods { #No editing needed
+    from: numbers
+    type: left_outer
+    relationship: one_to_many
+    fields: []
+    sql_on: ${within_periods.n}
+            <= DATEDIFF( {% parameter pop.within_period_type %},{% date_start pop.date_filter %},{% date_end pop.date_filter %} )
+              * CASE WHEN {%parameter pop.within_period_type %} = 'hour' THEN 24 ELSE 1 END;;
+  }
+  join: over_periods { #No editing needed
+    from: numbers
+    view_label: "[PoP]"
+    type: left_outer
+    relationship: one_to_many
+    sql_on:
+        CASE WHEN {% condition pop.over_how_many_past_periods %} NULL {% endcondition %}
+        THEN
+          ${over_periods.n} <= 1
+        ELSE
+          {% condition pop.over_how_many_past_periods %} ${over_periods.n} {% endcondition %}
+        END;;
+  }
+  #Rename (& optionally repeat) below join to match your pop view(s)
+  join: pop_order_items_created {
+    type: left_outer
+    relationship: many_to_one
+    #Apply join name below in sql_on
+    sql_on: pop_order_items_created.join_date = DATE_TRUNC({% parameter pop.within_period_type %},
+          DATEADD({% parameter pop.over_period_type %}, 0 - ${over_periods.n},
+              DATEADD({% parameter pop.within_period_type %}, 0 - ${within_periods.n},
+                  {% date_end pop.date_filter %}
+              )
+          )
+      );;
+  }
+  join: pop_order_items_delivered {
+    type: left_outer
+    relationship: many_to_one
+    #Apply join name below in sql_on
+    sql_on: pop_order_items_delivered.join_date = DATE_TRUNC({% parameter pop.within_period_type %},
+          DATEADD({% parameter pop.over_period_type %}, 0 - ${over_periods.n},
+              DATEADD({% parameter pop.within_period_type %}, 0 - ${within_periods.n},
+                  {% date_end pop.date_filter %}
+              )
+          )
+      );;
+  }
+  #No editing needed below
+  always_join: [within_periods,over_periods]
+  always_filter: {
+    filters: {
+      field: pop.date_filter
+      value: "last 12 weeks"
+    }
+    filters: {
+      field: pop.within_period_type
+      value: "week"
+    }
+    filters: {
+      field: pop.over_period_type
+      value: "year"
+    }
+  }
+}
 # label: "{% if _user_attributes['brand'] == 'Calvin Klein' %} Calvin Klein
 #             {% elsif _user_attributes['brand'] == 'Calvin Klein Jeans' %} Calvin Klein
 #             {% else %} OTHER {% endif %}"
@@ -80,10 +146,10 @@ explore: order_items {
     sql_on: ${order_items.id}=${order_items_repurchase_facts.order_id} ;;
     relationship: one_to_one
   }
-  join: inventory_items_1 {
+  join: inventory_items {
     view_label: "Inventory"
     type: left_outer
-    sql_on: ${order_items.inventory_item_id} = ${inventory_items_1.id} ;;
+    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
     relationship: many_to_one
   }
 
@@ -96,7 +162,7 @@ explore: order_items {
 
   join: products {
     type: left_outer
-    sql_on: ${inventory_items_1.product_id} = ${products.id} ;;
+    sql_on: ${inventory_items.product_id} = ${products.id} ;;
     relationship: many_to_one
   }
 
