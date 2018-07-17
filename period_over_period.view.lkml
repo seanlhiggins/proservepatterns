@@ -150,13 +150,14 @@ view: pop_order_items_created {
       }
       filter: date_filter  {
         label: "1. Date Range"
-        hidden: yes
+        hidden: no
         type: date
         convert_tz: no
       }
       dimension: over_period_type {
         label: "3. Compare over"
-        hidden: yes
+        hidden: no
+        description: "For the comparison period, what granularity are you comparing against"
         type: string
         #Using case just to get friendlier UI experience in filters. Otherwise, could have a no-sql filter field
         case: {
@@ -185,7 +186,8 @@ view: pop_order_items_created {
       }
       dimension: within_period_type {
         label: "2. Break down date range by"
-        hidden: yes
+        hidden: no
+        description: "Within the selected date range, what granularity do you want to see e.g. Daily, Weekly etc."
         type: string
         #Using case just to get friendlier UI experience in filters. Otherwise, could have a no-sql filter field
         case: {
