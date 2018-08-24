@@ -6,6 +6,7 @@ view: etl_checker {
   }
 
   dimension: etl_date {
+    type: date
     sql: ${TABLE}.etl_date ;;
   }
 }
@@ -71,6 +72,17 @@ view: users {
     sql: ${TABLE}.COUNTRY ;;
   }
 
+  dimension: country_array {
+    label: "City Array"
+    sql: {% assign city_array_fr = _user_attributes.['new_york']%}
+    {% assign city_array_de = _user_attributes.['santa_cruz'] %}
+    {% assign city_array_full = '' | append: city_array_fr | append:',' |append: city_array_de %}
+    {% for city in city_array_full %}
+    '{{ city }}'
+    {% endfor %}
+    ;;
+# '- {{ item }}'
+  }
 
 # {% assign today_date = 'now' | date: '%s' %}
 # {% assign pre_date = product.metafields.Release-Date.preOrder | date: '%s' %}
@@ -93,7 +105,9 @@ view: users {
 
   dimension: etl_date_diff{
     type: number
-    sql: datediff(day,${etl_checker.etl_date},{% date_end date_filter %}) ;;
+#     --datediff(day,${etl_checker.etl_date_date},{% date_end date_filter %})
+    sql: 1
+    ;;
     }
 
   dimension_group: created {

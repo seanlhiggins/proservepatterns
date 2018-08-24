@@ -47,11 +47,15 @@ view: inventory_items {
   dimension: product_brand {
     type: string
     sql: ${TABLE}.PRODUCT_BRAND ;;
+    suggest_explore: products
+    suggest_dimension: products.brand_filter
   }
 
   dimension: product_category {
     type: string
     sql: ${TABLE}.PRODUCT_CATEGORY ;;
+    suggest_explore: products
+    suggest_dimension: products.category_filter
   }
 
   dimension: product_department {

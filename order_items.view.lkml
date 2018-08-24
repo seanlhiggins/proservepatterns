@@ -1,5 +1,118 @@
+# view: order_items_de {
+#   extends: [order_items_base]
+#   sql_table_name: public.order_items ;;
+
+#   measure: total_sale_price {
+#     sql: ${sale_price} * 0.88 ;;
+#   }
+
+# }
+
+# view: order_items_last_week {
+#   derived_table: {
+#     sql: SELECT * FROM public.ORDER_ITEMS  ((( CAST(order_items.CREATED_AT as DATE) ) >= ((CONVERT_TIMEZONE('America/Los_Angeles', 'UTC', DATEADD(day,-6, DATE_TRUNC('day',CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', GETDATE())) )))) AND ( CAST(order_items.CREATED_AT as DATE) ) < ((CONVERT_TIMEZONE('America/Los_Angeles', 'UTC', DATEADD(day,7, DATEADD(day,-6, DATE_TRUNC('day',CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', GETDATE())) ) )))))) ;;
+#   persist_for: "1 hour"
+#   }
+# }
+# view: order_items_last_month {
+#   derived_table: {
+#     sql: SELECT * FROM public.ORDER_ITEMS  ((( CAST(order_items.CREATED_AT as DATE) ) >= ((CONVERT_TIMEZONE('America/Los_Angeles', 'UTC', DATEADD(day,-30, DATE_TRUNC('day',CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', GETDATE())) )))) AND ( CAST(order_items.CREATED_AT as DATE) ) < ((CONVERT_TIMEZONE('America/Los_Angeles', 'UTC', DATEADD(day,7, DATEADD(day,-30, DATE_TRUNC('day',CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', GETDATE())) ) )))))) ;;
+#     persist_for: "1 hour"
+#   }
+# }
+
+# datagroup: etl_update {
+#   sql_trigger: SELECT count(*) FROM order_items ;;
+#   max_cache_age: "1 minute"
+# }
+
+# view: user_order_facts {
+#   derived_table: {
+#     # sql_trigger_value: SELECT CURRENT_DATE ;;
+#     # persist_for: "12 hours"
+#     datagroup_trigger: etl_update
+#     sql: SELECT user_id, count(*) FROM order_items ;;
+#   }
+
+# }
+
 view: order_items {
+  # extension: required
   sql_table_name: public.ORDER_ITEMS ;;
+# sql_table_name:
+# {% if date_diff_selected._value < 7 %}
+# ${order_items_last_week.SQL_TABLE_NAME}
+# {% elsif date_diff_selected._value < 31 %}
+# ${order_items_last_month.SQL_TABLE_NAME}
+# {% else %}
+# public.ORDER_ITEMS
+# {% endif %}
+# ;;
+  dimension: date_diff_selected {
+    type: number
+    sql: DATEDIFF(day,{% date_start previous_period_filter %},CURRENT_DATE) ;;
+  }
+
+  parameter: previous_period_comparison_granularity {
+    description: "Select the comparison period. E.g. choosing Month will compare the selected range against the same dates 30 days ago. "
+    type: unquoted
+
+    allowed_value: {
+      label: "Week"
+      value: "7"
+    }
+    allowed_value: {
+      label: "Month"
+      value: "30"
+    }
+    allowed_value: {
+      label: "Year"
+      value: "365"
+    }
+  }
+
+  filter: previous_period_filter {
+    label: "Previous Period/This Period filter Range"
+    description: "Previous Period Filter for specific measures. User Date filter for any regular measures."
+    type: date
+    sql:
+    {% if period_over_period._in_query %}
+    (${created_date} >=  {% date_start previous_period_filter %}
+    AND ${created_date} <= {% date_end previous_period_filter %})
+
+     OR
+     (${created_date} >= DATEADD(day,-{{ previous_period_comparison_granularity._parameter_value }}, {% date_start previous_period_filter %} )
+     AND ${created_date} <= DATEADD(day,-{{ previous_period_comparison_granularity._parameter_value }}+DATEDIFF(day,{% date_start previous_period_filter %}, {% date_end previous_period_filter %}),{% date_start previous_period_filter %} ))
+    {% else %}
+    {% condition previous_period_filter %} CAST(${created_raw} as DATE) {% endcondition %}
+    {% endif %}
+    ;;
+    }
+
+    # For Amazon Redshift
+    # ${created_raw} is the timestamp dimension we are building our reporting period off of
+    dimension: period_over_period {
+      type: string
+      description: "The reporting period as selected by the Previous Period Filter"
+      sql:
+      CASE
+        WHEN {% date_start previous_period_filter %} is not null AND {% date_end previous_period_filter %} is not null /* date ranges or in the past x days */
+          THEN
+            CASE
+              WHEN ${created_date} >=  {% date_start previous_period_filter %}
+                AND ${created_date} <= {% date_end previous_period_filter %}
+                THEN 'This Period'
+
+                WHEN ${created_date} >= DATEADD(day,-{{ previous_period_comparison_granularity._parameter_value }}, {% date_start previous_period_filter %} )
+                AND ${created_date} <= DATEADD(day,-{{ previous_period_comparison_granularity._parameter_value }}+DATEDIFF(day,{% date_start previous_period_filter %}, {% date_end previous_period_filter %}),{% date_start previous_period_filter %} )
+
+                THEN 'Previous Period'
+            END
+            ELSE
+            'This Period'
+          END ;;
+    }
+
 
   parameter: period_filter {
     type: date
@@ -46,7 +159,6 @@ filter: consolidated_filter {
 
   dimension: inventory_item_id {
     type: number
-    # hidden: yes
     sql: ${TABLE}.INVENTORY_ITEM_ID ;;
   }
 
@@ -222,6 +334,7 @@ filter: consolidated_filter {
   measure: total_sales_price {
     sql: ${sale_price} ;;
     type: sum
+    drill_fields: [created_date,created_raw,total_sales_price]
   }
   measure: ttl_gross_margin {
     type: sum
