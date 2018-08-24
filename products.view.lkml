@@ -1,3 +1,7 @@
+view: products_extended {
+  extends: [products]
+  dimension: brand {}
+}
 view: products {
   sql_table_name: public.PRODUCTS ;;
 
@@ -10,20 +14,35 @@ view: products {
     type: string
     default_value: "The Money Zone"
   }
-
+  parameter: image_url {
+    type: unquoted
+  }
+  dimension: product_image {
+    sql: 1;;
+    html: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq7OyHRIDa1t4Mnbk6U4Ac3U_{{ products.image_url._parameter_value }}" ;;
+  }
   dimension: brand {
-    group_label: "{% parameter view_label %}"
     type: string
     sql: ${TABLE}.BRAND ;;
+    suggest_explore: products
+    suggest_dimension: products.brand_filter
   }
 
+  dimension: brand_filter {
+    hidden: yes
+    sql: ${TABLE}.BRAND ;;
+  }
   dimension: category {
-    group_label: "{% parameter view_label %}"
-
     type: string
     sql: ${TABLE}.CATEGORY ;;
+    suggest_explore: products
+    suggest_dimension: products.category_filter
   }
 
+  dimension: category_filter {
+    hidden: yes
+    sql: ${TABLE}.CATEGORY ;;
+  }
   dimension: cost {
     group_label: "{% if _explore._name   == 'order_items' %} Product Subcategory
     {% elsif _explore._name == 'Products' %} Brand

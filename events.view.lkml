@@ -75,6 +75,8 @@ view: events {
   dimension: state {
     type: string
     sql: ${TABLE}.STATE ;;
+    suggest_explore: users
+    suggest_dimension: users.state
   }
 
   dimension: traffic_source {
@@ -91,6 +93,8 @@ view: events {
     type: number
     # hidden: yes
     sql: ${TABLE}.USER_ID ;;
+    suggest_explore: users
+    suggest_dimension: users.id
   }
 
   dimension: zip {

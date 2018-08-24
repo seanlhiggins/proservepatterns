@@ -10,6 +10,29 @@ datagroup: default {
   sql_trigger: SELECT CURRENT_DATE;;
   max_cache_age: "1 hour"
 }
+
+# explore: order_items_de {
+#   extends: [order_items]
+#   label: "Deutsche"
+#   fields: [ALL_FIELDS*,-total_sale_price]
+# }
+
+# explore: users_order_items {
+#   from: users
+#   extends: [users,order_items]
+#   join: order_items {
+#     sql_on: ${users.id} = ${order_items.user_id} ;;
+#   }
+# }
+explore: products {
+  sql_always_where: ${brand} = 'Allegra K' AND ${category} = 'Jeans';;
+}
+
+explore: users {
+  sql_always_where: ${city} = 'New York' ;;
+}
+
+
 explore: pop {
 #   from:  pop/
 #   view_name: pop
@@ -95,7 +118,13 @@ explore: parameter_intervals {
   description: "User Retention Analysis with dynamic parameters."
 
 }
-
+explore: inventory_items{
+  join: products {
+    sql_on: ${products.id} = ${inventory_items.product_id} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
+}
 explore: interval_windows {}
 
 explore: distribution_centers {}
@@ -131,70 +160,9 @@ explore: users_extended {
 }
 
 
-explore: order_items {
-  fields: [ALL_FIELDS*, -users.etl_date_diff]
 
-# access_filter: {
-#   field: products.brand
-#   user_attribute: brand
-# }
-  join: order_items_repurchase_facts {
-    view_label: "{% if _user_attributes['customer'] == 'A' %}Don't use these!
-            {% elsif _user_attributes['customer'] == 'B' %}To be Deprecated
-            {% else %}Repurchase Facts {% endif %}"
-    type: left_outer
-    sql_on: ${order_items.id}=${order_items_repurchase_facts.order_id} ;;
-    relationship: one_to_one
-  }
-  join: inventory_items {
-    view_label: "Inventory"
-    type: left_outer
-    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
-    relationship: many_to_one
-  }
 
-  join: users {
-    view_label: "Customers"
-    type: left_outer
-    sql_on: ${order_items.user_id} = ${users.id} ;;
-    relationship: many_to_one
-  }
 
-  join: products {
-    type: left_outer
-    sql_on: ${inventory_items.product_id} = ${products.id} ;;
-    relationship: many_to_one
-  }
-
-  join: distribution_centers {
-    type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
-  }
-
-  join: top_5_countries {
-    view_label: "Countries"
-    sql_on: ${top_5_countries.country_code} = ${users.country} ;;
-    type: inner
-    relationship: many_to_one
-  }
-}
-
-explore: products {
-  join: distribution_centers {
-    type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
-  }
-}
-
-explore: users {
-#   sql_always_where: ${users.created_date} <= (SELECT MAX(etl_date) FROM ${etl_checker.SQL_TABLE_NAME}) ;;
-  join: etl_checker {
-    type: cross
-    relationship: many_to_one
-  }
-}
 
 explore: calendar {
   fields: [ALL_FIELDS*, -users.etl_date_diff]
