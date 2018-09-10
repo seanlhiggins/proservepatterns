@@ -25,6 +25,13 @@ view: users {
     sql: ${TABLE}.EMAIL ;;
   }
 
+  dimension_group: system {
+    description: "current timestamp"
+    type: time
+    datatype: timestamp
+    sql: GETDATE();;
+  }
+
   dimension: id {
     primary_key: yes
     type: number
@@ -112,23 +119,12 @@ view: users {
 
   dimension_group: created {
     type: time
-    timeframes: [
-      raw,
-      date,
-    ]
+
     sql: ${TABLE}.CREATED_AT ;;
   }
   dimension_group: unadjusted_created {
     type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
+
     sql:${TABLE}.CREATED_AT ;;}
 
 
