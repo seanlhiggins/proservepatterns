@@ -21,11 +21,26 @@ view: products {
     sql: 1;;
     html: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq7OyHRIDa1t4Mnbk6U4Ac3U_{{ products.image_url._parameter_value }}" ;;
   }
+
+  parameter: brand_selector {
+    default_value: "TEST"
+    allowed_value: {
+      value: "Test"
+      label: "Test"
+    }
+    suggest_dimension: brand
+  }
+
   dimension: brand {
     type: string
     sql: ${TABLE}.BRAND ;;
-    suggest_explore: products
-    suggest_dimension: products.brand_filter
+    html:
+    {% if products.category._value =='Jeans' AND products.category._is_selected %}
+    <a href="https://profservices.dev.looker.com/dashboards/47?Category={{ category._value | encode_uri }}">{{rendered_value}}</a>
+    {% else %}
+    {{linked_value}}
+    {% endif %}
+    ;;
   }
 
   dimension: brand_filter {
@@ -85,6 +100,13 @@ view: products {
 
   measure: count {
     type: count
+    html:
+    {% if products.category._value =='Jeans' %}
+    <a href="https://profservices.dev.looker.com/dashboards/47?Category={{ category.value | encode_uri }}">{{linked_value}}</a>
+    {% else %}
+    HIDDEN
+    {% endif %}
+    ;;
     drill_fields: [id, name, distribution_centers.id, distribution_centers.name, inventory_items.count]
   }
 }

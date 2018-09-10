@@ -24,8 +24,37 @@ datagroup: default {
 #     sql_on: ${users.id} = ${order_items.user_id} ;;
 #   }
 # }
+access_grant: calvin_klein {
+  allowed_values: ["Calvin Klein"]
+  user_attribute: brand
+}
+
 explore: products {
-  sql_always_where: ${brand} = 'Allegra K' AND ${category} = 'Jeans';;
+
+  # sql_always_where: ${brand} = 'Allegra K' AND ${category} = 'Jeans';;
+}
+
+  explore: order_items {
+    label: "(1) Orders, Items and Users"
+    view_name: order_items
+    # sql_always_where: ${created_week} = TO_CHAR(DATE_TRUNC('week', DATE_ADD('day',-{{order_items.week_selector._parameter_value}},CURRENT_DATE)),'YYYY-MM-DD') ;;
+
+    join: inventory_items {
+      #Left Join only brings in items that have been sold as order_item
+      type: full_outer
+      relationship: one_to_one
+      sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+    }
+
+    join: users {
+      relationship: many_to_one
+      sql_on: ${order_items.user_id} = ${users.id} ;;
+    }
+
+    join: products {
+      relationship: many_to_one
+      sql_on: ${products.id} = ${inventory_items.product_id} ;;
+      }
 }
 
 explore: users {

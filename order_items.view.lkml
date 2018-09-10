@@ -142,7 +142,18 @@ filter: consolidated_filter {
     convert_tz: no
     sql: ${TABLE}.CREATED_AT ;;
     }
-
+  # parameter: week_selector {
+  #   type: unquoted
+  #   default_value: "Current Week"
+  #   allowed_value: {
+  #     value: "0"
+  #     label: "Current Week"
+  #   }
+  #   allowed_value: {
+  #     value: "7"
+  #     label: "Last Week"
+  #   }
+  # }
   dimension_group: delivered {
     type: time
     timeframes: [
@@ -335,6 +346,15 @@ filter: consolidated_filter {
     sql: ${sale_price} ;;
     type: sum
     drill_fields: [created_date,created_raw,total_sales_price]
+    html:
+    {% if users.count._value > 9900 %}
+    <div style="color:green">{{rendered_value}}</div>
+    {% elsif users.count._value < 9500 %}
+    <div style="color:pink">{{rendered_value}}</div>
+    {% else %}
+    {{rendered_value}}
+    {% endif %}
+    ;;
   }
   measure: ttl_gross_margin {
     type: sum

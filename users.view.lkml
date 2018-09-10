@@ -188,6 +188,12 @@ view: users {
   measure: count {
     type: count
     drill_fields: [id, last_name, first_name, events.count, order_items.count]
+    html: <b>{{rendered_value}}</b> ;;
+  }
+  measure: name_list {
+    type: list
+    list_field: first_name
+    html: <b>{{value}}</b> ;;
   }
 
   set: detail {
