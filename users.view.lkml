@@ -1,199 +1,207 @@
-explore: etl_checker {}
-view: etl_checker {
-  derived_table: {
-    ## Change this to something like sql: SELECT max(etl_date) as etl_date FROM etl_logs ;;
-    sql: SELECT (CURRENT_DATE -4) as etl_date ;;
-  }
-
-  dimension: etl_date {
-    type: date
-    sql: ${TABLE}.etl_date ;;
-  }
-}
-
-view: users_extended {
-  extends: [users]
-  dimension: email {
-    hidden: yes
-  }
-}
-
 view: users {
-  sql_table_name: public.USERS ;;
-  dimension: email {
-    type: string
-    sql: ${TABLE}.EMAIL ;;
-  }
-
-  dimension_group: system {
-    description: "current timestamp"
-    type: time
-    datatype: timestamp
-    sql: GETDATE();;
-  }
+  sql_table_name: ecomm.users ;;
+  ## Demographics ##
 
   dimension: id {
     primary_key: yes
     type: number
-    sql: ${TABLE}.ID ;;
+    sql: ${TABLE}.id ;;
+    tags: ["user_id"]
   }
-  parameter: set_variable {
-    allowed_value: {
-      value: "detail"
-      label: "detal"
-    }
-    default_value: "detail"
-  }
-  dimension: age {
-    type: number
-    sql: ${TABLE}.AGE ;;
-  }
-
-  # dimension: age_tier {
-  #   type: tier
-  #   sql: ${age} ;;
-  # }
-
-  measure: average_age {
-    label: "average_conversion"
-    type: average
-    sql: ${age} ;;
-    html:
-     <div style="float: left
-          ; width:100%
-          ; background-color: rgba(200,0,0,0.{{100 | times:value}})
-          ; text-align:left
-          ; color: #FFFFFF
-          ; border-radius: 5px"> <p style="margin-bottom: 0; margin-left: 4px;">{{ value }}</p>
-          </div>
-         ;;
-  }
-  dimension: city {
-    type: string
-    sql: ${TABLE}.CITY ;;
-  }
-
-  dimension: country {
-    type: string
-    map_layer_name: countries
-    sql: ${TABLE}.COUNTRY ;;
-  }
-
-  dimension: country_array {
-    label: "City Array"
-    sql: {% assign city_array_fr = _user_attributes.['new_york']%}
-    {% assign city_array_de = _user_attributes.['santa_cruz'] %}
-    {% assign city_array_full = '' | append: city_array_fr | append:',' |append: city_array_de %}
-    {% for city in city_array_full %}
-    '{{ city }}'
-    {% endfor %}
-    ;;
-# '- {{ item }}'
-  }
-
-# {% assign today_date = 'now' | date: '%s' %}
-# {% assign pre_date = product.metafields.Release-Date.preOrder | date: '%s' %}
-# {% if today_date > pre_date %}
-
-
-
-
-  filter: date_filter {
-    type: date
-    sql:
-    CASE WHEN
-    DATEDIFF(day, ({% date_start date_filter %})::date,({% date_end date_filter %})::date) = 1 THEN
-    ({% date_start date_filter %})::date = ${created_date}
-    ELSE
-    {% condition date_filter %} DATEADD(day,${etl_date_diff},${created_date}) {% endcondition %}
-    END
-;;
-  }
-
-  dimension: etl_date_diff{
-    type: number
-#     --datediff(day,${etl_checker.etl_date_date},{% date_end date_filter %})
-    sql: 1
-    ;;
-    }
-
-  dimension_group: created {
-    type: time
-
-    sql: ${TABLE}.CREATED_AT ;;
-  }
-  dimension_group: unadjusted_created {
-    type: time
-
-    sql:${TABLE}.CREATED_AT ;;}
-
 
   dimension: first_name {
-    type: string
-    sql: ${TABLE}.FIRST_NAME ;;
-  }
-
-  dimension: gender {
-    type: string
-    sql: ${TABLE}.GENDER ;;
+    hidden: yes
+    sql: INITCAP(${TABLE}.first_name) ;;
   }
 
   dimension: last_name {
-    type: string
-    sql: ${TABLE}.LAST_NAME ;;
+    hidden: yes
+    sql: INITCAP(${TABLE}.last_name) ;;
   }
 
-  dimension: latitude {
-    type: number
-    sql: ${TABLE}.LATITUDE ;;
+  dimension: name {
+    sql: ${first_name} || ' ' || ${last_name} ;;
   }
 
-  dimension: longitude {
+  dimension: age {
     type: number
-    sql: ${TABLE}.LONGITUDE ;;
+    sql: ${TABLE}.age ;;
+  }
+
+  dimension: age_tier {
+    type: tier
+    tiers: [0, 10, 20, 30, 40, 50, 60, 70]
+    style: integer
+    sql: ${age} ;;
+  }
+
+  dimension: gender {
+    sql: ${TABLE}.gender ;;
+  }
+
+  dimension: gender_short {
+    sql: LOWER(LEFT(${gender},1)) ;;
+  }
+
+  dimension: user_image {
+    sql: ${image_file} ;;
+    html: <img src="{{ value }}" width="220" height="220"/>;;
+  }
+
+  dimension: email {
+    sql: ${TABLE}.email ;;
+    tags: ["email"]
+
+    link: {
+      label: "User Lookup Dashboard"
+      url: "http://demo.looker.com/dashboards/160?Email={{ value | encode_uri }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
+    action: {
+      label: "Email Promotion to Customer"
+      url: "https://desolate-refuge-53336.herokuapp.com/posts"
+      icon_url: "https://sendgrid.com/favicon.ico"
+      param: {
+        name: "some_auth_code"
+        value: "abc123456"
+      }
+      form_param: {
+        name: "Subject"
+        required: yes
+        default: "Thank you {{ users.name._value }}"
+      }
+      form_param: {
+        name: "Body"
+        type: textarea
+        required: yes
+        default:
+        "Dear {{ users.first_name._value }},
+
+        Thanks for your loyalty to the Look.  We'd like to offer you a 10% discount
+        on your next purchase!  Just use the code LOYAL when checking out!
+
+        Your friends at the Look"
+      }
+    }
+    required_fields: [name, first_name]
+  }
+
+  dimension: image_file {
+    hidden: yes
+    sql: ('https://docs.looker.com/assets/images/'||${gender_short}||'.jpg') ;;
+  }
+
+  ## Demographics ##
+
+  dimension: city {
+    sql: ${TABLE}.city ;;
+    drill_fields: [zip]
   }
 
   dimension: state {
-    type: string
-    sql: ${TABLE}.STATE ;;
+    sql: ${TABLE}.state ;;
     map_layer_name: us_states
-  }
-
-  dimension: traffic_source {
-    type: string
-    sql: ${TABLE}.TRAFFIC_SOURCE ;;
+    drill_fields: [zip, city]
   }
 
   dimension: zip {
     type: zipcode
-    sql: ${TABLE}.ZIP ;;
+    sql: ${TABLE}.zip ;;
   }
 
-  dimension: nr_of_orders {
-    sql: (SELECT count(id)  as nr_of_orders
-   FROM public.ORDER_ITEMS) ;;
+  dimension: uk_postcode {
+    label: "UK Postcode"
+    sql: CASE WHEN ${TABLE}.country = 'UK' THEN TRANSLATE(LEFT(${zip},2),'0123456789','') END ;;
+    map_layer_name: uk_postcode_areas
+    drill_fields: [city, zip]
   }
 
-
-  parameter: first_name_filter {}
-  measure: total_number_named {
-    label: "Total Users Named {% parameter first_name_filter %}"
-    type: count_distinct
-    sql: {% condition first_name_filter %} ${first_name} {% endcondition %} ;;
+  dimension: country {
+    map_layer_name: countries
+    drill_fields: [state, city]
+    sql: CASE WHEN ${TABLE}.country = 'UK' THEN 'United Kingdom'
+           ELSE ${TABLE}.country
+           END
+       ;;
   }
+
+  dimension: location {
+    type: location
+    sql_latitude: ${TABLE}.latitude ;;
+    sql_longitude: ${TABLE}.longitude ;;
+  }
+
+  dimension: approx_location {
+    type: location
+    drill_fields: [location]
+    sql_latitude: round(${TABLE}.latitude,1) ;;
+    sql_longitude: round(${TABLE}.longitude,1) ;;
+  }
+
+  ## Other User Information ##
+
+  dimension_group: created {
+    type: time
+#     timeframes: [time, date, week, month, raw]
+    sql: ${TABLE}.created_at ;;
+  }
+
+  dimension: history {
+    sql: ${TABLE}.id ;;
+    html: <a href="/explore/thelook/order_items?fields=order_items.detail*&f[users.id]={{ value }}">Order History</a>
+      ;;
+  }
+
+  dimension: traffic_source {
+    sql: ${TABLE}.traffic_source ;;
+  }
+
+  dimension: ssn {
+    # dummy field used in next dim
+    hidden: yes
+    type: number
+    sql: lpad(cast(round(random() * 10000, 0) as char(4)), 4, '0') ;;
+  }
+
+  dimension: ssn_last_4 {
+    label: "SSN Last 4"
+    description: "Only users with sufficient permissions will see this data"
+    type: string
+    sql:
+          CASE  WHEN '{{_user_attributes["can_see_sensitive_data"]}}' = 'yes'
+                THEN ${ssn}
+                ELSE MD5(${ssn}||'salt')
+          END;;
+    html:
+          {% if _user_attributes["can_see_sensitive_data"]  == 'yes' %}
+          {{ value }}
+          {% else %}
+            ####
+          {% endif %}  ;;
+  }
+
+  ## MEASURES ##
+
   measure: count {
     type: count
-    drill_fields: [id, last_name, first_name, events.count, order_items.count]
-    html: <b>{{rendered_value}}</b> ;;
+    drill_fields: [detail*]
   }
-  measure: name_list {
-    type: list
-    list_field: first_name
-    html: <b>{{value}}</b> ;;
+
+  measure: count_percent_of_total {
+    label: "Count (Percent of Total)"
+    type: percent_of_total
+    sql: ${count} ;;
+    drill_fields: [detail*]
+  }
+
+  measure: average_age {
+    type: average
+    value_format_name: decimal_2
+    sql: ${age} ;;
+    drill_fields: [detail*]
   }
 
   set: detail {
-    fields: [id, last_name, first_name, events.count, order_items.count]
-
+    fields: [id, name, email, age, created_date, orders.count, order_items.count]
   }
 }
