@@ -1,5 +1,5 @@
 view: users {
-  sql_table_name: ecomm.users ;;
+  sql_table_name: public.users ;;
   ## Demographics ##
 
   dimension: id {

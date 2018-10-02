@@ -1,112 +1,96 @@
-view: products_extended {
-  extends: [products]
-  dimension: brand {}
-}
 view: products {
-  sql_table_name: public.PRODUCTS ;;
+  sql_table_name: public.products ;;
 
   dimension: id {
     primary_key: yes
     type: number
-    sql: ${TABLE}.ID ;;
-  }
-  parameter: view_label {
-    type: string
-    default_value: "The Money Zone"
-  }
-  parameter: image_url {
-    type: unquoted
-  }
-  dimension: product_image {
-    sql: 1;;
-    html: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq7OyHRIDa1t4Mnbk6U4Ac3U_{{ products.image_url._parameter_value }}" ;;
+    sql: ${TABLE}.id ;;
   }
 
-  parameter: brand_selector {
-    default_value: "TEST"
-    allowed_value: {
-      value: "Test"
-      label: "Test"
-    }
-    suggest_dimension: brand
+  dimension: category {
+    sql: TRIM(${TABLE}.category) ;;
+    drill_fields: [item_name]
+  }
+
+  dimension: item_name {
+    sql: TRIM(${TABLE}.name) ;;
   }
 
   dimension: brand {
-    type: string
-    sql: ${TABLE}.BRAND ;;
-    html:
-    {% if products.category._value =='Jeans' AND products.category._is_selected %}
-    <a href="https://profservices.dev.looker.com/dashboards/47?Category={{ category._value | encode_uri }}">{{rendered_value}}</a>
-    {% else %}
-    {{linked_value}}
-    {% endif %}
-    ;;
-  }
+    sql: TRIM(${TABLE}.brand) ;;
 
-  dimension: brand_filter {
-    hidden: yes
-    sql: ${TABLE}.BRAND ;;
-  }
-  dimension: category {
-    type: string
-    sql: ${TABLE}.CATEGORY ;;
-    suggest_explore: products
-    suggest_dimension: products.category_filter
-  }
+    link: {
+      label: "Website"
+      url: "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"
+      icon_url: "http://www.google.com/s2/favicons?domain=www.{{ value | encode_uri }}.com"
+    }
 
-  dimension: category_filter {
-    hidden: yes
-    sql: ${TABLE}.CATEGORY ;;
-  }
-  dimension: cost {
-    group_label: "{% if _explore._name   == 'order_items' %} Product Subcategory
-    {% elsif _explore._name == 'Products' %} Brand
-    {% else %} Products {% endif %}"
-    type: number
-    sql: ${TABLE}.COST ;;
-  }
+    link: {
+      label: "Facebook"
+      url: "http://www.google.com/search?q=site:facebook.com+{{ value | encode_uri }}+clothes&btnI"
+      icon_url: "https://upload.wikimedia.org/wikipedia/commons/c/c2/F_icon.svg"
+    }
 
-  dimension: department {
-    group_label: "{% if _explore._name   == 'order_items' %} Product Subcategory
-    {% elsif _explore._name == 'Products' %} Brand
-    {% else %} Products {% endif %}"
-    type: string
-    sql: ${TABLE}.DEPARTMENT ;;
-  }
+    link: {
+      label: "{{value}} Analytics Dashboard"
+      url: "/dashboards/8?Brand%20Name={{ value | encode_uri }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
+    # html: <a href = "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"><u>{{rendered_value}}</u></a> ;;
 
-  dimension: distribution_center_id {
-    type: number
-    # hidden: yes
-    sql: ${TABLE}.DISTRIBUTION_CENTER_ID ;;
-  }
-
-  dimension: name {
-    group_label: "{% if _explore._name   == 'order_items' %} Product Subcategory
-    {% elsif _explore._name == 'Products' %} Brand
-    {% else %} Products {% endif %}"
-    type: string
-    sql: ${TABLE}.NAME ;;
+    drill_fields: [category, item_name]
   }
 
   dimension: retail_price {
     type: number
-    sql: ${TABLE}.RETAIL_PRICE ;;
+    sql: ${TABLE}.retail_price ;;
+  }
+
+  dimension: department {
+    sql: TRIM(${TABLE}.department) ;;
   }
 
   dimension: sku {
-    type: string
-    sql: ${TABLE}.SKU ;;
+    sql: ${TABLE}.sku ;;
   }
+
+  dimension: distribution_center_id {
+    type: number
+    sql: ${TABLE}.distribution_center_id ;;
+  }
+
+  ## MEASURES ##
 
   measure: count {
     type: count
-    html:
-    {% if products.category._value =='Jeans' %}
-    <a href="https://profservices.dev.looker.com/dashboards/47?Category={{ category.value | encode_uri }}">{{linked_value}}</a>
-    {% else %}
-    HIDDEN
-    {% endif %}
-    ;;
-    drill_fields: [id, name, distribution_centers.id, distribution_centers.name, inventory_items.count]
+    drill_fields: [detail*]
+  }
+
+  measure: brand_count {
+    type: count_distinct
+    sql: ${brand} ;;
+    drill_fields: [brand, detail2*, -brand_count] # show the brand, a bunch of counts (see the set below), don't show the brand count, because it will always be 1
+  }
+
+  measure: category_count {
+    alias: [category.count]
+    type: count_distinct
+    sql: ${category} ;;
+    drill_fields: [category, detail2*, -category_count] # don't show because it will always be 1
+  }
+
+  measure: department_count {
+    alias: [department.count]
+    type: count_distinct
+    sql: ${department} ;;
+    drill_fields: [department, detail2*, -department_count] # don't show because it will always be 1
+  }
+
+  set: detail {
+    fields: [id, item_name, brand, category, department, retail_price, customers.count, orders.count, order_items.count, inventory_items.count]
+  }
+
+  set: detail2 {
+    fields: [category_count, brand_count, department_count, count, customers.count, orders.count, order_items.count, inventory_items.count, products.count]
   }
 }

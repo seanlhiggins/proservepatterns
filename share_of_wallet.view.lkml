@@ -33,7 +33,7 @@ view: order_items_share_of_wallet {
     description: "Compare a selected item vs. other items in the brand vs. all other brands"
     sql: CASE
       WHEN {% condition item_name %} trim(products.item_name) {% endcondition %}
-      THEN '(1) '||${products.name}
+      THEN '(1) '||${products.item_name}
       WHEN  {% condition brand %} trim(products.brand) {% endcondition %}
       THEN '(2) Rest of '||${products.brand}
       ELSE '(3) Rest of Population'

@@ -15,7 +15,7 @@ view: sessions {
         , MAX(user_id) AS session_user_id
         , MIN(id) AS landing_event_id
         , MAX(id) AS bounce_event_id
-      FROM ecomm.events
+      FROM public.events
       GROUP BY session_id
        ;;
   }

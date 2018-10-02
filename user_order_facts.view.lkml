@@ -7,7 +7,7 @@ view: user_order_facts {
         , MIN(NULLIF(created_at,0)) AS first_order
         , MAX(NULLIF(created_at,0)) AS latest_order
         , COUNT(DISTINCT DATE_TRUNC('month', NULLIF(created_at,0))) AS number_of_distinct_months_with_orders
-      FROM ecomm.order_items
+      FROM public.order_items
       GROUP BY user_id
        ;;
     sortkeys: ["user_id"]
