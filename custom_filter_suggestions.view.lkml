@@ -84,7 +84,7 @@ dimension: week {
     hidden: yes
     type: string
     sql: ${TABLE}.WEEK_NAME ;;
-    order_by_field: week_number
+#     order_by_field: week_number
   }
 }
 

@@ -1,180 +1,127 @@
-
 view: inventory_items {
-  sql_table_name: public.INVENTORY_ITEMS ;;
+  sql_table_name: public.inventory_items ;;
+  ## DIMENSIONS ##
 
   dimension: id {
     primary_key: yes
     type: number
-    sql: ${TABLE}.ID ;;
-  }
-  parameter: view_label {
-    type: string
-    default_value: "The Money Zone"
+    sql: ${TABLE}.id ;;
   }
 
   dimension: cost {
-#     view_label: "{% parameter view_label %}"
     type: number
-    sql: 1 ;;
-  }
-
-  dimension: cost_ex_vat {
-#     view_label: "{% parameter view_label %}"
-    type: number
-    sql: ${TABLE}.COST_EX_VAT ;;
-  }
-
-  dimension: cost_eur {
-#     view_label: "{% parameter view_label %}"
-    type: number
-    sql: ${TABLE}.COST_EUR ;;
+    value_format_name: usd
+    sql: ${TABLE}.cost ;;
   }
 
   dimension_group: created {
     type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.CREATED_AT ;;
-  }
-
-  dimension: product_brand {
-    type: string
-    sql: ${TABLE}.PRODUCT_BRAND ;;
-    suggest_explore: products
-    suggest_dimension: products.brand_filter
-  }
-
-  dimension: product_category {
-    type: string
-    sql: ${TABLE}.PRODUCT_CATEGORY ;;
-    suggest_explore: products
-    suggest_dimension: products.category_filter
-  }
-
-  dimension: product_department {
-    type: string
-    sql: ${TABLE}.PRODUCT_DEPARTMENT ;;
-  }
-
-  dimension: product_distribution_center_id {
-    type: number
-    sql: ${TABLE}.PRODUCT_DISTRIBUTION_CENTER_ID ;;
+    timeframes: [time, date, week, month, raw]
+    sql: ${TABLE}.created_at ;;
   }
 
   dimension: product_id {
     type: number
-    # hidden: yes
-    sql: ${TABLE}.PRODUCT_ID ;;
-  }
-
-  dimension: product_name {
-    type: string
-    sql: ${TABLE}.PRODUCT_NAME ;;
-  }
-  dimension: product_match {
-    type: yesno
-    sql: ${product_name} = {% parameter product_name_selection %}  ;;
-  }
-  parameter: product_name_selection {
-    default_value: "Ray-Ban RB2132 New Wayfarer Sunglasses"
-    allowed_value: {
-      value: "Ray-Ban RB2132 New Wayfarer Sunglasses"
-      label: "Ray-Ban RB2132 New Wayfarer Sunglasses"
-    }
-    allowed_value: {
-      value: "Levi's Men's 501 Jean"
-      label: "Levi's Men's 501 Jean"
-    }
-    allowed_value: {
-      value: "Columbia Men's Steens Mountain Full Zip"
-      label: "Columbia Men's Steens Mountain Full Zip"
-    }
-  }
-  parameter: brand_selection {
-    allowed_value: {
-      value: "Calvin Klein"
-      label: "Calvin Klein"
-    }
-    allowed_value: {
-      value: "Volcom"
-      label: "Volcom"
-    }
-  }
-  parameter: category_selection {
-    allowed_value: {
-      value: "Jeans"
-      label: "Jeans"
-    }
-    allowed_value: {
-      value: "Accessories"
-      label: "Accessories"
-    }
-  }
-  parameter: retail_price_upper_bound {
-    type: unquoted
-    allowed_value: {
-      value: "100"
-      label: "100"
-    }
-    allowed_value: {
-      value: "75"
-      label: "75"
-    }
-    allowed_value: {
-      value: "50"
-      label: "50"
-    }
-  }
-
-  measure: sum_if_conditional_measure {
-    type: sum
-    sql: CASE WHEN ${product_brand} = {% parameter brand_selection %}
-    AND ${product_category} = {% parameter category_selection %}
-    AND ${product_retail_price} <= {% parameter retail_price_upper_bound %}
-    THEN
-    ${product_retail_price}
-    ELSE NULL
-    END;;
-    value_format_name: usd
-  }
-
-  measure: count_product_name {
-    sql: CASE WHEN ${product_name} = {% parameter product_name_selection %} THEN ${id} ELSE NULL END ;;
-    type: count_distinct
-  }
-  dimension: product_retail_price {
-    type: number
-    sql: ${TABLE}.PRODUCT_RETAIL_PRICE ;;
-  }
-
-  dimension: product_sku {
-    type: string
-    sql: ${TABLE}.PRODUCT_SKU ;;
+    hidden: yes
+    sql: ${TABLE}.product_id ;;
   }
 
   dimension_group: sold {
     type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.SOLD_AT ;;
+    timeframes: [time, date, week, month, raw]
+    sql: ${TABLE}.sold_at ;;
+  }
+
+  dimension: is_sold {
+    type: yesno
+    sql: ${sold_raw} is not null ;;
+  }
+
+  dimension: days_in_inventory {
+    description: "days between created and sold date"
+    type: number
+    sql: DATEDIFF('day', ${created_raw}, coalesce(${sold_raw},CURRENT_DATE)) ;;
+  }
+
+  dimension: days_in_inventory_tier {
+    type: tier
+    sql: ${days_in_inventory} ;;
+    style: integer
+    tiers: [0, 5, 10, 20, 40, 80, 160, 360]
+  }
+
+  dimension: days_since_arrival {
+    description: "days since created - useful when filtering on sold yesno for items still in inventory"
+    type: number
+    sql: DATEDIFF('day', ${created_date}, GETDATE()) ;;
+  }
+
+  dimension: days_since_arrival_tier {
+    type: tier
+    sql: ${days_since_arrival} ;;
+    style: integer
+    tiers: [0, 5, 10, 20, 40, 80, 160, 360]
+  }
+
+  dimension: product_distribution_center_id {
+    hidden: yes
+    sql: ${TABLE}.product_distribution_center_id ;;
+  }
+
+  ## MEASURES ##
+
+  measure: sold_count {
+    type: count
+    drill_fields: [detail*]
+
+    filters: {
+      field: is_sold
+      value: "Yes"
+    }
+  }
+
+  measure: sold_percent {
+    type: number
+    value_format_name: percent_2
+    sql: 1.0 * ${sold_count}/NULLIF(${count},0) ;;
+  }
+
+  measure: total_cost {
+    type: sum
+    value_format_name: usd
+    sql: ${cost} ;;
+  }
+
+  measure: average_cost {
+    type: average
+    value_format_name: usd
+    sql: ${cost} ;;
   }
 
   measure: count {
     type: count
-    drill_fields: [id, product_name, products.name, products.id, order_items.count]
+    drill_fields: [detail*]
+  }
+
+  measure: number_on_hand {
+    type: count
+    drill_fields: [detail*]
+
+    filters: {
+      field: is_sold
+      value: "No"
+    }
+  }
+
+  measure: stock_coverage_ratio {
+    type:  number
+    description: "Stock on Hand vs Trailing 28d Sales Ratio"
+    sql:  1.0 * ${number_on_hand} / nullif(${order_items.count_last_28d},0) ;;
+    value_format_name: decimal_2
+    html: <p style="color: black; background-color: rgba({{ value | times: -100.0 | round | plus: 250 }},{{value | times: 100.0 | round | plus: 100}},100,80); font-size:100%; text-align:center">{{ rendered_value }}</p> ;;
+  }
+
+  set: detail {
+    fields: [id, products.item_name, products.category, products.brand, products.department, cost, created_time, sold_time]
   }
 }
