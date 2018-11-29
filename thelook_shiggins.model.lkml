@@ -19,6 +19,11 @@ explore: order_items {
 
   }
 
+  always_filter: {filters: {
+    field: users.country
+    value: "USA"
+  }
+}
 
 
   from: order_items
