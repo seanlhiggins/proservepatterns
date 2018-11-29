@@ -1,3 +1,4 @@
+explore: top_5_countries {}
 view: top_5_countries {
   label: "Countries Ranking"
   derived_table: {
@@ -90,6 +91,6 @@ view: top_5_countries {
     description: "Name of the Country within the rank selection."
     label: "Country Name (Top N)"
     type: string
-    sql: case when ${TABLE}.country_rank<={% parameter country_rank_limit %} then ${TABLE}.country_code else 'other' end ;;
+    sql: case when ${TABLE}.country_rank<={% parameter country_rank_limit %} then ${TABLE}.country else 'other' end ;;
   }
 }

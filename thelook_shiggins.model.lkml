@@ -10,9 +10,28 @@ persist_with: ecommerce_etl
 ############ Base Explores #############
 
 explore: order_items {
+  # This is a pattern for allowing users to quick-select a reporting period that's slightly arbitrary, or specific
+  # to their organisation's calendar reporting dates
+
+  access_filter: {
+    field: order_items.product_brand_filter
+    user_attribute: brand
+
+  }
+
+
+
   from: order_items
   label: "(1) Orders, Items and Users"
   view_name: order_items
+
+  join: competitor_query{
+    view_label: "Competitor"
+    type: inner
+    sql_on: ${competitor_query.brand} = ${products.brand} ;;
+    relationship: many_to_one
+  }
+
 
   join: order_facts {
     view_label: "Orders"

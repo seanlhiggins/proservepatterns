@@ -8,6 +8,7 @@ view: products {
   }
 
   dimension: category {
+#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{_field._name}} {% endif %}"
     sql: TRIM(${TABLE}.category) ;;
     drill_fields: [item_name]
   }
@@ -17,7 +18,10 @@ view: products {
   }
 
   dimension: brand {
-    sql: TRIM(${TABLE}.brand) ;;
+    hidden:yes
+    sql:
+    TRIM(${TABLE}.brand)
+     ;;
 
     link: {
       label: "Website"
@@ -47,10 +51,12 @@ view: products {
   }
 
   dimension: department {
+#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{_field._name}} {% endif %}"
     sql: TRIM(${TABLE}.department) ;;
   }
 
   dimension: sku {
+#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{_field._name}} {% endif %}"
     sql: ${TABLE}.sku ;;
   }
 
@@ -59,6 +65,13 @@ view: products {
     sql: ${TABLE}.distribution_center_id ;;
   }
 
+  ## Custom header name selector
+  parameter: header_name {
+    type: unquoted
+    default_value: "All"
+    allowed_value: {label:"Customer A" value:"Customer_A"}
+    allowed_value: {label:"Customer B" value:"Customer_B"}
+  }
   ## MEASURES ##
 
   measure: count {
@@ -67,12 +80,14 @@ view: products {
   }
 
   measure: brand_count {
+#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{_field._name}} {% endif %}"
     type: count_distinct
     sql: ${brand} ;;
     drill_fields: [brand, detail2*, -brand_count] # show the brand, a bunch of counts (see the set below), don't show the brand count, because it will always be 1
   }
 
   measure: category_count {
+#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{_field._name}} {% endif %}"
     alias: [category.count]
     type: count_distinct
     sql: ${category} ;;
@@ -80,6 +95,7 @@ view: products {
   }
 
   measure: department_count {
+#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{_field._name}} {% endif %}"
     alias: [department.count]
     type: count_distinct
     sql: ${department} ;;
