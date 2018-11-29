@@ -10,7 +10,7 @@ view: competitor_query {
       LEFT JOIN public.products  AS products ON products.id = inventory_items.product_id
       WHERE {% condition order_items.product_brand_filter %} TRIM(products.brand) {% endcondition %}
       AND  {% condition users.country %}users.country {% endcondition %}
-      --AND {% condition order_items.created_date %} order_items.created_at {% endcondition %}
+      AND {% condition order_items.created_date %} order_items.created_at {% endcondition %}
 
       GROUP BY 1,2
       )
