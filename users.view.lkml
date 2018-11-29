@@ -2,6 +2,7 @@ view: users {
   sql_table_name: public.users ;;
   ## Demographics ##
 
+
   dimension: id {
     primary_key: yes
     type: number
@@ -33,6 +34,7 @@ view: users {
     tiers: [0, 10, 20, 30, 40, 50, 60, 70]
     style: integer
     sql: ${age} ;;
+#     order_by_field: count
   }
 
   dimension: gender {
@@ -119,10 +121,10 @@ view: users {
   dimension: country {
     map_layer_name: countries
     drill_fields: [state, city]
-    sql: CASE WHEN ${TABLE}.country = 'UK' THEN 'United Kingdom'
-           ELSE ${TABLE}.country
-           END
-       ;;
+#     sql: CASE WHEN ${TABLE}.country = 'UK' THEN 'United Kingdom'
+#            ELSE ${TABLE}.country
+#            END
+      sql: ${TABLE}.country ;;
   }
 
   dimension: location {

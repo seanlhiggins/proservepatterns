@@ -2,6 +2,40 @@
     sql_table_name: public.order_items ;;
     ########## IDs, Foreign Keys, Counts ###########
 
+    filter: product_brand_filter {
+      type: string
+    }
+
+    dimension: brand {
+#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{products.header_name._parameter_value }} {% endif %}"
+      sql:
+          CASE WHEN {% condition product_brand_filter %} TRIM(${products.brand}) {% endcondition %}
+          THEN
+          '(1) - ' || TRIM(${products.brand})
+          WHEN {{_user_attributes['is_internal']}} = 1 THEN 'Competitor - ' || TRIM(${products.brand})
+          ELSE 'Competitor ' || TRIM(${competitor_query.rank})
+          END ;;
+
+        link: {
+          label: "Website"
+          url: "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"
+          icon_url: "http://www.google.com/s2/favicons?domain=www.{{ value | encode_uri }}.com"
+        }
+
+        link: {
+          label: "Facebook"
+          url: "http://www.google.com/search?q=site:facebook.com+{{ value | encode_uri }}+clothes&btnI"
+          icon_url: "https://upload.wikimedia.org/wikipedia/commons/c/c2/F_icon.svg"
+        }
+
+        link: {
+          label: "{{value}} Analytics Dashboard"
+          url: "/dashboards/8?Brand%20Name={{ value | encode_uri }}"
+          icon_url: "http://www.looker.com/favicon.ico"
+        }
+        # html: <a href = "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"><u>{{rendered_value}}</u></a> ;;
+
+      }
     dimension: id {
       primary_key: yes
       type: number
@@ -16,8 +50,13 @@
 
     dimension: user_id {
       type: number
-      hidden: yes
+      hidden: no
       sql: ${TABLE}.user_id ;;
+    }
+
+    dimension: user_id_evens{
+      sql:
+      '{{user_id._value | modulo:2}}';;
     }
 
     measure: count {
@@ -126,9 +165,33 @@
 
     dimension_group: created {
       type: time
-      timeframes: [time, hour, date, week, month, year, hour_of_day, day_of_week, month_num, month_name, raw, week_of_year]
-      sql: ${TABLE}.created_at ;;
+      timeframes: [time, hour, date, week, month, year, hour_of_day, day_of_week, day_of_month, month_num, month_name, raw, week_of_year]
+      sql:
+      ${TABLE}.created_at ;;
     }
+
+    ### Custom date range selection
+
+    parameter: date_range {
+      description: "If you want to filter all results to the 25th to Month End, select that option, otherwise this will result in all dates showing."
+      type: unquoted
+      default_value: "1"
+      allowed_value: {
+        label: "25th to Month End"
+        value: "25"
+      }
+      allowed_value: {
+        label: "14th to 25th"
+        value: "14"
+      }
+      allowed_value: {
+        label: "All Dates"
+        value: "1"
+      }
+    }
+
+
+    ###
 
     dimension: reporting_period {
       group_label: "Order Date"
@@ -384,9 +447,9 @@
       suggestions: ["Week", "Month", "Quarter", "Year"]
     }
 
-    filter: metric {
+    parameter: metric {
       type: string
-      hidden: yes
+      hidden: no
       suggestions: ["Order Count", "Gross Margin", "Total Sales", "Unique Users"]
     }
 
@@ -406,9 +469,10 @@
     }
 
     measure: cohort_values_0 {
+      label: "Cohort Values"
       type: count_distinct
-      hidden: yes
-      sql: CASE WHEN {% parameter metric %} = 'Order Count' THEN ${id}
+      hidden: no
+      sql: CASE WHEN {{  metric._parameter_value =="Order Count" }}  THEN ${id}
         WHEN {% parameter metric %} = 'Unique Users' THEN ${users.id}
         ELSE null
       END
