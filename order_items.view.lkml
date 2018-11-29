@@ -3,6 +3,7 @@
     ########## IDs, Foreign Keys, Counts ###########
 
     filter: product_brand_filter {
+      hidden: yes
       type: string
     }
 
