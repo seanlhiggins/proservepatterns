@@ -7,6 +7,13 @@
       type: string
     }
 
+    # dimension: custom_array {
+    #   sql: {% if users.country._is_selected %} ${users.country} {% else %} '' {% endif %}
+    #   {% if products.category._is_selected %}|| ' ' || ${products.category}  ||''{% else %} '' {% endif %}
+    #   {% if users.traffic_source._is_selected %}|| ' ' || ${users.traffic_source}  ||''{% else %} '' {% endif %}
+    #   ;;
+    # }
+
     dimension: brand {
 #     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{products.header_name._parameter_value }} {% endif %}"
       sql:
@@ -280,11 +287,33 @@
       style: interval
     }
 
+    parameter: sales_cost {
+      type: unquoted
+      allowed_value: {value:"Sales"}
+      allowed_value: {value:"Cost"}
+      }
     measure: total_sale_price {
       type: sum
       value_format_name: usd
       sql: ${sale_price} ;;
-      drill_fields: [detail*]
+      # drill_fields: [detail*]
+
+      html:
+      {% if sales_cost._parameter_value == 'Sales' %}
+        {% if value > 10000 %}
+        <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% else %}
+        <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% endif %}
+      {% elsif sales_cost._parameter_value == 'Cost' %}
+        {% if value > 10000 %}
+        <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% else %}
+        <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% endif %}
+      {% endif %}
+
+        ;;
     }
 
     measure: total_gross_margin {

@@ -3,6 +3,7 @@ label: "1) eCommerce with Event Data"
 include: "*.view" # include all the views
 include: "business_pulse.dashboard"
 include: "byoms.dashboard"
+include: "dynamic_criteo_test.dashboard"
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(completed_at) FROM public.etl_jobs ;;
   max_cache_age: "24 hours"}
