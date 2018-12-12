@@ -1,6 +1,5 @@
 
-
-#explore(pop_explore) is defined below the pop views
+# explore(pop_explore) is defined below the pop views
 
 view: pop_order_items_created {
   view_label: "Order Items (By created)"
@@ -85,6 +84,7 @@ view: pop_order_items_created {
         type:  number
         label: "Total Amount"
         sql: SUM(${TABLE}.agg_2) ;;
+        value_format_name: usd_0
       }
     }
 

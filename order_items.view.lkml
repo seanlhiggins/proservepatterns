@@ -287,6 +287,72 @@
       style: interval
     }
 
+    #-- Parameters
+
+      parameter: metric_selector {
+        default_value: "Rev"
+        type: unquoted
+        allowed_value: {value:"Rev"}
+        allowed_value: {value:"CPO"}
+        allowed_value: {value:"CPC"}
+        allowed_value: {value:"CPM"}
+        allowed_value: {value:"Cost"}
+        allowed_value: {value:"Clicks"}
+      }
+      parameter: metric_selector_1 {
+        default_value: "Rev"
+        type: unquoted
+        allowed_value: {value:"Rev"}
+        allowed_value: {value:"CPO"}
+        allowed_value: {value:"CPC"}
+        allowed_value: {value:"CPM"}
+        allowed_value: {value:"Cost"}
+        allowed_value: {value:"Clicks"}
+      }
+      parameter: metric_selector_2 {
+        default_value: "Rev"
+        type: unquoted
+        allowed_value: {value:"Rev"}
+        allowed_value: {value:"CPO"}
+        allowed_value: {value:"CPC"}
+        allowed_value: {value:"CPM"}
+        allowed_value: {value:"Cost"}
+        allowed_value: {value:"Clicks"}
+      }
+    measure: dynamic_metric {
+      label_from_parameter: metric_selector
+      type: number
+      drill_fields: [dynamic_metric,dynamic_metric_1,dynamic_metric_2]
+      sql: {% if metric_selector._parameter_value =='Rev' %} ${total_sale_price}
+      {% elsif metric_selector._parameter_value =='Cost' %} ${total_gross_margin}
+      {% elsif metric_selector._parameter_value =='CPM' %} ${total_gross_margin_percentage}
+      {% else %} ${average_spend_per_user}
+      {% endif %}
+      ;;
+    }
+      measure: dynamic_metric_1 {
+        label_from_parameter: metric_selector_1
+        type: number
+        drill_fields: [dynamic_metric,dynamic_metric_1,dynamic_metric_2]
+        sql: {% if metric_selector_1._parameter_value =='Rev' %} ${total_sale_price}
+                {% elsif metric_selector_1._parameter_value =='Cost' %} ${total_gross_margin}
+                {% elsif metric_selector_1._parameter_value =='CPM' %} ${total_gross_margin_percentage}
+                {% else %} ${average_spend_per_user}
+                {% endif %}
+                ;;
+      }
+      measure: dynamic_metric_2 {
+        label_from_parameter: metric_selector_2
+        type: number
+        drill_fields: [dynamic_metric,dynamic_metric_1,dynamic_metric_2]
+        sql: {% if metric_selector_2._parameter_value =='Rev' %} ${total_sale_price}
+                {% elsif metric_selector_2._parameter_value =='Cost' %} ${total_gross_margin}
+                {% elsif metric_selector_2._parameter_value =='CPM' %} ${total_gross_margin_percentage}
+                {% else %} ${average_spend_per_user}
+                {% endif %}
+                ;;
+      }
+
     parameter: sales_cost {
       type: unquoted
       allowed_value: {value:"Sales"}
