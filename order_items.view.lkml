@@ -1,4 +1,47 @@
-  view: order_items {
+explore: order_dates{}
+view: order_dates {
+  derived_table: {
+    sql: SELECT * FROM (SELECT (getdate() - INTERVAL '365 days' + "i") :: DATE
+              FROM generate_series(1, ((getdate()) :: DATE - (getdate() - INTERVAL '365 days') :: DATE)) "i")
+              WHERE
+              {% if date_parameter._parameter_value == 'Today' %}
+                date=(GETDATE())::DATE
+              {% elsif date_parameter._parameter_value == 'Yesterday' %}
+                date=(getdate() - INTERVAL '1 days')::DATE
+              {% elsif date_parameter._parameter_value == 'This_Week' %}
+                (((date ) >= ((DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())))) AND (date) < ((DATEADD(week,1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) )))))
+              {% elsif date_parameter._parameter_value == 'Last_Week' %}
+                (((date ) >= ((DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) ))) AND (date ) < ((DATEADD(week,1, DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())) ) )))))
+              {% elsif date_parameter._parameter_value == 'This_Month' %}
+                (((date ) >= ((DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())))) AND (date) < ((DATEADD(month,1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) )))))
+              {% elsif date_parameter._parameter_value == 'Last_Month' %}
+                (((date ) >= ((DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) ))) AND (date ) < ((DATEADD(month,1, DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())) ) )))))
+              {% else %}
+                date >= (GETDATE() - INTERVAL '365 days')::DATE
+              {% endif %}
+
+               ;;
+              persist_for: "6 hours"
+              distribution_style: all
+              }
+  dimension: date {
+    type: date
+    sql: ${TABLE}.date ;;
+    convert_tz: no
+  }
+  parameter: date_parameter {
+    type: unquoted
+    default_value: "Today"
+    allowed_value: {label: "Today" value: "Today"}
+    allowed_value: {label: "Yesterday" value: "Yesterday"}
+    allowed_value: {label: "This Week" value: "This_Week"}
+    allowed_value: {label: "Last Week" value: "Last_Week"}
+    allowed_value: {label: "This Month" value: "This_Month"}
+    allowed_value: {label: "Last Month" value: "Last_Month"}
+    }
+  }
+
+ view: order_items {
     sql_table_name: public.order_items ;;
     ########## IDs, Foreign Keys, Counts ###########
 
