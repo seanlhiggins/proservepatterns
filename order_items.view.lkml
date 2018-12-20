@@ -1,4 +1,47 @@
-  view: order_items {
+explore: order_dates{}
+view: order_dates {
+  derived_table: {
+    sql: SELECT * FROM (SELECT (getdate() - INTERVAL '365 days' + "i") :: DATE
+              FROM generate_series(1, ((getdate()) :: DATE - (getdate() - INTERVAL '365 days') :: DATE)) "i")
+              WHERE
+              {% if date_parameter._parameter_value == 'Today' %}
+                date=(GETDATE())::DATE
+              {% elsif date_parameter._parameter_value == 'Yesterday' %}
+                date=(getdate() - INTERVAL '1 days')::DATE
+              {% elsif date_parameter._parameter_value == 'This_Week' %}
+                (((date ) >= ((DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())))) AND (date) < ((DATEADD(week,1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) )))))
+              {% elsif date_parameter._parameter_value == 'Last_Week' %}
+                (((date ) >= ((DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) ))) AND (date ) < ((DATEADD(week,1, DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())) ) )))))
+              {% elsif date_parameter._parameter_value == 'This_Month' %}
+                (((date ) >= ((DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())))) AND (date) < ((DATEADD(month,1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) )))))
+              {% elsif date_parameter._parameter_value == 'Last_Month' %}
+                (((date ) >= ((DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) ))) AND (date ) < ((DATEADD(month,1, DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())) ) )))))
+              {% else %}
+                date >= (GETDATE() - INTERVAL '365 days')::DATE
+              {% endif %}
+
+               ;;
+              persist_for: "6 hours"
+              distribution_style: all
+              }
+  dimension: date {
+    type: date
+    sql: ${TABLE}.date ;;
+    convert_tz: no
+  }
+  parameter: date_parameter {
+    type: unquoted
+    default_value: "Today"
+    allowed_value: {label: "Today" value: "Today"}
+    allowed_value: {label: "Yesterday" value: "Yesterday"}
+    allowed_value: {label: "This Week" value: "This_Week"}
+    allowed_value: {label: "Last Week" value: "Last_Week"}
+    allowed_value: {label: "This Month" value: "This_Month"}
+    allowed_value: {label: "Last Month" value: "Last_Month"}
+    }
+  }
+
+ view: order_items {
     sql_table_name: public.order_items ;;
     ########## IDs, Foreign Keys, Counts ###########
 
@@ -6,6 +49,13 @@
       hidden: yes
       type: string
     }
+
+    # dimension: custom_array {
+    #   sql: {% if users.country._is_selected %} ${users.country} {% else %} '' {% endif %}
+    #   {% if products.category._is_selected %}|| ' ' || ${products.category}  ||''{% else %} '' {% endif %}
+    #   {% if users.traffic_source._is_selected %}|| ' ' || ${users.traffic_source}  ||''{% else %} '' {% endif %}
+    #   ;;
+    # }
 
     dimension: brand {
 #     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{products.header_name._parameter_value }} {% endif %}"
@@ -280,11 +330,99 @@
       style: interval
     }
 
+    #-- Parameters
+
+      parameter: metric_selector {
+        default_value: "Rev"
+        type: unquoted
+        allowed_value: {value:"Rev"}
+        allowed_value: {value:"CPO"}
+        allowed_value: {value:"CPC"}
+        allowed_value: {value:"CPM"}
+        allowed_value: {value:"Cost"}
+        allowed_value: {value:"Clicks"}
+      }
+      parameter: metric_selector_1 {
+        default_value: "Rev"
+        type: unquoted
+        allowed_value: {value:"Rev"}
+        allowed_value: {value:"CPO"}
+        allowed_value: {value:"CPC"}
+        allowed_value: {value:"CPM"}
+        allowed_value: {value:"Cost"}
+        allowed_value: {value:"Clicks"}
+      }
+      parameter: metric_selector_2 {
+        default_value: "Rev"
+        type: unquoted
+        allowed_value: {value:"Rev"}
+        allowed_value: {value:"CPO"}
+        allowed_value: {value:"CPC"}
+        allowed_value: {value:"CPM"}
+        allowed_value: {value:"Cost"}
+        allowed_value: {value:"Clicks"}
+      }
+    measure: dynamic_metric {
+      label_from_parameter: metric_selector
+      type: number
+      drill_fields: [dynamic_metric,dynamic_metric_1,dynamic_metric_2]
+      sql: {% if metric_selector._parameter_value =='Rev' %} ${total_sale_price}
+      {% elsif metric_selector._parameter_value =='Cost' %} ${total_gross_margin}
+      {% elsif metric_selector._parameter_value =='CPM' %} ${total_gross_margin_percentage}
+      {% else %} ${average_spend_per_user}
+      {% endif %}
+      ;;
+    }
+      measure: dynamic_metric_1 {
+        label_from_parameter: metric_selector_1
+        type: number
+        drill_fields: [dynamic_metric,dynamic_metric_1,dynamic_metric_2]
+        sql: {% if metric_selector_1._parameter_value =='Rev' %} ${total_sale_price}
+                {% elsif metric_selector_1._parameter_value =='Cost' %} ${total_gross_margin}
+                {% elsif metric_selector_1._parameter_value =='CPM' %} ${total_gross_margin_percentage}
+                {% else %} ${average_spend_per_user}
+                {% endif %}
+                ;;
+      }
+      measure: dynamic_metric_2 {
+        label_from_parameter: metric_selector_2
+        type: number
+        drill_fields: [dynamic_metric,dynamic_metric_1,dynamic_metric_2]
+        sql: {% if metric_selector_2._parameter_value =='Rev' %} ${total_sale_price}
+                {% elsif metric_selector_2._parameter_value =='Cost' %} ${total_gross_margin}
+                {% elsif metric_selector_2._parameter_value =='CPM' %} ${total_gross_margin_percentage}
+                {% else %} ${average_spend_per_user}
+                {% endif %}
+                ;;
+      }
+
+    parameter: sales_cost {
+      type: unquoted
+      allowed_value: {value:"Sales"}
+      allowed_value: {value:"Cost"}
+      }
     measure: total_sale_price {
       type: sum
       value_format_name: usd
       sql: ${sale_price} ;;
-      drill_fields: [detail*]
+      # drill_fields: [detail*]
+
+      html:
+      {% if sales_cost._parameter_value == 'Sales' %}
+        {% if value > 10000 %}
+        <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% else %}
+        <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% endif %}
+      {% elsif sales_cost._parameter_value == 'Cost' %}
+        {% if value > 10000 %}
+        <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% else %}
+        <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+        {% endif %}
+      {% endif %}
+
+        ;;
     }
 
     measure: total_gross_margin {

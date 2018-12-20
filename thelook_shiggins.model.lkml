@@ -1,8 +1,9 @@
 connection: "thelook_events_redshift"
-label: "1) eCommerce with Event Data"
+label: "1) eCommerce with Event Data Shiggins"
 include: "*.view" # include all the views
 include: "business_pulse.dashboard"
 include: "byoms.dashboard"
+# include: "dynamic_criteo_test.dashboard"
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(completed_at) FROM public.etl_jobs ;;
   max_cache_age: "24 hours"}
@@ -10,6 +11,12 @@ persist_with: ecommerce_etl
 ############ Base Explores #############
 
 explore: order_items {
+  join: order_dates {
+    type: inner
+    sql_on: ${order_dates.date} = ${order_items.created_date} ;;
+    relationship: many_to_one
+  }
+
   # This is a pattern for allowing users to quick-select a reporting period that's slightly arbitrary, or specific
   # to their organisation's calendar reporting dates
 
@@ -22,6 +29,10 @@ explore: order_items {
   always_filter: {filters: {
     field: users.country
     value: "USA"
+  }
+  filters: {
+    field: order_dates.date_parameter
+    value: "Today"
   }
 }
 
