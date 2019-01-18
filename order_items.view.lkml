@@ -1,23 +1,22 @@
 explore: order_dates{}
 view: order_dates {
   derived_table: {
-    sql: SELECT * FROM (SELECT (getdate() - INTERVAL '365 days' + "i") :: DATE
-              FROM generate_series(1, ((getdate()) :: DATE - (getdate() - INTERVAL '365 days') :: DATE)) "i")
+    sql: SELECT created_at as date FROM order_items
               WHERE
               {% if date_parameter._parameter_value == 'Today' %}
-                date=(GETDATE())::DATE
+                created_at=(GETDATE())::DATE
               {% elsif date_parameter._parameter_value == 'Yesterday' %}
-                date=(getdate() - INTERVAL '1 days')::DATE
+                created_at=(getdate() - INTERVAL '1 days')::DATE
               {% elsif date_parameter._parameter_value == 'This_Week' %}
-                (((date ) >= ((DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())))) AND (date) < ((DATEADD(week,1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) )))))
+                (((created_at ) >= ((DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())))) AND (created_at) < ((DATEADD(week,1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) )))))
               {% elsif date_parameter._parameter_value == 'Last_Week' %}
-                (((date ) >= ((DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) ))) AND (date ) < ((DATEADD(week,1, DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())) ) )))))
+                (((created_at ) >= ((DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day', GETDATE())) ))) AND (created_at ) < ((DATEADD(week,1, DATEADD(week,-1, DATE_TRUNC('week', DATE_TRUNC('day',GETDATE())) ) )))))
               {% elsif date_parameter._parameter_value == 'This_Month' %}
-                (((date ) >= ((DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())))) AND (date) < ((DATEADD(month,1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) )))))
+                (((created_at ) >= ((DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())))) AND (created_at) < ((DATEADD(month,1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) )))))
               {% elsif date_parameter._parameter_value == 'Last_Month' %}
-                (((date ) >= ((DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) ))) AND (date ) < ((DATEADD(month,1, DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())) ) )))))
+                (((created_at ) >= ((DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day', GETDATE())) ))) AND (created_at ) < ((DATEADD(month,1, DATEADD(month,-1, DATE_TRUNC('month', DATE_TRUNC('day',GETDATE())) ) )))))
               {% else %}
-                date >= (GETDATE() - INTERVAL '365 days')::DATE
+                created_at >= (GETDATE() - INTERVAL '365 days')::DATE
               {% endif %}
 
                ;;
@@ -43,7 +42,30 @@ view: order_dates {
 
  view: order_items {
     sql_table_name: public.order_items ;;
+    # sql_table_name:
+    # {% if dimension_selector._parameter_value == 'A' and subdimension_selector._parameter_value == 'A' %} AA {{dimension_selector._parameter_value}}{{subdimension_selector._parameter_value}}
+    # {% elsif dimension_selector._parameter_value == 'A' and subdimension_selector._parameter_value == 'B' %} AB {{dimension_selector._parameter_value}}{{subdimension_selector._parameter_value}}
+    # {% elsif dimension_selector._parameter_value == 'B' and subdimension_selector._parameter_value == 'A' %} BA {{dimension_selector._parameter_value}}{{subdimension_selector._parameter_value}}
+    # {% else %} BB
+    # {% endif %}
+
+    # ;;
+    # ########## Table Selector Parameters ###########
+
+    # parameter:  dimension_selector{
+    #   type: unquoted
+    #   allowed_value: {value:"A"}
+    #   allowed_value: {value:"B"}
+    # }
+    # parameter:  subdimension_selector{
+    #   type: unquoted
+    #   allowed_value: {value:"A"}
+    #   allowed_value: {value:"B"}
+    # }
+
     ########## IDs, Foreign Keys, Counts ###########
+
+
 
     filter: product_brand_filter {
       hidden: yes

@@ -11,11 +11,11 @@ persist_with: ecommerce_etl
 ############ Base Explores #############
 
 explore: order_items {
-  join: order_dates {
-    type: inner
-    sql_on: ${order_dates.date} = ${order_items.created_date} ;;
-    relationship: many_to_one
-  }
+#   join: order_dates {
+#     type: inner
+#     sql_on: ${order_dates.date} = ${order_items.created_date} ;;
+#     relationship: many_to_one
+#   }
 
   # This is a pattern for allowing users to quick-select a reporting period that's slightly arbitrary, or specific
   # to their organisation's calendar reporting dates
@@ -30,10 +30,10 @@ explore: order_items {
     field: users.country
     value: "USA"
   }
-  filters: {
-    field: order_dates.date_parameter
-    value: "Today"
-  }
+#   filters: {
+#     field: order_dates.date_parameter
+#     value: "Today"
+#   }
 }
 
 
