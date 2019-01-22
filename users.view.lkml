@@ -33,12 +33,14 @@ view: users {
     type: tier
     tiers: [0, 10, 20, 30, 40, 50, 60, 70]
     style: integer
+    html: <div href="https://www.google.com/">{{linked_value}}</div> ;;
     sql: ${age} ;;
 #     order_by_field: count
   }
 
   dimension: gender {
     sql: ${TABLE}.gender ;;
+    drill_fields: [email]
   }
 
   dimension: gender_short {
