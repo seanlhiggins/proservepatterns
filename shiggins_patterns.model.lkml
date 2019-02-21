@@ -215,3 +215,26 @@ explore: pop {
 #
 #   }
 # }
+explore: order_items_2 {
+  label: "Period Over Period"
+  description: "Simple User Experience, Tricky Developer Implementation"
+  always_filter: {
+    filters: {
+      field: period_selection
+      value: "Yesterday"
+    }
+    filters: {
+      field: period_comparison_type
+      value: "Previous period"
+    }
+    filters: {
+      field: time_aggregation_selector
+      value: "Day"
+    }
+  }
+  join: users {
+    sql_on: ${users.id}=${order_items_2.user_id} ;;
+    type: left_outer
+    relationship: many_to_one
+  }
+}

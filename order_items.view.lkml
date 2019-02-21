@@ -1,3 +1,1022 @@
+
+view: order_items_2 {
+  sql_table_name: public.order_items;;
+  dimension: user_id {}
+#First we create a few parameters. These are going to be default dropdowns to make the explore super simple for users.
+
+  # date filtering parameter, this informs Looker of the period the user wants to analyse with a finite list of options more
+  # simplistic than the traditional Looker options e.g. Last 14 Days, This Month
+  parameter: period_selection {
+    description: "Selection of the main period for the analysis"
+    default_value: "Last 7 days"
+    suggestions: [,"Yesterday","This week","Last week", "Last 7 days", "Last 14 days","Last 30 days", "This month", "Last month", "This quarter", "Last quarter", "This year","Last year"]
+#    "Today"
+#     allowed_value: {
+#       label: "Today"
+#       value: "Today"
+#     }
+    allowed_value: {
+      label: "Yesterday"
+      value: "Yesterday"
+    }
+    allowed_value: {
+      label: "This week"
+      value: "This week"
+    }
+    allowed_value: {
+      label: "Last week"
+      value: "Last week"
+    }
+    allowed_value: {
+      label: "Last 7 days"
+      value: "Last 7 days"
+    }
+    allowed_value: {
+      label: "Last 14 days"
+      value: "Last 14 days"
+    }
+    allowed_value: {
+      label: "Last 30 days"
+      value: "Last 30 days"
+    }
+    allowed_value: {
+      label: "This month"
+      value: "This month"
+    }
+    allowed_value: {
+      label: "Last month"
+      value: "Last month"
+    }
+    allowed_value: {
+      label: "This quarter"
+      value: "This quarter"
+    }
+    allowed_value: {
+      label: "Last quarter"
+      value: "Last quarter"
+    }
+    allowed_value: {
+      label: "This year"
+      value: "This year"
+    }
+    allowed_value: {
+      label: "Last year"
+      value: "Last year"
+    }
+    allowed_value: {
+      label: "Custom period"
+      value: "Custom period"
+    }
+  }
+  # this allows you to compare either the preceding period, same length OR the same period 1 year ago i.e. Feb vs Jan OR Feb '19 vs Feb '18
+  parameter: period_comparison_type {
+    description: "Period comparison type"
+    default_value: "Previous period"
+    suggestions: ["Previous period","Same period previous year"]
+    allowed_value: {
+      label: "Previous period"
+      value: "Previous period"
+    }
+    allowed_value: {
+      label: "Same period previous year"
+      value: "Same period previous year"
+    }
+    allowed_value: {
+      label: "Custom period"
+      value: "Custom period"
+    }
+  }
+  # this is the granularity of the dates you will show. So if you select 'Week', the date is going to be rolled up to the weekly grain
+  parameter: time_aggregation_selector {
+    description: "Time aggregation selector"
+    default_value: "Day"
+    suggestions: ["Day","Week","Month"]
+    allowed_value: {
+      label: "Day"
+      value: "Day"
+    }
+    allowed_value: {
+      label: "Week"
+      value: "Week"
+    }
+    allowed_value: {
+      label: "Month"
+      value: "Month"
+    }
+  }
+
+  # within the above 2 parameters, we have a custom_date option. this is optional, but sometimes you might also want to give users
+  # a calendar option so we create the below two filters which get used in the comparison/previous_period dimensions
+# Filters {
+  filter: custom_date_filter {
+    type: date
+    hidden: yes
+    label: "Custom dates for the analysis"
+    description: "Select the custom timeframe of your analysis"
+  }
+
+  filter: custom_previous_date_filter {
+    type: date
+    hidden: yes
+    label: "Custom dates for the period over period comparison"
+    description: "Select the timeframe for the period over period comparison"
+  }
+
+  # we create a dimension named 'today' so we can have a sort of variable we can change in one place but reference in multiple other
+  # places.
+  dimension: today{
+    type:  date
+    sql: CURRENT_DATE;;
+    convert_tz: no
+    hidden: yes
+    }
+
+  # this is your main dimension_group e.g. ordered, event, created dates. It's used mostly for filtering and customising the
+  # date granularity shown to users.
+  dimension_group: day {
+    type: time
+    sql: ${TABLE}.created_at ;;
+    convert_tz: no
+    hidden: yes
+  }
+  # this is the date dimension you'll show in the Explore, we dynamically change the granularity based on the parameter selections
+  dimension: time_aggregation {
+    label: "Previous Period vs Current Period"
+    sql:{% if time_aggregation_selector._parameter_value == "'Day'" %}
+        ${comparison_day_date}
+        {% elsif time_aggregation_selector._parameter_value == "'Week'" %}
+        ${comparison_day_week}
+        {% elsif time_aggregation_selector._parameter_value == "'Month'" %}
+        ${comparison_day_month_name}
+        {% endif %};;
+    }
+  # this _looks_ complex, but is actually just a bunch of interleaved if/else statements to evaluate the
+  # correct granularity and comparison types
+  dimension_group: comparison_day {
+    type: time
+    timeframes: [raw,date, day_of_week,week, week_of_year,hour, month, year, month_name]
+    sql:
+    -- if a user wants to look at Today vs Tomorrow, this first bit will be true
+    {% if  period_selection._parameter_value  ==  "'Today'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        CASE
+            WHEN ${day_date} =  ${today}
+                    THEN ${day_date}
+            WHEN ${day_date} =  ${today}-1
+                    THEN DATEADD(day,1 ,${day_date})
+            END
+    -- if they want to see Today vs same day last year, this second bit will be true
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        CASE
+            WHEN ${day_date} =  ${today}
+                    THEN ${day_date}
+             WHEN ${day_date} =  DATEADD(year,-1*(1) ,${today})
+                    THEN DATEADD(year,1*(1) ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} =  ${today}
+                    THEN ${day_date}
+             WHEN ${day_date} = {% date_start custom_previous_date_filter %}
+                THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %}, ${today})) ,${day_date})
+            END
+      {% endif %}
+    -- and so on and so forth; yesterday vs 2 days ago, then yesterday vs same day a year ago
+    {% elsif  period_selection._parameter_value  ==  "'Yesterday'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        CASE
+            WHEN ${day_date} =  ${today}-1
+                    THEN ${day_date}
+            WHEN ${day_date}=  ${today}-2
+                    THEN DATEADD(day,1 ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        CASE
+            WHEN ${day_date} =  ${today}-1
+                    THEN ${day_date}
+             WHEN ${day_date} =  DATEADD(year,-1*(1) ,${today}-1)
+                    THEN DATEADD(year,1*(1) ,${day_date})
+            END
+       {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} =  ${today}-1
+                    THEN ${day_date}
+             WHEN ${day_date} = {% date_start custom_previous_date_filter %}
+                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %}, ${today}-1)) ,${day_date})
+            END
+      {% endif %}
+     {% elsif  period_selection._parameter_value  ==  "'This week'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        CASE
+            WHEN ${day_date} >=  date_trunc('week',${today})
+                    AND ${day_date} < ${today}
+                    THEN ${day_date}
+            WHEN ${day_date} >=  DATEADD('week',-1 ,date_trunc('week',${today}))
+                    AND ${day_date} < DATEADD(week,1,${today})
+                    THEN DATEADD('week',1 ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        CASE
+            WHEN ${day_date} >=  date_trunc('week',${today})
+                    AND ${day_date} < ${today}
+                    THEN ${day_date}
+             WHEN ${day_date} >=  DATEADD(year,-1*(1) ,date_trunc('week',${today}))
+                    AND ${day_date} < DATEADD(year,-1*(1) ,${today})
+                    THEN DATEADD(year,1*(1) ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} >=  date_trunc('week',${today})
+                    AND ${day_date} < ${today}
+                    THEN ${day_date}
+             WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))) ,${day_date})
+            END
+      {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'Last week'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        CASE
+          WHEN ${day_date} >=  DATEADD(week,-1*(1), date_trunc('week',${today}))
+                      AND ${day_date} < date_trunc('week',${today})
+                    THEN ${day_date}
+            WHEN ${day_date} >=  DATEADD('week',-1 ,DATEADD(week,-1*(1), date_trunc('week',${today})))
+                      AND ${day_date} < DATEADD(week,-1*(1), date_trunc('week',${today}))
+                    THEN DATEADD(week,1 ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        CASE
+            WHEN ${day_date} >=  DATEADD(week,-1*(1), date_trunc('week',${today}))
+                      AND ${day_date} < date_trunc('week',${today})
+                    THEN ${day_date}
+             WHEN ${day_date} >= DATEADD('year',-1 ,DATEADD(week,-1*(1), date_trunc('week',${today})))
+                      AND ${day_date} < DATEADD('year',-1*(1), date_trunc('week',${today}))
+                    THEN DATEADD(year,1*(1) ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} >=  DATEADD(week,-1*(1), date_trunc('week',${today}))
+                      AND ${day_date} < date_trunc('week',${today})
+                    THEN ${day_date}
+             WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD(week,-1*(1), date_trunc('week',${today})))) ,${day_date})
+            END
+    {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'Last 7 days'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        CASE
+            WHEN ${day_date} >=  ${today}-7
+                    AND ${day_date} <= ${today}-1
+                    THEN ${day_date}
+            WHEN ${day_date} >=  DATEADD(day,-1*(7) , ${today}-7)
+                    AND ${day_date} < ${today}-7
+                    THEN DATEADD(day,1*(7) ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        CASE
+            WHEN ${day_date} >=  ${today}-7
+                    AND ${day_date} <= ${today}-1
+                    THEN ${day_date}
+             WHEN ${day_date} >=  DATEADD(year,-1*(1) ,${today}-7)
+                    AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                    THEN DATEADD(year,1*(1) ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} >=  ${today}-7
+                    AND ${day_date} <= ${today}-1
+                    THEN ${day_date}
+             WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},${today}-7)),${day_date})
+            END
+      {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'Last 14 days'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        CASE
+            WHEN ${day_date} >=  ${today}-14
+                    AND ${day_date} <= ${today}-1
+                    THEN ${day_date}
+            WHEN ${day_date} >=  DATEADD(day,-1*14 , ${today}-14)
+                    AND ${day_date} < ${today}-14
+                    THEN DATEADD(day,1*(1+TIMESTAMPDIFF(day,${today}-14, ${today}-1)) ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        CASE
+            WHEN ${day_date} >=  ${today}-14
+                    AND ${day_date} <= ${today}-1
+                    THEN ${day_date}
+             WHEN ${day_date} >=  DATEADD(year,-1*(1) ,${today}-14)
+                    AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                    THEN DATEADD(year,1*(1) ,${day_date})
+            END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} >=  ${today}-14
+                    AND ${day_date} <= ${today}-1
+                    THEN ${day_date}
+             WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},${today}-14)),${day_date})
+            END
+      {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+          CASE
+              WHEN ${day_date} >=  ${today}-30
+                      AND ${day_date} <= ${today}-1
+                      THEN ${day_date}
+              WHEN ${day_date} >=  DATEADD(day,-1*(1+TIMESTAMPDIFF(day,${today}-30, ${today}-1)) , ${today}-30)
+                      AND ${day_date} < ${today}-30
+                      THEN DATEADD(day,1*30 ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=  ${today}-30
+                      AND ${day_date} <= ${today}-1
+                      THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD(year,-1*(1) ,${today}-30)
+                      AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                      THEN DATEADD(year,1*(1) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} >=  ${today}-30
+                    AND ${day_date} <= ${today}-1
+                    THEN ${day_date}
+             WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},${today}-30)),${day_date})
+            END
+      {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'This month'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+          CASE
+              WHEN ${day_date} >=  date_trunc('month',${today})
+                      AND ${day_date} <= ${today}-1
+                      THEN ${day_date}
+              WHEN ${day_date} >=  DATEADD('month',-1 ,date_trunc('month',${today}))
+                      AND ${day_date} < DATEADD('month',-1,${today})
+                      THEN DATEADD(month,1 ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=   date_trunc('month',${today})
+                      AND ${day_date} <= ${today}-1
+                      THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD(year,-1*(1) , date_trunc('month',${today}))
+                      AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                      THEN DATEADD(year,1*(1) ,${day_date})
+              END
+       {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        CASE
+            WHEN ${day_date} >=   date_trunc('month',${today})
+                      AND ${day_date} <= ${today}-1
+                      THEN ${day_date}
+             WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('month',${today}))),${day_date})
+            END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Last month'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+          CASE
+              WHEN ${day_date} >= DATEADD(month,-1*(1), date_trunc('month',${today}))
+                      AND ${day_date} < date_trunc('month',${today})
+                      THEN ${day_date}
+              WHEN ${day_date} >=  DATEADD(month,-1*(2), date_trunc('month',${today}))
+                      AND ${day_date} <  DATEADD(month,-1*(1), date_trunc('month',${today}))
+                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD(month,-2, date_trunc('month',${today})), DATEADD(month,-1, date_trunc('month',${today}))) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=   DATEADD(month,-1*(1), date_trunc('month',${today}))
+                      AND ${day_date} < date_trunc('month',${today})
+                      THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD(year,-1*(1) , DATEADD(month,-1*(1), date_trunc('month',${today})))
+                      AND ${day_date} < DATEADD(year,-1*(1) ,date_trunc('month',${today}))
+                      THEN DATEADD(year,1*(1) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+          CASE
+              WHEN ${day_date} >=   DATEADD(month,-1*(1), date_trunc('month',${today}))
+                      AND ${day_date} < date_trunc('month',${today})
+                      THEN ${day_date}
+               WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD(month,-1*(1), date_trunc('month',${today})))),${day_date})
+              END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'This quarter'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+          CASE
+              WHEN ${day_date} >= date_trunc('quarter',${today})
+                      AND ${day_date} < ${today}
+                      THEN ${day_date}
+              WHEN ${day_date} >=  DATEADD('quarter',-1 ,date_trunc('quarter',${today}))
+                      AND ${day_date} < DATEADD('quarter',-1 ,${today})
+                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD('quarter',-1 ,date_trunc('quarter',${today})), date_trunc('quarter',${today})) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=   date_trunc('quarter',${today})
+                      AND ${day_date} < ${today}
+                      THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD(year,-1*(1) , date_trunc('quarter',${today}))
+                      AND ${day_date} < DATEADD(year,-1*(1) ,${today})
+                      THEN DATEADD(year,1*(1) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+          CASE
+              WHEN ${day_date} >=   date_trunc('quarter',${today})
+                      AND ${day_date} < ${today}
+                      THEN ${day_date}
+               WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('quarter',${today}))),${day_date})
+              END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Last quarter'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+          CASE
+              WHEN ${day_date} >= DATEADD(quarter,-1,date_trunc('quarter',${today}))
+                      AND ${day_date} <date_trunc('quarter',${today})
+                      THEN ${day_date}
+              WHEN ${day_date} >=  DATEADD(quarter,-2,date_trunc('quarter',${today}))
+                      AND ${day_date} < DATEADD(quarter,-1*1, date_trunc('quarter',${today}))
+                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD(quarter,-2, date_trunc('quarter',${today})), DATEADD(quarter,-1, date_trunc('quarter',${today}))), ${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=   DATEADD(quarter,-1,date_trunc('quarter',${today}))
+                      AND ${day_date} <date_trunc('quarter',${today})
+                      THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD(year,-1*(1) , DATEADD(quarter,-1,date_trunc('quarter',${today})))
+                      AND ${day_date} < DATEADD(year,-1*(1) ,date_trunc('quarter',${today}))
+                      THEN DATEADD(year,1*(1) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+          CASE
+              WHEN ${day_date} >=   DATEADD(quarter,-1,date_trunc('quarter',${today}))
+                      AND ${day_date} <date_trunc('quarter',${today})
+                      THEN ${day_date}
+               WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD(quarter,-1,date_trunc('quarter',${today})))),${day_date})
+              END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'This year'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+          CASE
+              WHEN ${day_date} >= date_trunc('year',${today})
+                      AND ${day_date} < ${today}
+                      THEN ${day_date}
+              WHEN ${day_date} >=  DATEADD('year',-1 ,date_trunc('year',${today}))
+                      AND ${day_date} < DATEADD('year',-1 ,${today})
+                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD('year',-1 ,date_trunc('year',${today})), date_trunc('year',${today})) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=   date_trunc('year',${today})
+                      AND ${day_date} < ${today}
+                      THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD(year,-1*(1) , date_trunc('year',${today}))
+                      AND ${day_date} < DATEADD('year',-1*(1) ,${today})
+                    THEN DATEADD(year,1*(1) ,${day_date})
+              END
+     {% elsif period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+          CASE
+              WHEN ${day_date} >=   date_trunc('year',${today})
+                      AND ${day_date} < ${today}
+                      THEN ${day_date}
+               WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('year',${today}))),${day_date})
+              END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Last year'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+          CASE
+              WHEN ${day_date} >= DATEADD('year',-1,date_trunc('year',${today}))
+                      AND ${day_date} <date_trunc('year',${today})
+                      THEN ${day_date}
+              WHEN ${day_date} >=  DATEADD('year',-2,date_trunc('year',${today}))
+                      AND ${day_date} < DATEADD(quarter,-1*1, date_trunc('year',${today}))
+                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD('year',-2, date_trunc('year',${today})), DATEADD('year',-1, date_trunc('year',${today}))), ${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=   DATEADD('year',-1,date_trunc('year',${today}))
+                      AND ${day_date} <date_trunc('year',${today})
+                      THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD(year,-1*(1) , DATEADD('year',-1,date_trunc('year',${today})))
+                      AND ${day_date} < DATEADD(year,-1*(1) ,date_trunc('year',${today}))
+                      THEN DATEADD(year,1*(1) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+          CASE
+              WHEN ${day_date} >=  DATEADD('year',-1,date_trunc('year',${today}))
+                      AND ${day_date} <date_trunc('year',${today})
+                      THEN ${day_date}
+               WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                    AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD('year',-1,date_trunc('year',${today})))),${day_date})
+              END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Custom period'" %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+          CASE
+              WHEN ${day_date} >=  {% date_start custom_date_filter %}
+                AND ${day_date} <= {% date_end custom_date_filter %}
+                THEN ${day_date}
+              WHEN ${day_date} >= DATEADD(day,-1*(1+TIMESTAMPDIFF(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) , {% date_start custom_date_filter %})
+                      AND ${day_date} < {% date_start custom_date_filter %}
+                      THEN DATEADD(day,(1+TIMESTAMPDIFF(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+          CASE
+              WHEN ${day_date} >=   {% date_start custom_date_filter %}
+                AND ${day_date} <= {% date_end custom_date_filter %}
+                THEN ${day_date}
+               WHEN ${day_date} >=  DATEADD('year',-1,{% date_start custom_date_filter %})
+                      AND ${day_date} <= DATEADD('year',-1, {% date_end custom_date_filter %})
+                      THEN DATEADD(year,1*(1) ,${day_date})
+              END
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+          CASE
+              WHEN ${day_date} >=   {% date_start custom_date_filter %}
+                AND ${day_date} <= {% date_end custom_date_filter %}
+                THEN ${day_date}
+               WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},{% date_start custom_date_filter %})),${day_date})
+              END
+      {% endif %}
+    {% endif %}
+    ;;
+  }
+
+  # same as above but for the previous_period this _looks_ complex, but is actually just a bunch of interleaved if/else statements to evaluate the
+  # correct granularity and comparison types
+  dimension: previous_period {
+    label: "Period status"
+    type: string
+    description: "Makes the difference between main period and comparison period"
+    sql:
+    {% if  period_selection._parameter_value  ==  "'Today'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} =  ${today}
+                      THEN 'Current Period'
+              WHEN ${day_date} =  ${today}-1
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} =  ${today}
+                  THEN 'Current Period'
+          WHEN ${day_date} =  DATEADD(year,-1*(1) ,${today})
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} =  ${today}
+                  THEN 'Current Period'
+          WHEN ${day_date} =  {% date_start custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Yesterday'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} =  ${today}-1
+                      THEN 'Current Period'
+              WHEN ${day_date} =  ${today}-2
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} =  ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} =  DATEADD(year,-1*(1) ,${today}-1)
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} =  ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} =  {% date_start custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'This week'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >=  date_trunc('week',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD('week',-1 ,date_trunc('week',${today}))
+                      AND ${day_date} < DATEADD('week',-1,${today})
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >=  date_trunc('week',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,date_trunc('week',${today}))
+                      AND ${day_date} < DATEADD(year,-1*(1) ,${today})
+                      THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >=  date_trunc('week',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN 'Previous Period'
+          END
+      {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'Last week'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >=  DATEADD(week,-1*(1), date_trunc('week',${today}))
+                      AND ${day_date} < date_trunc('week',${today})
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD('week',-1 ,DATEADD(week,-1*(1), date_trunc('week',${today})))
+                      AND ${day_date} < DATEADD(week,-1*(1), date_trunc('week',${today}))
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+         WHEN ${day_date} >=  DATEADD(week,-1*(1), date_trunc('week',${today}))
+                      AND ${day_date} < date_trunc('week',${today})
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,DATEADD(week,-1*(1), date_trunc('week',${today})))
+                      AND ${day_date} < DATEADD(year,-1*(1) ,date_trunc('week',${today}))
+                      THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+         WHEN ${day_date} >=  DATEADD(week,-1*(1), date_trunc('week',${today}))
+                      AND ${day_date} < date_trunc('week',${today})
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                      THEN 'Previous Period'
+          END
+      {% else  %}
+          NULL
+      {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'Last 7 days'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >=  ${today}-7
+                      AND ${day_date} <= ${today}-1
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD(day,-1*7 ,${today}-7)
+                      AND ${day_date} < ${today}-7
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >=  ${today}-7
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,${today}-7)
+                    AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >=  ${today}-7
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Last 14 days'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >=  ${today}-14
+                      AND ${day_date} <= ${today}-1
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD(day,-1*14 ,${today}-14)
+                      AND ${day_date} < ${today}-14
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >=  ${today}-14
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,${today}-14)
+                    AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >=  ${today}-14
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Last 30 days'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >=  ${today}-30
+                      AND ${day_date} <= ${today}-1
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD(day,-1*30 ,${today}-30)
+                      AND ${day_date} < ${today}-30
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >=  ${today}-30
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,${today}-30)
+                    AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >=  ${today}-30
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'This month'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >=  date_trunc('month',${today})
+                      AND ${day_date} <= ${today}-1
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD('month',-1 ,date_trunc('month',${today}))
+                      AND ${day_date} < DATEADD('month',-1,${today})
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >=  date_trunc('month',${today})
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,date_trunc('month',${today}))
+                    AND ${day_date} <= DATEADD(year,-1*(1) ,${today}-1)
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >=  date_trunc('month',${today})
+                  AND ${day_date} <= ${today}-1
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+
+    {% elsif  period_selection._parameter_value  ==  "'Last month'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >= DATEADD(month,-1*(1), date_trunc('month',${today}))
+                      AND ${day_date} < date_trunc('month',${today})
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD(month,-1*(2), date_trunc('month',${today}))
+                      AND ${day_date} < DATEADD(month,-1*(1), date_trunc('month',${today}))
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >=  DATEADD(month,-1*(1), date_trunc('month',${today}))
+                  AND ${day_date} < date_trunc('month',${today})
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,DATEADD(month,-1*(1), date_trunc('month',${today})))
+                    AND ${day_date} < DATEADD(year,-1*(1) ,date_trunc('month',${today}))
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >=  DATEADD(month,-1*(1), date_trunc('month',${today}))
+                  AND ${day_date} < date_trunc('month',${today})
+                  THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'This quarter'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >= date_trunc('quarter',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD('quarter',-1,date_trunc('quarter',${today}))
+                      AND ${day_date} < DATEADD('quarter',-1,${today})
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >= date_trunc('quarter',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,date_trunc('quarter',${today}))
+                    AND ${day_date} < DATEADD(year,-1*(1) ,${today})
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >= date_trunc('quarter',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Last quarter'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >= DATEADD(quarter,-1,date_trunc('quarter',${today}))
+                      AND ${day_date} <date_trunc('quarter',${today})
+                      THEN 'Current Period'
+              WHEN ${day_date} >=DATEADD(quarter,-2,date_trunc('quarter',${today}))
+                      AND ${day_date} < DATEADD(quarter,-1*1, date_trunc('quarter',${today}))
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >= DATEADD(quarter,-1,date_trunc('quarter',${today}))
+                      AND ${day_date} < date_trunc('quarter',${today})
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,date_trunc('quarter',DATEADD(quarter,-1,date_trunc('quarter',${today}))))
+                    AND ${day_date} < DATEADD(year,-1*(1) ,date_trunc('quarter',${today}))
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >= DATEADD(quarter,-1,date_trunc('quarter',${today}))
+                      AND ${day_date} < date_trunc('quarter',${today})
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'This year'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >= date_trunc('year',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+              WHEN ${day_date} >=  DATEADD('year',-1,date_trunc('year',${today}))
+                      AND ${day_date} < DATEADD('year',-1,${today})
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >= date_trunc('year',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,date_trunc('year',${today}))
+                    AND ${day_date} < DATEADD(year,-1*(1) ,${today})
+                    THEN 'Previous Period'
+          END
+       {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >= date_trunc('year',${today})
+                      AND ${day_date} < ${today}
+                      THEN 'Current Period'
+          WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Last year'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+        CASE
+              WHEN ${day_date} >= DATEADD('year',-1,date_trunc('year',${today}))
+                      AND ${day_date} <date_trunc('year',${today})
+                      THEN 'Current Period'
+              WHEN ${day_date} >=DATEADD('year',-2,date_trunc('year',${today}))
+                      AND ${day_date} < DATEADD('year',-1*1, date_trunc('year',${today}))
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >= DATEADD('year',-1,date_trunc('year',${today}))
+                      AND ${day_date} < date_trunc('year',${today})
+                      THEN 'Current Period'
+          WHEN ${day_date} >=  DATEADD(year,-1*(1) ,date_trunc('year',DATEADD('year',-1,date_trunc('year',${today}))))
+                    AND ${day_date} < DATEADD('year',-1*(1) ,date_trunc('year',${today}))
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >= DATEADD('year',-1,date_trunc('year',${today}))
+                      AND ${day_date} < date_trunc('year',${today})
+                      THEN 'Current Period'
+          WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                      AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% elsif  period_selection._parameter_value  ==  "'Custom period'"  %}
+      {% if  period_comparison_type._parameter_value  ==  "'Previous period'"  %}
+         CASE
+              WHEN ${day_date} >=  {% date_start custom_date_filter %}
+                AND ${day_date} <= {% date_end custom_date_filter %}
+                THEN 'Current Period'
+              WHEN ${day_date} >= DATEADD(day,-1*(1+TIMESTAMPDIFF(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) , {% date_start custom_date_filter %})
+                      AND ${day_date} < {% date_start custom_date_filter %}
+                      THEN 'Previous Period'
+              END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
+      CASE
+          WHEN ${day_date} >=  {% date_start custom_date_filter %}
+                AND ${day_date} <= {% date_end custom_date_filter %}
+                      THEN 'Current Period'
+         WHEN ${day_date} >=  DATEADD('year',-1,{% date_start custom_date_filter %})
+                      AND ${day_date} <= DATEADD('year',-1, {% date_end custom_date_filter %})
+                    THEN 'Previous Period'
+          END
+      {% elsif  period_comparison_type._parameter_value  ==  "'Custom period'"  %}
+      CASE
+          WHEN ${day_date} >=  {% date_start custom_date_filter %}
+                AND ${day_date} <= {% date_end custom_date_filter %}
+                      THEN 'Current Period'
+         WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
+                AND ${day_date} <= {% date_end custom_previous_date_filter %}
+                    THEN 'Previous Period'
+          END
+      {% endif %}
+    {% endif %}
+      ;;
+  }
+
+  # ignore this unless you're wanting to create some sort of variables for HTML/Liquid
+  dimension: previous_day_label {
+    type: number
+    hidden: yes
+    sql:
+    {% if  period_selection._parameter_value  ==  "'Today'" %}
+      timestampdiff(second,{% date_start custom_previous_date_filter %}, ${today})
+    {% elsif  period_selection._parameter_value  ==  "'Yesterday'" %}
+      timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-1)
+    {% elsif  period_selection._parameter_value  ==  "'This week'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))
+    {% elsif  period_selection._parameter_value  ==  "'Last week'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))
+    {% elsif  period_selection._parameter_value  ==  "'Last 7 days'" %}
+      timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-7)
+    {% elsif  period_selection._parameter_value  ==  "'Last 14 days'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-14)
+    {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" %}
+      timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-30)
+    {% elsif  period_selection._parameter_value  ==  "'This month'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('month',${today}))
+    {% elsif  period_selection._parameter_value  ==  "'Last month'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},DATEADD(month,-1*(1), date_trunc('month',${today})))
+    {% elsif  period_selection._parameter_value  ==  "'This quarter'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},,date_trunc('quarter',${today}))
+    {% elsif  period_selection._parameter_value  ==  "'Last quarter'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},DATEADD(quarter,-1,date_trunc('quarter',${today})))
+    {% elsif  period_selection._parameter_value  ==  "'This year'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('year',${today}))
+    {% elsif  period_selection._parameter_value  ==  "'Last year'" %}
+     timestampdiff(second,{% date_start custom_previous_date_filter %},DATEADD('year',-1,date_trunc('year',${today})))
+    {% elsif  period_selection._parameter_value  ==  "'Custom period'" %}
+      {% if  period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        timestampdiff(second,{% date_start custom_previous_date_filter %},{% date_start custom_date_filter %})
+      {% else %}
+        timestampdiff(second,{% date_start custom_date_filter %},{% date_end custom_date_filter %})+24*60*60
+      {% endif %}
+    {% endif %}
+    ;;
+  }
+  measure: count {type:count}
+
+}
+
+
 explore: order_dates{}
 view: order_dates {
   derived_table: {

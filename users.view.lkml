@@ -10,6 +10,11 @@ view: users {
     tags: ["user_id"]
   }
 
+  parameter: test {
+    type: string
+    allowed_value: {value: "test"}
+    allowed_value: {value: "test1"}
+  }
   dimension: first_name {
     hidden: yes
     sql: INITCAP(${TABLE}.first_name) ;;
