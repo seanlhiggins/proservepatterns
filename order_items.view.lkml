@@ -121,7 +121,7 @@ view: order_items_2 {
     label: "Custom dates for the period over period comparison"
     description: "Select the timeframe for the period over period comparison"
   }
-
+#}
   # we create a dimension named 'today' so we can have a sort of variable we can change in one place but reference in multiple other
   # places.
   dimension: today{
@@ -1013,7 +1013,10 @@ view: order_items_2 {
     ;;
   }
   measure: count {type:count}
-
+  measure: total_sale_price {
+    type: sum
+    value_format_name: usd
+    sql: ${TABLE}.sale_price ;;}
 }
 
 
