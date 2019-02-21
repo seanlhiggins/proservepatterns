@@ -150,101 +150,24 @@ view: order_items_2 {
         {% elsif time_aggregation_selector._parameter_value == "'Month'" %}
         ${comparison_day_month_name}
         {% endif %};;
-    # this is complex liquid. We take the difference between the start of the comparison/"Current" period and the start of the "Previous" period
  # this is complex liquid. We take the difference between the start of the comparison/"Current" period and the start of the "Previous" period
       # and use Liquid to inform the HTML how to render the dates. This way our Tooltip will show the two dates being compared for that datapoint
     html:
     {% if time_aggregation_selector._parameter_value == "'Day'" or time_aggregation_selector._parameter_value == "'Week'"%}
-    {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
-    {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-    {{rendered_value | date: "%s" | minus : 86400 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-    {{rendered_value | date: "%s" | minus : 604800 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif period_selection._parameter_value  == "'Last 14 days'" %}
-    {{rendered_value | date: "%s" | minus : 1209600 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'Last 30 days'"  or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'"  %}
-    {{rendered_value | date: "%s" | minus : 2629743 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-    {{rendered_value | date: "%s" | minus : 7889229 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'Custom period'"  %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% endif %}
-    {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
-    {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" or period_selection._parameter_value  ==  "'Custom period'"  %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% endif %}
-    {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
-    {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" or period_selection._parameter_value  ==  "'Custom period'"  %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-    {% endif %}
-    {% endif %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+      {% endif %}
     {% elsif time_aggregation_selector._parameter_value == "'Month'" %}
-    {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
-    {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-    {{rendered_value | date: "%s" | minus : 86400 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-    {{rendered_value | date: "%s" | minus : 604800 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-    {% elsif period_selection._parameter_value  == "'Last 14 days'" %}
-    {{rendered_value | date: "%s" | minus : 1209600 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'Last 30 days'"  or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'"  %}
-    {{rendered_value | date: "%s" | minus : 2629743 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-    {{rendered_value | date: "%s" | minus : 7889229 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b '%y" | uri_encode}}
-    {% elsif period_selection._parameter_value  ==  "'Custom period'"  %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-    {% endif %}
-    {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
-    {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  or period_selection._parameter_value  ==  "'Custom period'" %}
-    {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
-    {% endif %}
-    {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
-    {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, '%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, '%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%bd, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, '%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b '%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, '%y" | uri_encode}}
-    {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  or period_selection._parameter_value  ==  "'Custom period'" %}
-    {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, '%y" | uri_encode}}
-    {% endif %}
+      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+        {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
+      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+        {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, '%y" | uri_encode}} - {{rendered_value | date: "%s" | date: "'%y" | uri_encode}}
+      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+        {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, '%y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, '%y" | uri_encode}}
     {% endif %}
     {% else %}
     {{rendered_value}}
@@ -280,7 +203,7 @@ view: order_items_2 {
             WHEN ${day_date} =  ${today}
                     THEN ${day_date}
              WHEN ${day_date} = {% date_start custom_previous_date_filter %}
-                THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %}, ${today})) ,${day_date})
+                THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %}, ${today})) ,${day_date})
             END
       {% endif %}
     -- and so on and so forth; yesterday vs 2 days ago, then yesterday vs same day a year ago
@@ -304,7 +227,7 @@ view: order_items_2 {
             WHEN ${day_date} =  ${today}-1
                     THEN ${day_date}
              WHEN ${day_date} = {% date_start custom_previous_date_filter %}
-                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %}, ${today}-1)) ,${day_date})
+                    THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %}, ${today}-1)) ,${day_date})
             END
       {% endif %}
      {% elsif  period_selection._parameter_value  ==  "'This week'" %}
@@ -333,7 +256,7 @@ view: order_items_2 {
                     THEN ${day_date}
              WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))) ,${day_date})
+                    THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))) ,${day_date})
             END
       {% endif %}
 
@@ -363,7 +286,7 @@ view: order_items_2 {
                     THEN ${day_date}
              WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD(week,-1*(1), date_trunc('week',${today})))) ,${day_date})
+                    THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},DATEADD(week,-1*(1), date_trunc('week',${today})))) ,${day_date})
             END
     {% endif %}
 
@@ -393,7 +316,7 @@ view: order_items_2 {
                     THEN ${day_date}
              WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},${today}-7)),${day_date})
+                    THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},${today}-7)),${day_date})
             END
       {% endif %}
 
@@ -405,7 +328,7 @@ view: order_items_2 {
                     THEN ${day_date}
             WHEN ${day_date} >=  DATEADD(day,-1*14 , ${today}-14)
                     AND ${day_date} < ${today}-14
-                    THEN DATEADD(day,1*(1+TIMESTAMPDIFF(day,${today}-14, ${today}-1)) ,${day_date})
+                    THEN DATEADD(day,1*(1+datediff(day,${today}-14, ${today}-1)) ,${day_date})
             END
       {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
         CASE
@@ -423,7 +346,7 @@ view: order_items_2 {
                     THEN ${day_date}
              WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},${today}-14)),${day_date})
+                    THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},${today}-14)),${day_date})
             END
       {% endif %}
 
@@ -433,7 +356,7 @@ view: order_items_2 {
               WHEN ${day_date} >=  ${today}-30
                       AND ${day_date} <= ${today}-1
                       THEN ${day_date}
-              WHEN ${day_date} >=  DATEADD(day,-1*(1+TIMESTAMPDIFF(day,${today}-30, ${today}-1)) , ${today}-30)
+              WHEN ${day_date} >=  DATEADD(day,-1*(1+datediff(day,${today}-30, ${today}-1)) , ${today}-30)
                       AND ${day_date} < ${today}-30
                       THEN DATEADD(day,1*30 ,${day_date})
               END
@@ -453,7 +376,7 @@ view: order_items_2 {
                     THEN ${day_date}
              WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},${today}-30)),${day_date})
+                    THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},${today}-30)),${day_date})
             END
       {% endif %}
 
@@ -483,7 +406,7 @@ view: order_items_2 {
                       THEN ${day_date}
              WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                    THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('month',${today}))),${day_date})
+                    THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},date_trunc('month',${today}))),${day_date})
             END
       {% endif %}
     {% elsif  period_selection._parameter_value  ==  "'Last month'" %}
@@ -494,7 +417,7 @@ view: order_items_2 {
                       THEN ${day_date}
               WHEN ${day_date} >=  DATEADD(month,-1*(2), date_trunc('month',${today}))
                       AND ${day_date} <  DATEADD(month,-1*(1), date_trunc('month',${today}))
-                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD(month,-2, date_trunc('month',${today})), DATEADD(month,-1, date_trunc('month',${today}))) ,${day_date})
+                      THEN DATEADD(day,datediff(day,DATEADD(month,-2, date_trunc('month',${today})), DATEADD(month,-1, date_trunc('month',${today}))) ,${day_date})
               END
       {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
           CASE
@@ -512,7 +435,7 @@ view: order_items_2 {
                       THEN ${day_date}
                WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD(month,-1*(1), date_trunc('month',${today})))),${day_date})
+                      THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},DATEADD(month,-1*(1), date_trunc('month',${today})))),${day_date})
               END
       {% endif %}
     {% elsif  period_selection._parameter_value  ==  "'This quarter'" %}
@@ -523,7 +446,7 @@ view: order_items_2 {
                       THEN ${day_date}
               WHEN ${day_date} >=  DATEADD('quarter',-1 ,date_trunc('quarter',${today}))
                       AND ${day_date} < DATEADD('quarter',-1 ,${today})
-                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD('quarter',-1 ,date_trunc('quarter',${today})), date_trunc('quarter',${today})) ,${day_date})
+                      THEN DATEADD(day,datediff(day,DATEADD('quarter',-1 ,date_trunc('quarter',${today})), date_trunc('quarter',${today})) ,${day_date})
               END
       {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
           CASE
@@ -541,7 +464,7 @@ view: order_items_2 {
                       THEN ${day_date}
                WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('quarter',${today}))),${day_date})
+                      THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},date_trunc('quarter',${today}))),${day_date})
               END
       {% endif %}
     {% elsif  period_selection._parameter_value  ==  "'Last quarter'" %}
@@ -552,7 +475,7 @@ view: order_items_2 {
                       THEN ${day_date}
               WHEN ${day_date} >=  DATEADD(quarter,-2,date_trunc('quarter',${today}))
                       AND ${day_date} < DATEADD(quarter,-1*1, date_trunc('quarter',${today}))
-                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD(quarter,-2, date_trunc('quarter',${today})), DATEADD(quarter,-1, date_trunc('quarter',${today}))), ${day_date})
+                      THEN DATEADD(day,datediff(day,DATEADD(quarter,-2, date_trunc('quarter',${today})), DATEADD(quarter,-1, date_trunc('quarter',${today}))), ${day_date})
               END
       {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
           CASE
@@ -570,7 +493,7 @@ view: order_items_2 {
                       THEN ${day_date}
                WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD(quarter,-1,date_trunc('quarter',${today})))),${day_date})
+                      THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},DATEADD(quarter,-1,date_trunc('quarter',${today})))),${day_date})
               END
       {% endif %}
     {% elsif  period_selection._parameter_value  ==  "'This year'" %}
@@ -581,7 +504,7 @@ view: order_items_2 {
                       THEN ${day_date}
               WHEN ${day_date} >=  DATEADD('year',-1 ,date_trunc('year',${today}))
                       AND ${day_date} < DATEADD('year',-1 ,${today})
-                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD('year',-1 ,date_trunc('year',${today})), date_trunc('year',${today})) ,${day_date})
+                      THEN DATEADD(day,datediff(day,DATEADD('year',-1 ,date_trunc('year',${today})), date_trunc('year',${today})) ,${day_date})
               END
       {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
           CASE
@@ -599,7 +522,7 @@ view: order_items_2 {
                       THEN ${day_date}
                WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},date_trunc('year',${today}))),${day_date})
+                      THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},date_trunc('year',${today}))),${day_date})
               END
       {% endif %}
     {% elsif  period_selection._parameter_value  ==  "'Last year'" %}
@@ -610,7 +533,7 @@ view: order_items_2 {
                       THEN ${day_date}
               WHEN ${day_date} >=  DATEADD('year',-2,date_trunc('year',${today}))
                       AND ${day_date} < DATEADD(quarter,-1*1, date_trunc('year',${today}))
-                      THEN DATEADD(day,TIMESTAMPDIFF(day,DATEADD('year',-2, date_trunc('year',${today})), DATEADD('year',-1, date_trunc('year',${today}))), ${day_date})
+                      THEN DATEADD(day,datediff(day,DATEADD('year',-2, date_trunc('year',${today})), DATEADD('year',-1, date_trunc('year',${today}))), ${day_date})
               END
       {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
           CASE
@@ -628,7 +551,7 @@ view: order_items_2 {
                       THEN ${day_date}
                WHEN ${day_date} >= {% date_start custom_previous_date_filter %}
                     AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},DATEADD('year',-1,date_trunc('year',${today})))),${day_date})
+                      THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},DATEADD('year',-1,date_trunc('year',${today})))),${day_date})
               END
       {% endif %}
     {% elsif  period_selection._parameter_value  ==  "'Custom period'" %}
@@ -637,9 +560,9 @@ view: order_items_2 {
               WHEN ${day_date} >=  {% date_start custom_date_filter %}
                 AND ${day_date} <= {% date_end custom_date_filter %}
                 THEN ${day_date}
-              WHEN ${day_date} >= DATEADD(day,-1*(1+TIMESTAMPDIFF(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) , {% date_start custom_date_filter %})
+              WHEN ${day_date} >= DATEADD(day,-1*(1+datediff(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) , {% date_start custom_date_filter %})
                       AND ${day_date} < {% date_start custom_date_filter %}
-                      THEN DATEADD(day,(1+TIMESTAMPDIFF(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) ,${day_date})
+                      THEN DATEADD(day,(1+datediff(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) ,${day_date})
               END
       {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'"  %}
           CASE
@@ -657,7 +580,7 @@ view: order_items_2 {
                 THEN ${day_date}
                WHEN ${day_date} >=  {% date_start custom_previous_date_filter %}
                 AND ${day_date} <= {% date_end custom_previous_date_filter %}
-                      THEN DATEADD(day,1*(TIMESTAMPDIFF(day,{% date_start custom_previous_date_filter %},{% date_start custom_date_filter %})),${day_date})
+                      THEN DATEADD(day,1*(datediff(day,{% date_start custom_previous_date_filter %},{% date_start custom_date_filter %})),${day_date})
               END
       {% endif %}
     {% endif %}
@@ -1047,7 +970,7 @@ view: order_items_2 {
               WHEN ${day_date} >=  {% date_start custom_date_filter %}
                 AND ${day_date} <= {% date_end custom_date_filter %}
                 THEN 'Current Period'
-              WHEN ${day_date} >= DATEADD(day,-1*(1+TIMESTAMPDIFF(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) , {% date_start custom_date_filter %})
+              WHEN ${day_date} >= DATEADD(day,-1*(1+datediff(day,{% date_start custom_date_filter %},{% date_end custom_date_filter %})) , {% date_start custom_date_filter %})
                       AND ${day_date} < {% date_start custom_date_filter %}
                       THEN 'Previous Period'
               END
@@ -1080,36 +1003,36 @@ view: order_items_2 {
     hidden: yes
     sql:
     {% if  period_selection._parameter_value  ==  "'Today'" %}
-      timestampdiff(second,{% date_start custom_previous_date_filter %}, ${today})
+      datediff(second,{% date_start custom_previous_date_filter %}, ${today})
     {% elsif  period_selection._parameter_value  ==  "'Yesterday'" %}
-      timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-1)
+      datediff(second,{% date_start custom_previous_date_filter %},${today}-1)
     {% elsif  period_selection._parameter_value  ==  "'This week'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))
+     datediff(second,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))
     {% elsif  period_selection._parameter_value  ==  "'Last week'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))
+     datediff(second,{% date_start custom_previous_date_filter %},date_trunc('week',${today}))
     {% elsif  period_selection._parameter_value  ==  "'Last 7 days'" %}
-      timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-7)
+      datediff(second,{% date_start custom_previous_date_filter %},${today}-7)
     {% elsif  period_selection._parameter_value  ==  "'Last 14 days'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-14)
+     datediff(second,{% date_start custom_previous_date_filter %},${today}-14)
     {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" %}
-      timestampdiff(second,{% date_start custom_previous_date_filter %},${today}-30)
+      datediff(second,{% date_start custom_previous_date_filter %},${today}-30)
     {% elsif  period_selection._parameter_value  ==  "'This month'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('month',${today}))
+     datediff(second,{% date_start custom_previous_date_filter %},date_trunc('month',${today}))
     {% elsif  period_selection._parameter_value  ==  "'Last month'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},DATEADD(month,-1*(1), date_trunc('month',${today})))
+     datediff(second,{% date_start custom_previous_date_filter %},DATEADD(month,-1*(1), date_trunc('month',${today})))
     {% elsif  period_selection._parameter_value  ==  "'This quarter'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},,date_trunc('quarter',${today}))
+     datediff(second,{% date_start custom_previous_date_filter %},,date_trunc('quarter',${today}))
     {% elsif  period_selection._parameter_value  ==  "'Last quarter'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},DATEADD(quarter,-1,date_trunc('quarter',${today})))
+     datediff(second,{% date_start custom_previous_date_filter %},DATEADD(quarter,-1,date_trunc('quarter',${today})))
     {% elsif  period_selection._parameter_value  ==  "'This year'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},date_trunc('year',${today}))
+     datediff(second,{% date_start custom_previous_date_filter %},date_trunc('year',${today}))
     {% elsif  period_selection._parameter_value  ==  "'Last year'" %}
-     timestampdiff(second,{% date_start custom_previous_date_filter %},DATEADD('year',-1,date_trunc('year',${today})))
+     datediff(second,{% date_start custom_previous_date_filter %},DATEADD('year',-1,date_trunc('year',${today})))
     {% elsif  period_selection._parameter_value  ==  "'Custom period'" %}
       {% if  period_comparison_type._parameter_value  ==  "'Custom period'" %}
-        timestampdiff(second,{% date_start custom_previous_date_filter %},{% date_start custom_date_filter %})
+        datediff(second,{% date_start custom_previous_date_filter %},{% date_start custom_date_filter %})
       {% else %}
-        timestampdiff(second,{% date_start custom_date_filter %},{% date_end custom_date_filter %})+24*60*60
+        datediff(second,{% date_start custom_date_filter %},{% date_end custom_date_filter %})+24*60*60
       {% endif %}
     {% endif %}
     ;;
