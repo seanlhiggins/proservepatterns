@@ -25,16 +25,16 @@ explore: order_items {
     user_attribute: brand
 
   }
-
-  always_filter: {filters: {
-    field: users.country
-    value: "USA"
-  }
+#
+#   always_filter: {filters: {
+#     field: users.country
+#     value: "USA"
+#   }
 #   filters: {
 #     field: order_dates.date_parameter
 #     value: "Today"
 #   }
-}
+# }
 
 
   from: order_items

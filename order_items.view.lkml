@@ -1327,9 +1327,45 @@ view: order_dates {
 
     dimension_group: created {
       type: time
-      timeframes: [time, hour, date, week, month, year, hour_of_day, day_of_week, day_of_month, month_num, month_name, raw, week_of_year]
+      timeframes: [time, hour, date, week, month, year, hour_of_day, quarter,day_of_week, day_of_month, month_num, month_name, raw, week_of_year]
       sql:
       ${TABLE}.created_at ;;
+    }
+      parameter: date_granularity {
+        type: unquoted
+        allowed_value: { value: "Daily" }
+        allowed_value: { value: "Monthly" }
+        allowed_value: { value: "Quarterly" }
+        allowed_value: { value: "Yearly" }
+        }
+      dimension: date_breakdown {
+        label_from_parameter: date_granularity
+        sql:
+               {% if date_granularity._parameter_value == "Daily" %}
+                   ${created_date}::VARCHAR
+               {% elsif date_granularity._parameter_value == "Monthly" %}
+                   ${created_month}::VARCHAR
+                {% elsif date_granularity._parameter_value == "Quarterly" %}
+                   ${created_quarter}::VARCHAR
+                {% elsif date_granularity._parameter_value == "Yearly" %}
+                  ${created_year}::VARCHAR
+              {% else %}
+                   NULL
+               {% endif %};;
+      }
+
+    dimension: date_pivot {
+      description: "PIVOT ME!"
+      sql:
+             {% if date_granularity._parameter_value == "Hourly" %}
+                 ${created_day_of_week}
+             {% elsif date_granularity._parameter_value == "Daily" %}
+                 ${created_week_of_year}
+              {% elsif date_granularity._parameter_value == "Monthly" %}
+                 ${created_year}
+            {% else %}
+                 NULL
+             {% endif %};;
     }
 
     ### Custom date range selection
