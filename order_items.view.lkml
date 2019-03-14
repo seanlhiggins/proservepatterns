@@ -1554,22 +1554,22 @@ view: order_dates {
       sql: ${sale_price} ;;
       # drill_fields: [detail*]
 
-      html:
-      {% if sales_cost._parameter_value == 'Sales' %}
-        {% if value > 10000 %}
-        <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
-        {% else %}
-        <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
-        {% endif %}
-      {% elsif sales_cost._parameter_value == 'Cost' %}
-        {% if value > 10000 %}
-        <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
-        {% else %}
-        <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
-        {% endif %}
-      {% endif %}
-
-        ;;
+#       html:
+#       {% if sales_cost._parameter_value == 'Sales' %}
+#         {% if value > 10000 %}
+#         <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+#         {% else %}
+#         <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+#         {% endif %}
+#       {% elsif sales_cost._parameter_value == 'Cost' %}
+#         {% if value > 10000 %}
+#         <a style="color:red" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+#         {% else %}
+#         <a style="color:green" href="/explore/shiggins_patterns/users?fields=users.id,users.name&f[users.state]={{ _filters['users.state'] | url_encode }}">▲ {{rendered_value}}</a>
+#         {% endif %}
+#       {% endif %}
+#
+#         ;;
     }
 
     measure: total_gross_margin {
