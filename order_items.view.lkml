@@ -590,6 +590,12 @@ view: order_items_2 {
     ;;
   }
 
+
+#   master ------------------------*-------*----
+
+#   dev 1            \-------*----/------------/
+#   dev 2 ---------\-----------------*---/
+
   # same as above but for the previous_period this _looks_ complex, but is actually just a bunch of interleaved if/else statements to evaluate the
   # correct granularity and comparison types
   dimension: previous_period {
