@@ -1,22 +1,24 @@
 explore: top_5_countries {}
 view: top_5_countries {
-  label: "Countries Ranking"
+  label: "Country Ranking"
   derived_table: {
     sql:
-    select country as country,
+    select country,
     {% parameter country_name_criteria %} as country_rank
 
     from
     (
-      select country,
-      rank() over(order by count(*) desc) as visitorCount,
-      rank() over(order by sum(order_items.sale_price) desc) as totalGrossRevenue,
-      rank() over(order by avg(order_items.sale_price) desc) as averageGrossRevenue
+      select air_capacity_management.country as country,
+      rank() over(order by count(*) desc) as flightCount,
+      rank() over(order by sum(order_items.passenger_count) desc) as passengerCount,
+      rank() over(order by avg(order_items.ticketPrice) desc) as ticketRevenue
 
-      FROM order_items
-      JOIN users ON order_items.user_id = users.id
-      WHERE
-      {% condition rank_date_range %}order_items.created_at {% endcondition %}
+--    India | 1 | 5 | 25
+--    UK    | 5 | 3 | 2
+
+      FROM air_capacity_management
+
+
       group by country
     )country_summary
     ;;
@@ -26,11 +28,11 @@ view: top_5_countries {
     type: date
     description: "Select a range within which you are ranking the ordering of countries by metric selection. E.g. the rank of countries who had the top 10 highest revenue in May"
   }
-  dimension: country_code {
+  dimension: brand {
     primary_key: yes
     hidden: yes
     type: string
-    sql: ${TABLE}.country ;;
+    sql: ${TABLE}.brand ;;
   }
 
   parameter: country_name_criteria {
@@ -38,24 +40,24 @@ view: top_5_countries {
     description: "Specify which metric to order the ranking by"
     type: unquoted
 
-    default_value: "totalGrossRevenue"
+    default_value: "Ticket Revenue"
     allowed_value: {
-      label: "Total Gross Revenue"
-      value: "totalGrossRevenue"
+      label: "Ticket Revenue"
+      value: "ticketRevenue"
     }
     allowed_value: {
-      label: "Average Gross Revenue"
-      value: "averageGrossRevenue"
+      label: "Flight Count"
+      value: "flightCount"
     }
     allowed_value: {
-      label: "Visitor Count"
-      value: "visitorCount"
+      label: "Passenger Count"
+      value: "passengerCount"
     }
 
   }
 
 #### This parameter will allow a user to select a Top N ranking limit for bucketing the countries, almost like parameterizing the Row Limit in the UI
-  parameter: country_rank_limit {
+  parameter: brand_rank_limit {
     label: "Rank Limit"
     description: "Specify the cutoff for overall rank"
     type: unquoted
@@ -78,19 +80,19 @@ view: top_5_countries {
     }
   }
 
-  dimension: country_rank_top_N {
+  dimension: brand_rank_top_N {
     hidden: yes
     description: "Rank within the range selected and list of countries based on metric selected. Useful for sorting visualisation based on ranking."
-    label_from_parameter: country_name_criteria
-    label: "Country Code"
+    label_from_parameter: brand_name_criteria
+    label: "Brand Code"
     type: number
-    sql: case when ${TABLE}.country_rank<={% parameter country_rank_limit %} then ${TABLE}.country_rank else null end ;;
+    sql: case when ${TABLE}.brand_rank<={% parameter brand_rank_limit %} then ${TABLE}.brand_rank else null end ;;
   }
 
   dimension: country_name_top_N {
     description: "Name of the Country within the rank selection."
-    label: "Country Name (Top N)"
+    label: "Brand Name (Top N)"
     type: string
-    sql: case when ${TABLE}.country_rank<={% parameter country_rank_limit %} then ${TABLE}.country else 'other' end ;;
+    sql: case when ${TABLE}.brand_rank<={% parameter brand_rank_limit %} then ${TABLE}.brand else 'other' end ;;
   }
 }

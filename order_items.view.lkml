@@ -1640,12 +1640,22 @@ view: order_dates {
       }
     }
 
-    measure: return_rate {
-      type: number
-      value_format_name: percent_2
-      sql: 1.0 * ${returned_count} / nullif(${count},0) ;;
+    measure: test_rate {
+
     }
 
+    measure: return_rate {
+      type: number
+#       value_format_name: percent_2
+      sql: 1.0 * ${returned_count} / nullif(${count},0) ;;
+      drill_fields: [return_rate*]
+    }
+
+  measure: returned_passthrough {
+    sql: ${return_rate};;
+    type: number
+
+  }
 
 ########## Repeat Purchase Facts ##########
 

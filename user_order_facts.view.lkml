@@ -10,9 +10,9 @@ view: user_order_facts {
       FROM public.order_items
       GROUP BY user_id
        ;;
-    sortkeys: ["user_id"]
-    distribution: "user_id"
-    datagroup_trigger: ecommerce_etl
+
+#       datagroup_trigger: ecommerce_etl
+
   }
 
   dimension: user_id {

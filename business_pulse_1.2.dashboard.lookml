@@ -1,12 +1,12 @@
 - dashboard: business_pulse
-# Version 1.1
+# Version 1.3
   title: Business Pulse TEST
   layout: newspaper
   description: ''
   embed_style:
     background_color: white
-    show_title: false
-    title_color: "#0f0201"
+    show_title: true
+    title_color: "#FFFFFF"
     show_filters_bar: false
     tile_text_color: "#3a4245"
     text_tile_text_color: "#ecf1e8"

@@ -41,7 +41,7 @@ view: products {
   }
 
   dimension: brand {
-    hidden:yes
+    hidden:no
     sql:
     TRIM(${TABLE}.brand)
      ;;

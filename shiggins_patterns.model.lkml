@@ -1,4 +1,4 @@
-# connection: "thelook_events_redshift"
+connection: "snowflake_ecommerce"
 #
 # # include all the views
 include: "*.view"
