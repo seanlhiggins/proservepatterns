@@ -3,6 +3,7 @@ label: "1) eCommerce with Event Data Shiggins"
 include: "*.view" # include all the views
 include: "business_pulse.dashboard"
 include: "byoms.dashboard"
+include: "criteo*.dashboard"
 # include: "dynamic_criteo_test.dashboard"
 
 
@@ -16,99 +17,73 @@ persist_with: ecommerce_etl
 
 
 
-explore:  order_items{
-  join: users {
-    sql_on: ${users.id} = ${order_items.user_id} ;;
-  }
-}
+# explore:  order_items{
+#   join: users {
+#     sql_on: ${users.id} = ${order_items.user_id} ;;
+#   }
+# }
 
 ############ Base Explores #############
 
-# explore: order_items {
-# #   join: order_dates {
-# #     type: inner
-# #     sql_on: ${order_dates.date} = ${order_items.created_date} ;;
-# #     relationship: many_to_one
-# #   }
+explore: order_items {
 
-#   # This is a pattern for allowing users to quick-select a reporting period that's slightly arbitrary, or specific
-#   # to their organisation's calendar reporting dates
-
-#   access_filter: {
-#     field: order_items.product_brand_filter
-#     user_attribute: brand
-
-#   }
-# #
-# #   always_filter: {filters: {
-# #     field: users.country
-# #     value: "USA"
-# #   }
-# #   filters: {
-# #     field: order_dates.date_parameter
-# #     value: "Today"
-# #   }
-# # }
+  sql_always_where: ${created_date} > '2019-01-01' ;;
 
 
-#   from: order_items
-#   label: "(1) Orders, Items and Users"
-#   view_name: order_items
+  from: order_items
+  label: "(1) Orders, Items and Users"
+  view_name: order_items
 
-#   join: competitor_query{
-#     view_label: "Competitor"
-#     type: inner
-#     sql_on: ${competitor_query.brand} = ${products.brand} ;;
-#     relationship: many_to_one
-#   }
+  join: competitor_query{
+    view_label: "Competitor"
+    type: inner
+    sql_on: ${competitor_query.brand} = ${products.brand} ;;
+    relationship: many_to_one
+  }
 
 
-#   join: order_facts {
-#     view_label: "Orders"
-#     relationship: many_to_one
-#     sql_on: ${order_facts.order_id} = ${order_items.order_id} ;;
-#   }
+  join: order_facts {
+    view_label: "Orders"
+    relationship: many_to_one
+    sql_on: ${order_facts.order_id} = ${order_items.order_id} ;;
+  }
 
-#   join: inventory_items {
-#     #Left Join only brings in items that have been sold as order_item
-#     type: full_outer
-#     relationship: one_to_one
-#     sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
-#   }
+  join: inventory_items {
+    #Left Join only brings in items that have been sold as order_item
+    type: full_outer
+    relationship: one_to_one
+    sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+  }
 
-#   join: users {
-#     relationship: many_to_one
-#     sql_on: ${order_items.user_id} = ${users.id} ;;
-#   }
+  join: users {
+    relationship: many_to_one
+    sql_on: ${order_items.user_id} = ${users.id} ;;
+  }
 
-#   join: user_order_facts {
-#     view_label: "Users"
-#     relationship: many_to_one
-#     sql_on: ${user_order_facts.user_id} = ${order_items.user_id} ;;
-#   }
+  join: user_order_facts {
+    view_label: "Users"
+    relationship: many_to_one
+    sql_on: ${user_order_facts.user_id} = ${order_items.user_id} ;;
+  }
 
-#   join: products {
-#     relationship: many_to_one
-#     sql_on: ${products.id} = ${inventory_items.product_id} ;;
-#   }
+  join: products {
+    relationship: many_to_one
+    sql_on: ${products.id} = ${inventory_items.product_id} ;;
+  }
 
-#   join: repeat_purchase_facts {
-#     relationship: many_to_one
-#     type: full_outer
-#     sql_on: ${order_items.order_id} = ${repeat_purchase_facts.order_id} ;;
-#   }
+  join: repeat_purchase_facts {
+    relationship: many_to_one
+    type: full_outer
+    sql_on: ${order_items.order_id} = ${repeat_purchase_facts.order_id} ;;
+  }
 
-#   join: distribution_centers {
-#     type: left_outer
-#     sql_on: ${distribution_centers.id} = ${inventory_items.product_distribution_center_id} ;;
-#     relationship: many_to_one
-#   }
-#   join: top_5_brands {
-#     type: inner
-#     sql_on: ${products.brand} = ${top_5_brands.brand} ;;
-#     relationship: one_to_one
-#   }
-# }
+  join: distribution_centers {
+    type: left_outer
+    sql_on: ${distribution_centers.id} = ${inventory_items.product_distribution_center_id} ;;
+    relationship: many_to_one
+  }
+
+}
 
 
 datagroup: events_etl {

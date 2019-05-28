@@ -1427,6 +1427,11 @@ view: order_dates {
 
     dimension: status {
       sql: ${TABLE}.status ;;
+      link: {
+        icon_url: "https://res-4.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1488912560/pzxig8e5r2nbgx2orr6y.png"
+        url: "https://cimpress.alation.com/column?q={{ _field._name }}"
+        label: "Go to column in data catalogue"
+      }
     }
 
     dimension: days_to_process {
@@ -1583,6 +1588,7 @@ view: order_dates {
       value_format_name: usd
       sql: ${gross_margin} ;;
       drill_fields: [detail*]
+      html: {{rendered_value}} $ ;;
     }
 
     measure: average_sale_price {
@@ -1654,7 +1660,7 @@ view: order_dates {
       type: number
 #       value_format_name: percent_2
       sql: 1.0 * ${returned_count} / nullif(${count},0) ;;
-      drill_fields: [return_rate*]
+      # drill_fields: [return_rate*]
     }
 
   measure: returned_passthrough {

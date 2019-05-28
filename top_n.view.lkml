@@ -40,7 +40,7 @@ view: top_5_countries {
     description: "Specify which metric to order the ranking by"
     type: unquoted
 
-    default_value: "Ticket Revenue"
+    default_value: "Ticket_Revenue"
     allowed_value: {
       label: "Ticket Revenue"
       value: "ticketRevenue"
@@ -83,7 +83,7 @@ view: top_5_countries {
   dimension: brand_rank_top_N {
     hidden: yes
     description: "Rank within the range selected and list of countries based on metric selected. Useful for sorting visualisation based on ranking."
-    label_from_parameter: brand_name_criteria
+    # label_from_parameter: brand_name_criteria
     label: "Brand Code"
     type: number
     sql: case when ${TABLE}.brand_rank<={% parameter brand_rank_limit %} then ${TABLE}.brand_rank else null end ;;
