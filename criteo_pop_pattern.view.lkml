@@ -15,6 +15,7 @@ view: criteo_pop_pattern {
     sql: ${TABLE}.created_at ;;
   }
   dimension: today {
+    hidden: yes
     sql: CURRENT_DATE ;;
   }
 
