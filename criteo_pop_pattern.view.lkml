@@ -5,6 +5,7 @@ view: criteo_pop_pattern {
   measure: total_revenue {
     sql: ${TABLE}.sale_price ;;
     type: sum
+    value_format_name: usd
   }
 
   dimension_group: day {
