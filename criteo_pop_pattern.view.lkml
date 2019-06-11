@@ -9,6 +9,7 @@ view: criteo_pop_pattern {
   }
 
   dimension_group: day {
+    hidden: yes
     type: time
     timeframes: [raw,date,week,month]
     sql: ${TABLE}.created_at ;;
@@ -120,7 +121,7 @@ view: criteo_pop_pattern {
 
 ### DYNAMIC DIMENSIONS {
   dimension: previous_period {
-    label: "Period status"
+    label: "Period status (Pivot me!)"
     type: string
     description: "Makes the difference between main period and comparison period"
     sql:
@@ -528,6 +529,8 @@ view: criteo_pop_pattern {
   }
 
   dimension_group: comparison_day {
+    hidden: yes
+    description: "DON'T SELECT ME!"
     type: time
     timeframes: [raw,date, day_of_week,week, week_of_year,hour, month, year, month_name]
     sql:
@@ -935,7 +938,8 @@ view: criteo_pop_pattern {
   }
 
   dimension: time_aggregation {
-    label: "Previous Period vs Current Period"
+    description: "Will show 2 dates; Current period and previous period. Format of those dates will be dynamic based on the parameter selections."
+    label: "Time Comparison (SELECT ME!)"
     sql:{% if time_aggregation_selector._parameter_value == "'Day'" %}
         ${comparison_day_date}
         {% elsif time_aggregation_selector._parameter_value == "'Week'" %}
