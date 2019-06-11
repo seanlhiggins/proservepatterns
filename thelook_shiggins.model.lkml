@@ -1,9 +1,9 @@
 connection: "thelook_events_redshift"
 label: "1) eCommerce with Event Data Shiggins"
 include: "*.view" # include all the views
-include: "business_pulse.dashboard"
-include: "byoms.dashboard"
-include: "criteo*.dashboard"
+# include: "business_pulse.dashboard"
+# include: "byoms.dashboard"
+# include: "criteo*.dashboard"
 # include: "dynamic_criteo_test.dashboard"
 
 

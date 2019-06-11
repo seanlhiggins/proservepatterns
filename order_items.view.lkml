@@ -116,7 +116,19 @@ view: order_items_2 {
     description: "Select the custom timeframe of your analysis"
 
   }
+  dimension: question_1_value {
+    sql: 1 ;;
+  }
+  dimension: liquid_loop_test {
+    sql:
+     {% assign var = 1 %}
+      --{% if order_items_2.question_i_value._is_selected %}
+     {{var}}
+        {% increment var %}
 
+      --{% endif %}
+     ;;
+  }
 
   filter: custom_previous_date_filter {
     type: date

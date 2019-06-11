@@ -1,5 +1,5 @@
 - dashboard: business_pulse
-  title: Business Pulse
+  title: Business_Pulse_Title
   layout: newspaper
   description: ''
   embed_style:

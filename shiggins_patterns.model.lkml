@@ -1,5 +1,5 @@
-connection: "snowflake_ecommerce"
-#
+# connection: "snowflake_ecommerce"
+
 # # include all the views
 include: "*.view"
 #
