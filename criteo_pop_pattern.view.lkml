@@ -38,6 +38,7 @@ view: criteo_pop_pattern {
       value: "Month"
     }
   }
+
   parameter: period_comparison_type {
     description: "Period comparison type"
     default_value: "Previous period"

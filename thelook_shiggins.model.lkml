@@ -27,7 +27,7 @@ persist_with: ecommerce_etl
 
 explore: order_items {
 
-  sql_always_where: ${created_date} > '2019-01-01' ;;
+
 
 
   from: order_items
