@@ -211,9 +211,9 @@ view: users {
   }
 
   parameter: adding_to_some_measure {
-    type: unquoted
+    type: number
     default_value: "5"
-    allowed_value: {value:"5"}
+
   }
   measure: count_plus_param {
     sql:
