@@ -27,7 +27,10 @@ persist_with: ecommerce_etl
 
 explore: order_items {
 
-
+  access_filter: {
+    field: users.country
+    user_attribute: country
+  }
 
 
   from: order_items

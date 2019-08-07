@@ -210,6 +210,21 @@ view: users {
     drill_fields: [detail*]
   }
 
+  parameter: adding_to_some_measure {
+    type: unquoted
+    default_value: "5"
+    allowed_value: {value:"5"}
+  }
+  measure: count_plus_param {
+    sql:
+    {% unless users.adding_to_some_measure._parameter_value == blank %}
+    ${count}+{{ users.adding_to_some_measure._parameter_value }}
+    {% else %}
+    ${count}
+    {% endunless %}
+    ;;
+    type: number
+  }
   set: detail {
     fields: [id, name, email, age, created_date, orders.count, order_items.count]
   }

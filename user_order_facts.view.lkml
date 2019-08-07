@@ -30,13 +30,14 @@ view: user_order_facts {
   }
 
   dimension_group: latest_order {
+
     type: time
     timeframes: [date, week, month, year]
-    sql: ${TABLE}.latest_order ;;
+    sql: ${TABLE}.latest_order --luna;;
   }
 
   dimension: days_as_customer {
-    description: "Days between first and latest order"
+    description: "Luna Days between first and latest order"
     type: number
     sql: DATEDIFF('day', ${TABLE}.first_order, ${TABLE}.latest_order)+1 ;;
   }
