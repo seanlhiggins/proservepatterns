@@ -5,7 +5,7 @@ include: "*.view" # include all the views
 # include: "byoms.dashboard"
 # include: "criteo*.dashboard"
 # include: "dynamic_criteo_test.dashboard"
-
+include: "health_and_fitness.dashboard"
 
 
 datagroup: ecommerce_etl {
@@ -135,6 +135,11 @@ explore: events_shiggins {
     sql_on: ${users.id} = ${user_order_facts.user_id} ;;
     relationship: one_to_one
     view_label: "Users"
+  }
+  join: events_top_10 {
+    sql_on: ${users.email} = ${events_top_10.email} ;;
+    type: left_outer
+    relationship: one_to_one
   }
 }
 

@@ -1,5 +1,6 @@
 // Alphabetical order
-
+"''"="''";
+"(?)"="(?)";
 "1st Metric"="1st Metric";
 "2nd Metric"="2nd Metric";
 "3rd Metric"="3rd Metric";

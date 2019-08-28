@@ -1,5 +1,6 @@
 // Alphabetical order
-
+"''"="''";
+"(?)"="(?)";
 "1st Metric"="1ère métrique";
 "2nd Metric"="2e métrique";
 "3rd Metric"="3e métrique";
@@ -81,7 +82,7 @@
 "eCPM"="eCPM";
 "Environment"="Environnement";
 "Europe/London"="Europe/Londres";
-"Exposed users"="Utilisateurs exposés";
+"Exposed Users"="Utilisateurs exposés";
 "Exposed_users"="Utilisateurs exposés";
 "Feb"="Fév.";
 "FILTERS"="FILTRES";

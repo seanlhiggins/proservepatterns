@@ -1,5 +1,41 @@
+
+# If necessary, uncomment the line below to include explore_source.
+# include: "thelook_shiggins.model.lkml"
+
+view: events_top_10 {
+  derived_table: {
+    explore_source: events_shiggins {
+      column: email { field: users.email }
+      column: count {}
+
+      bind_filters: {
+        from_field: events_top_10.combined_filter
+        to_field: events_shiggins.event_date
+      }
+      bind_filters: {
+        from_field: events_top_10.combined_filter
+        to_field: users.created_date
+        }
+      sort: {
+        desc: yes
+        field: count
+      }
+      limit: 10
+    }
+
+  }
+  dimension: email {}
+  dimension: count {
+    type: number
+  }
+  filter: combined_filter {
+    type: date
+  }
+}
 view: events {
   sql_table_name: public.events ;;
+
+
 
   dimension: event_id {
     type: number

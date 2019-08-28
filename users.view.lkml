@@ -20,6 +20,10 @@ view: users {
     sql: INITCAP(${TABLE}.first_name) ;;
   }
 
+  dimension: case_when_test_delete {
+    sql: CASE WHEN ${age} = 18 THEN 9999 ELSE ${age} END ;;
+  }
+
   dimension: last_name {
     hidden: yes
     sql: INITCAP(${TABLE}.last_name) ;;
