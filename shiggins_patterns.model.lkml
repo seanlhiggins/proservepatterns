@@ -2,6 +2,7 @@
 
 # # include all the views
 include: "*.view"
+# aggregate_awareness: yes
 #
 # # include all the dashboards
 # include: "*.dashboard"
@@ -56,10 +57,15 @@ include: "*.view"
 #       sql_on: ${products.id} = ${inventory_items.product_id} ;;
 #       }
 # }
-#
-# explore: users {
-#   sql_always_where: ${city} = 'New York' ;;
-# }
+
+explore: users {
+  view_name: users_2
+  from: users
+}
+
+explore: number_2 {
+  extends: [users]
+}
 #
 #
 explore: pop {

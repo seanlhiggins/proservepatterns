@@ -9,11 +9,18 @@ view: repeat_purchase_facts {
       LEFT JOIN public.order_items repeat_order_items
         ON order_items.user_id = repeat_order_items.user_id
         AND order_items.created_at < repeat_order_items.created_at
+        -- comment
       GROUP BY 1
+      -- order id |  date 1    | date 2
+      --    1     | 2019-01-01 | 2019-01-02
        ;;
     sortkeys: ["order_id"]
     distribution: "order_id"
-    datagroup_trigger: ecommerce_etl
+#     datagroup_trigger: ecommerce_etl
+
+    persist_for: "8 hours"
+#     sql_trigger_value: SELECT max(id) from ETL_LOG ;;
+
   }
 
   dimension: order_id {

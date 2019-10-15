@@ -30,9 +30,7 @@ FULL OUTER JOIN public.inventory_items  AS inventory_items ON inventory_items.id
 GROUP BY 1,5,6
 ;;
 
-    sortkeys: ["order_id"]
-    distribution: "order_id"
-    datagroup_trigger: ecommerce_etl
+
   }
   dimension: order_id {
     type: number

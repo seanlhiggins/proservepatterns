@@ -1,4 +1,6 @@
 explore: order_items_repurchase_facts{}
+
+
 view: order_items_repurchase_facts {
   derived_table: {
 #     sql_trigger_value: SELECT CURRENT_DATE() ;;
@@ -25,11 +27,14 @@ view: order_items_repurchase_facts {
 
 
        ;;
+
   }
 
   filter: product_category {
     suggest_dimension: category
   }
+
+  # Dimensions: {
   dimension: category {sql:${TABLE}.category ;; type:string}
 
   dimension: row_number {
@@ -153,9 +158,10 @@ view: order_items_repurchase_facts {
   dimension: repurchase_150 {type:yesno sql:${repurchase_gap} <=150 AND ${order_sequence_number}=2;; hidden:yes}
   dimension: repurchase_180 {type:yesno sql:${repurchase_gap} <=180 AND ${order_sequence_number}=2;; hidden:yes}
 
+# }
   ### Count of repurchases by users in N days since first purchase
   measure: count_repurchases_first_30_days {
-    label: "1m"
+    label: "Count Double Purhcases"
     group_label: "Count Repurchases"
     type: count_distinct
     sql: ${user_id} ;;

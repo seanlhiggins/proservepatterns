@@ -1,8 +1,73 @@
+# If necessary, uncomment the line below to include explore_source.
+include: "thelook_shiggins.model.lkml"
+view: orders_by_year {
+  derived_table: {
+    explore_source: order_items {
+      column: created_year {}
+      column: status {}
+      column: total_sale_price {}
+      column: total_gross_margin {}
+      column: count {}
+      column: average_sale_price {}
+    }
+    persist_for: "24 hours"
+  }
+  dimension: created_year {
+    type: date_year
+  }
+  dimension: total_sale_price {
+    value_format: "$#,##0.00"
+    type: number
+  }
+  dimension: total_gross_margin {
+    value_format: "$#,##0.00"
+    type: number
+  }
+  dimension: count {
+    type: number
+  }
+  dimension: average_sale_price {
+    value_format: "$#,##0.00"
+    type: number
+  }
+}
+
+view: orders_by_month {
+  derived_table: {
+    explore_source: order_items {
+      column: created_month {}
+      column: total_sale_price {}
+      column: total_gross_margin {}
+      column: count {}
+      column: average_sale_price {}
+    }
+    persist_for: "24 hours"
+  }
+  dimension: created_month {
+    type: date_month
+  }
+  dimension: total_sale_price {
+    value_format: "$#,##0.00"
+    type: number
+  }
+  dimension: total_gross_margin {
+    value_format: "$#,##0.00"
+    type: number
+  }
+  dimension: count {
+    type: number
+  }
+  dimension: average_sale_price {
+    value_format: "$#,##0.00"
+    type: number
+  }
+}
+
 
 view: order_items_2 {
   sql_table_name: public.order_items;;
   dimension: user_id {}
-#First we create a few parameters. These are going to be default dropdowns to make the explore super simple for users.
+  #First we create a few parameters. These are going to be default dropdowns to make the explore super simple for users.
 
   # date filtering parameter, this informs Looker of the period the user wants to analyse with a finite list of options more
   # simplistic than the traditional Looker options e.g. Last 14 Days, This Month
@@ -1493,6 +1558,11 @@ view: order_dates {
       sql: 1.0 * ${gross_margin}/NULLIF(${sale_price},0) ;;
     }
 
+    measure: item_gross_margin_perc {
+      type: number
+      sql: ${gross_margin} ;;
+      value_format_name: percent_1
+    }
     dimension: item_gross_margin_percentage_tier {
       type: tier
       sql: 100*${item_gross_margin_percentage} ;;

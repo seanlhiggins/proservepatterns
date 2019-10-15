@@ -6,6 +6,7 @@ include: "*.view" # include all the views
 # include: "criteo*.dashboard"
 # include: "dynamic_criteo_test.dashboard"
 include: "health_and_fitness.dashboard"
+aggregate_awareness: yes
 
 
 datagroup: ecommerce_etl {
@@ -23,14 +24,21 @@ persist_with: ecommerce_etl
 #   }
 # }
 
+# datagroup: order_items_update {
+#   sql_trigger: SELECT max(date) FROM order_items WHERE date >= yesterday ;;
+# }
+#
+# access_grant: finance_access {
+#   user_attribute: in_finance_group
+#   allowed_values: ["yes"]
+# }
+
 ############ Base Explores #############
 
 explore: order_items {
 
-  # access_filter: {
-  #   field: users.country
-  #   user_attribute: country
-  # }
+
+
 
 
   from: order_items
@@ -38,6 +46,7 @@ explore: order_items {
   view_name: order_items
 
   join: competitor_query{
+
     view_label: "Competitor"
     type: inner
     sql_on: ${competitor_query.brand} = ${products.brand} ;;
@@ -60,7 +69,8 @@ explore: order_items {
 
   join: users {
     relationship: many_to_one
-    sql_on: ${order_items.user_id} = ${users.id} ;;
+    sql_on:
+   {% condition users.user_id_selector %} ${order_items.user_id} {% endcondition %}  ;;
   }
 
   join: user_order_facts {
@@ -221,35 +231,35 @@ explore: orders_with_share_of_wallet_application {
   }
 }
 
-explore: journey_mapping {
-  label: "(6) Customer Journey Mapping"
-  extends: [order_items]
-  view_name: order_items
-
-  join: repeat_purchase_facts {
-    relationship: many_to_one
-    sql_on: ${repeat_purchase_facts.next_order_id} = ${order_items.order_id} ;;
-    type: left_outer
-  }
-
-  join: next_order_items {
-    from: order_items
-    sql_on: ${repeat_purchase_facts.next_order_id} = ${next_order_items.order_id} ;;
-    relationship: many_to_many
-  }
-
-  join: next_order_inventory_items {
-    from: inventory_items
-    relationship: many_to_one
-    sql_on: ${next_order_items.inventory_item_id} = ${next_order_inventory_items.id} ;;
-  }
-
-  join: next_order_products {
-    from: products
-    relationship: many_to_one
-    sql_on: ${next_order_inventory_items.product_id} = ${next_order_products.id} ;;
-  }
-}
+# explore: journey_mapping {
+#   label: "(6) Customer Journey Mapping"
+#   extends: [order_items]
+#   view_name: order_items
+#
+#   join: repeat_purchase_facts {
+#     relationship: many_to_one
+#     sql_on: ${repeat_purchase_facts.next_order_id} = ${order_items.order_id} ;;
+#     type: left_outer
+#   }
+#
+#   join: next_order_items {
+#     from: order_items
+#     sql_on: ${repeat_purchase_facts.next_order_id} = ${next_order_items.order_id} ;;
+#     relationship: many_to_many
+#   }
+#
+#   join: next_order_inventory_items {
+#     from: inventory_items
+#     relationship: many_to_one
+#     sql_on: ${next_order_items.inventory_item_id} = ${next_order_inventory_items.id} ;;
+#   }
+#
+#   join: next_order_products {
+#     from: products
+#     relationship: many_to_one
+#     sql_on: ${next_order_inventory_items.product_id} = ${next_order_products.id} ;;
+#   }
+# }
 
 explore: inventory_snapshot {
   label: "(7) Historical Stock Snapshot Analysis"

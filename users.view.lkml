@@ -1,3 +1,6 @@
+# view: users_2 {
+#   dimension:id {sql: 1;;}
+#   }
 view: users {
   sql_table_name: public.users ;;
   ## Demographics ##
@@ -8,6 +11,11 @@ view: users {
     type: number
     sql: ${TABLE}.id ;;
     tags: ["user_id"]
+  }
+
+  filter: user_id_selector {
+    type: number
+
   }
 
   parameter: test {
@@ -136,6 +144,7 @@ view: users {
 #            ELSE ${TABLE}.country
 #            END
       sql: ${TABLE}.country ;;
+      suggestions: ["Ireland"]
   }
 
   dimension: location {
@@ -219,16 +228,16 @@ view: users {
     default_value: "5"
 
   }
-  measure: count_plus_param {
-    sql:
-    {% unless users.adding_to_some_measure._parameter_value == blank %}
-    ${count}+{{ users.adding_to_some_measure._parameter_value }}
-    {% else %}
-    ${count}
-    {% endunless %}
-    ;;
-    type: number
-  }
+#   measure: count_plus_param {
+#     sql:
+#     {% unless users.adding_to_some_measure._parameter_value == blank %}
+#     ${count}+{{ users.adding_to_some_measure._parameter_value }}
+#     {% else %}
+#     ${count}
+#     {% endunless %}
+#     ;;
+#     type: number
+#   }
   set: detail {
     fields: [id, name, email, age, created_date, orders.count, order_items.count]
   }
