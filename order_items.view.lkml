@@ -1240,7 +1240,6 @@ view: order_dates {
 
 
     filter: product_brand_filter {
-      hidden: yes
       type: string
     }
 

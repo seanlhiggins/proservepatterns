@@ -45,13 +45,6 @@ explore: order_items {
   label: "(1) Orders, Items and Users"
   view_name: order_items
 
-  join: competitor_query{
-
-    view_label: "Competitor"
-    type: inner
-    sql_on: ${competitor_query.brand} = ${products.brand} ;;
-    relationship: many_to_one
-  }
 
 
   join: order_facts {
@@ -70,7 +63,7 @@ explore: order_items {
   join: users {
     relationship: many_to_one
     sql_on:
-   {% condition users.user_id_selector %} ${order_items.user_id} {% endcondition %}  ;;
+   ${order_items.user_id} = ${users.id}  ;;
   }
 
   join: user_order_facts {
@@ -82,6 +75,13 @@ explore: order_items {
   join: products {
     relationship: many_to_one
     sql_on: ${products.id} = ${inventory_items.product_id} ;;
+  }
+  join: competitor_query{
+
+    view_label: "Competitor"
+    type: inner
+    sql_on: ${competitor_query.brand} = ${products.brand} ;;
+    relationship: many_to_one
   }
 
   join: repeat_purchase_facts {

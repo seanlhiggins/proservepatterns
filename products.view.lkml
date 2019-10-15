@@ -64,10 +64,10 @@ view: products {
       icon_url: "http://www.looker.com/favicon.ico"
     }
     # html: <a href = "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"><u>{{rendered_value}}</u></a> ;;
-    html: {% if value == %}
-    "THIS IS NULL"
-    {% else %}
-    {{value}};;
+#     html: {% if value == %}
+#     "THIS IS NULL"
+#     {% else %}
+#     {{value}};;
     drill_fields: [category, item_name]
   }
 
