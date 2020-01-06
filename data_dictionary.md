@@ -1,0 +1,1 @@
+<iframe id="eazybi_dashboard" width="100%" height="798" src="https://eazybi.com/accounts/1/embed/dashboard/6?resize_iframe=https%3A%2F%2Fdocs.eazybi.com%2Fplugins%2Fresize_iframe.html" frameborder="0"></iframe>
