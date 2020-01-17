@@ -1,20 +1,18 @@
+explore: user_order_facts{}
 view: user_order_facts {
   derived_table: {
     sql: SELECT
-        user_id
-        , COUNT(DISTINCT order_id) AS lifetime_orders
-        , SUM(sale_price) AS lifetime_revenue
-        , MIN(NULLIF(created_at,0)) AS first_order
-        , MAX(NULLIF(created_at,0)) AS latest_order
-        , COUNT(DISTINCT DATE_TRUNC('month', NULLIF(created_at,0))) AS number_of_distinct_months_with_orders
-      FROM public.order_items
-      GROUP BY user_id
+        1
        ;;
 
 #       datagroup_trigger: ecommerce_etl
 
   }
 
+  dimension: local_image {
+    sql: 1;;
+    html: <img src="./cats.jpg"> ;;
+  }
   dimension: user_id {
     primary_key: yes
     hidden: yes

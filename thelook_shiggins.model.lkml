@@ -1,4 +1,4 @@
-connection: "thelook_events_redshift"
+connection: "the_look_mysql"
 label: "1) eCommerce with Event Data Shiggins"
 include: "*.view" # include all the views
 # include: "business_pulse.dashboard"
@@ -7,8 +7,7 @@ include: "*.view" # include all the views
 # include: "dynamic_criteo_test.dashboard"
 include: "health_and_fitness.dashboard"
 aggregate_awareness: yes
-
-
+#Non production comment
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
   max_cache_age: "24 hours"}
@@ -278,5 +277,16 @@ explore: inventory_snapshot {
   join: distribution_centers {
     sql_on: ${products.distribution_center_id}=${distribution_centers.id} ;;
     relationship: many_to_one
+  }
+}
+
+explore: users {
+  access_filter: {
+    field: country
+    user_attribute: inclusion_countries
+  }
+  access_filter: {
+    field: country
+    user_attribute: exclusion_countries
   }
 }
