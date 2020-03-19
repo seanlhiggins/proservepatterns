@@ -337,62 +337,10 @@ view: labels {
     }
 
 
-    dimension: performance_metrics_title{
-      label: "Metric Main Title"
-      label_from_parameter: perf_metric_selector
-      group_label: "Dynamic Metrics"
-      type: string
-      sql:
-        '{{_localization[perf_metric_selector._parameter_value] }}'
-    ;;
-      html:
-        <p><font color="#696969" size="5"><b> {{value}}</b></font></p>;;
-    }
-
-
-
-    dimension: volume_metrics_message{
-      label: "Volume Metric Message"
-      label_from_parameter: perf_metric_volume_selector
-      group_label: "Dynamic Metrics"
-      type: string
-      #value_format_name: decimal_1
-      sql: 1 ;;
-      html:
-        <p><font color="#696969" size="4"><b>{{_localization["Current Volume Metric"] }}: {{_localization[perf_metric_volume_selector._parameter_value] }}</b></font></p>
-
-    ;;
-    }
-
-    dimension: ratio_metrics_message{
-      label: "Ratio Metric Message"
-      label_from_parameter: perf_metric_ratio_selector
-      group_label: "Dynamic Metrics"
-      type: string
-      #value_format_name: decimal_1
-      sql: 1 ;;
-      html:
-        <p><font color="#696969" size="4"><b>{{_localization["Current Ratio Metric"] }}: {{_localization[perf_metric_ratio_selector._parameter_value] }}</b></font></p>
-    ;;
-    }
 
 
 # Troubleshooting {
 
-    dimension: performance_metrics_troubleshooting_main_focus_name {
-      label: "Main Focus"
-      #label_from_parameter: perf_metric_selector
-      group_label: "Troubleshooting Dynamic Dimensions"
-      type: string
-      #value_format_name: decimal_1
-      # Dynamic Label
-      # '{{ _localization["Exposed Users"] }}'
-      sql:
-        '{{_localization[perf_metric_selector._parameter_value] }}'
-    ;;
-      html: <font size="5" color="#696969"><b>{{ value }}</b></font> ;;
-
-    }
 
 #     dimension: performance_metrics_troubleshooting_first_complement_name {
 #       label: "1st Complement"

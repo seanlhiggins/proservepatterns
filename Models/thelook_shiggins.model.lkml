@@ -1,11 +1,11 @@
 connection: "thelook_events_redshift"
 label: "1) eCommerce with Event Data Shiggins"
-include: "*.view" # include all the views
+include: "../Views/*.view" # include all the views
 # include: "business_pulse.dashboard"
 # include: "byoms.dashboard"
 # include: "criteo*.dashboard"
 # include: "dynamic_criteo_test.dashboard"
-include: "health_and_fitness.dashboard"
+
 aggregate_awareness: yes
 
 
@@ -16,7 +16,12 @@ datagroup: ecommerce_etl {
 
 persist_with: ecommerce_etl
 
-
+# test: there_is_data {
+#   explore_source: order_items
+#   assert: there_is_no_fanout {
+#     expression: order_items.count = order_facts.count ;;
+#   }
+# }
 
 # explore:  order_items{
 #   join: users {
@@ -40,7 +45,6 @@ explore: order_items {
 
 
 
-
   from: order_items
   label: "(1) Orders, Items and Users"
   view_name: order_items
@@ -49,7 +53,7 @@ explore: order_items {
 
   join: order_facts {
     view_label: "Orders"
-    relationship: many_to_one
+    relationship: one_to_one
     sql_on: ${order_facts.order_id} = ${order_items.order_id} ;;
   }
 
@@ -280,3 +284,4 @@ explore: inventory_snapshot {
     relationship: many_to_one
   }
 }
+### Multiple extends

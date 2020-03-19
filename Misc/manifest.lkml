@@ -1,4 +1,4 @@
-project_name: "looker_for_advertiser_mvp"
+# project_name: "shiggins"
 
 # # Use local_dependency: To enable referencing of another project
 # # on this instance with include: statements
@@ -7,7 +7,7 @@ project_name: "looker_for_advertiser_mvp"
 #   project: "name_of_other_project"
 # }
 
-localization_settings: {
-  default_locale: en
-  localization_level: permissive
-}
+# localization_settings: {
+#   default_locale: en
+#   localization_level: permissive
+# }

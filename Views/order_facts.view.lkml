@@ -1,4 +1,4 @@
-include: "thelook_shiggins.model.lkml"
+include: "../Models/thelook_shiggins.model.lkml"
 view: order_facts {
   derived_table: {
 #     explore_source: order_items {
