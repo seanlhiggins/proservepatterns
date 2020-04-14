@@ -225,15 +225,15 @@ explore: affinity {
   }
 }
 
-explore: orders_with_share_of_wallet_application {
-  label: "(5) Share of Wallet Analysis"
-  extends: [order_items]
-  view_name: order_items
+# explore: orders_with_share_of_wallet_application {
+#   label: "(5) Share of Wallet Analysis"
+#   extends: [order_items]
+#   view_name: order_items
 
-  join: order_items_share_of_wallet {
-    view_label: "Share of Wallet"
-  }
-}
+#   join: order_items_share_of_wallet {
+#     view_label: "Share of Wallet"
+#   }
+# }
 
 # explore: journey_mapping {
 #   label: "(6) Customer Journey Mapping"
