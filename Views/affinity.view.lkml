@@ -1,3 +1,4 @@
+# test
 view: affinity {
   derived_table: {
     datagroup_trigger: ecommerce_etl
