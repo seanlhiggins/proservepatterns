@@ -1,0 +1,18 @@
+stages:
+  - 👀 Look at me sideways
+
+Lint:
+  stage: 👀 Look at me sideways
+  image:
+    name: registry.example.com/look-at-me-sideways-bot
+    entrypoint: [""]
+  script:
+  # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
+  - lams --reporting=save-yes --report-license-key=1BF4F3F3972C1FBD3A33 --report-user=shiggins@looker.com --output-to-cli
+  artifacts:
+    expire_in: 2 weeks
+    when: always
+    paths:
+      - issues.md
+  when: on_success
+  allow_failure: true
