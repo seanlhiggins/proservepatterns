@@ -44,6 +44,7 @@ view: users {
   dimension: age {
     type: number
     sql: ${TABLE}.age ;;
+    # required_access_grants: [can_see_pii_fields]
   }
 
   dimension: age_tier {
