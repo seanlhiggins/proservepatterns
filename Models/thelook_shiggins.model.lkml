@@ -47,6 +47,7 @@ explore: order_items {
 
   from: order_items
   label: "(1) Orders, Items and Users"
+  description: "This is a test"
   view_name: order_items
 
 
