@@ -4,7 +4,11 @@ navigation: true
 ---
 
 <p style="text-align:right;color:#cccs">
+<<<<<<< HEAD
 Generated Tue, 23 Jun 2020 15:49:26 GMT
+=======
+Generated Tue, 23 Jun 2020 15:49:29 GMT
+>>>>>>> branch 'master' of git@github.com:seanlhiggins/proservepatterns.git
 </p>
 
 <details style="margin-left: 3em" open="open">
