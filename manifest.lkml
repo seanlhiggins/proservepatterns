@@ -8,5 +8,7 @@ project_name: "shiggins"
 # }
 application: extension-demo {
   label: "PS EMEA Offsite"
-  url: "https://localhost:8080/bundle.js"
+  # url: "https://localhost:8080/bundle.js"
+  url: "http://localhost:8080/bundle.js"
+
 }
