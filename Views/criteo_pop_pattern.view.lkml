@@ -949,103 +949,103 @@ view: criteo_pop_pattern {
         {% elsif time_aggregation_selector._parameter_value == "'Month'" %}
         ${comparison_day_month_name}
         {% endif %};;
-    html:
-    {% if time_aggregation_selector._parameter_value == "'Day'" or time_aggregation_selector._parameter_value == "'Week'"%}
-      {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
-        {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-          {{rendered_value | date: "%s" | minus : 86400 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-          {{rendered_value | date: "%s" | minus : 604800 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif period_selection._parameter_value  == "'Last 14 days'" %}
-          {{rendered_value | date: "%s" | minus : 1209600 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif period_selection._parameter_value  ==  "'Last 30 days'"  or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'"  %}
-          {{rendered_value | date: "%s" | minus : 2629743 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-          {{rendered_value | date: "%s" | minus : 7889229 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" %}
-          {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif period_selection._parameter_value  ==  "'Custom period'"  %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% endif %}
-      {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
-        {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-          {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-        {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-          {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-        {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-          {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-        {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-          {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-        {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-          {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-        {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" or period_selection._parameter_value  ==  "'Custom period'"  %}
-          {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-        {% endif %}
-      {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
-        {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" or period_selection._parameter_value  ==  "'Custom period'"  %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
-        {% endif %}
-      {% endif %}
-    {% elsif time_aggregation_selector._parameter_value == "'Month'" %}
-        {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
-          {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-            {{rendered_value | date: "%s" | minus : 86400 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-          {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-            {{rendered_value | date: "%s" | minus : 604800 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-          {% elsif period_selection._parameter_value  == "'Last 14 days'" %}
-            {{rendered_value | date: "%s" | minus : 1209600 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-          {% elsif period_selection._parameter_value  ==  "'Last 30 days'"  or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'"  %}
-            {{rendered_value | date: "%s" | minus : 2629743 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-          {% elsif period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-            {{rendered_value | date: "%s" | minus : 7889229 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-          {% elsif period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  %}
-            {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b %Y" | uri_encode}}
-          {% elsif period_selection._parameter_value  ==  "'Custom period'"  %}
-          {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
-          {% endif %}
-        {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
-          {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-            {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-            {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-            {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-            {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-            {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  or period_selection._parameter_value  ==  "'Custom period'" %}
-            {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
-          {% endif %}
-        {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
-          {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
-            {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
-            {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
-            {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%bd, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
-             {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
-            {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
-          {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  or period_selection._parameter_value  ==  "'Custom period'" %}
-            {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
-          {% endif %}
-        {% endif %}
-    {% else %}
-      {{rendered_value}}
-    {% endif %}
-    ;;
+    # html:
+    # {% if time_aggregation_selector._parameter_value == "'Day'" or time_aggregation_selector._parameter_value == "'Week'"%}
+    #   {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+    #     {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
+    #       {{rendered_value | date: "%s" | minus : 86400 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
+    #       {{rendered_value | date: "%s" | minus : 604800 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif period_selection._parameter_value  == "'Last 14 days'" %}
+    #       {{rendered_value | date: "%s" | minus : 1209600 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif period_selection._parameter_value  ==  "'Last 30 days'"  or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'"  %}
+    #       {{rendered_value | date: "%s" | minus : 2629743 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
+    #       {{rendered_value | date: "%s" | minus : 7889229 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" %}
+    #       {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif period_selection._parameter_value  ==  "'Custom period'"  %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% endif %}
+    #   {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+    #     {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
+    #       {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
+    #       {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
+    #       {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
+    #       {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
+    #       {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" or period_selection._parameter_value  ==  "'Custom period'"  %}
+    #       {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %d, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #     {% endif %}
+    #   {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+    #     {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'" or period_selection._parameter_value  ==  "'Custom period'"  %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b %d" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %d" | uri_encode}}
+    #     {% endif %}
+    #   {% endif %}
+    # {% elsif time_aggregation_selector._parameter_value == "'Month'" %}
+    #     {% if period_comparison_type._parameter_value  ==  "'Previous period'" %}
+    #       {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
+    #         {{rendered_value | date: "%s" | minus : 86400 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
+    #         {{rendered_value | date: "%s" | minus : 604800 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
+    #       {% elsif period_selection._parameter_value  == "'Last 14 days'" %}
+    #         {{rendered_value | date: "%s" | minus : 1209600 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
+    #       {% elsif period_selection._parameter_value  ==  "'Last 30 days'"  or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'"  %}
+    #         {{rendered_value | date: "%s" | minus : 2629743 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
+    #       {% elsif period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
+    #         {{rendered_value | date: "%s" | minus : 7889229 | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
+    #       {% elsif period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  %}
+    #         {{rendered_value | date: "%s" | minus : 31470526 | date: "%b %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b %Y" | uri_encode}}
+    #       {% elsif period_selection._parameter_value  ==  "'Custom period'"  %}
+    #       {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b" | uri_encode}} - {{rendered_value | date: "%s" | date: "%b" | uri_encode}}
+    #       {% endif %}
+    #     {% elsif period_comparison_type._parameter_value  ==  "'Same period previous year'" %}
+    #       {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
+    #         {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
+    #         {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
+    #         {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
+    #         {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
+    #         {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  or period_selection._parameter_value  ==  "'Custom period'" %}
+    #         {{rendered_value | date: "%s" | minus : 31470526 | date: "%b, %Y" | uri_encode}} - {{rendered_value | date: "%s" | date: "%Y" | uri_encode}}
+    #       {% endif %}
+    #     {% elsif period_comparison_type._parameter_value  ==  "'Custom period'" %}
+    #       {% if period_selection._parameter_value  ==  "'Today'" or period_selection._parameter_value  ==  "'Yesterday'" %}
+    #         {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  == "'Last 7 days'" or period_selection._parameter_value  ==  "'This week'" or period_selection._parameter_value  ==  "'Last week'" %}
+    #         {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  == "'Last 14 days'" %}
+    #         {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%bd, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  ==  "'Last 30 days'" or period_selection._parameter_value  ==  "'This month'" or period_selection._parameter_value  ==  "'Last month'" %}
+    #         {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b %Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  ==  "'This quarter'"  or period_selection._parameter_value  ==  "'Last quarter'" %}
+    #         {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
+    #       {% elsif  period_selection._parameter_value  ==  "'This year'" or period_selection._parameter_value  ==  "'Last year'"  or period_selection._parameter_value  ==  "'Custom period'" %}
+    #         {{rendered_value | date: "%s" | minus : previous_day_label._value | date: "%b, %Y" | uri_encode}} vs {{rendered_value | date: "%s" | date: "%b, %Y" | uri_encode}}
+    #       {% endif %}
+    #     {% endif %}
+    # {% else %}
+    #   {{rendered_value}}
+    # {% endif %}
+    # ;;
 
     }
 
