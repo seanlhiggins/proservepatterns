@@ -2,7 +2,10 @@
 #   dimension:id {sql: 1;;}
 #   }
 view: users {
-  sql_table_name: public.users ;;
+  sql_table_name:
+  -- if dev -- public.users
+  -- if prod -- public.usersprod
+  ;;
   ## Demographics ##
 
 
