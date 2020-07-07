@@ -3,8 +3,7 @@
 #   }
 view: users {
   sql_table_name:
-  -- if dev -- public.users
-  -- if prod -- public.usersprod
+public.users
   ;;
   ## Demographics ##
 
