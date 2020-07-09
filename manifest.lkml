@@ -12,3 +12,8 @@ application: extension-demo {
   url: "http://localhost:8080/bundle.js"
 
 }
+
+localization_settings: {
+  default_locale: en
+  localization_level: permissive
+}

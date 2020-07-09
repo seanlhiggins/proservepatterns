@@ -11,9 +11,10 @@ view: users {
 
   dimension: id {
     primary_key: yes
-    type: number
-    sql: ${TABLE}.id ;;
+    type: date
+    # sql: ${TABLE}.id ;;
     tags: ["user_id"]
+    expression: add_minutes(123,now());;
   }
 
   filter: user_id_selector {
@@ -167,8 +168,9 @@ view: users {
   ## Other User Information ##
 
   dimension_group: created {
+    label: "user_created_at"
     type: time
-#     timeframes: [time, date, week, month, raw]
+    timeframes: [time, date, week, month, raw]
     sql: ${TABLE}.created_at ;;
   }
 

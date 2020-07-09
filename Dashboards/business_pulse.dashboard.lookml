@@ -1,6 +1,8 @@
 - dashboard: business_pulse
   title: Business_Pulse_Title
-  layout: newspaper
+  layout: static
+  tile_size: 500
+  width: 1500
   description: ''
   embed_style:
     background_color: white
@@ -42,8 +44,8 @@
     listen: {}
     row: 0
     col: 0
-    width: 6
-    height: 4
+    width: 1
+    height: 1
   - title: Average Order Sale Price
     name: Average Order Sale Price
     model: thelook_shiggins
@@ -81,8 +83,8 @@
     listen: {}
     row: 0
     col: 12
-    width: 6
-    height: 4
+    width: 1
+    height: 1
   - title: Orders by Day and Category
     name: Orders by Day and Category
     model: thelook_shiggins
@@ -150,8 +152,8 @@
     listen: {}
     row: 36
     col: 0
-    width: 24
-    height: 9
+    width: 1
+    height: 1
   - title: Website Visit Volume vs Conversion Rate
     name: Website Visit Volume vs Conversion Rate
     model: thelook_shiggins
@@ -218,8 +220,8 @@
     listen: {}
     row: 28
     col: 0
-    width: 12
-    height: 8
+    width: 1
+    height: 1
   - title: Percent of Cohort Still Active by Traffic Source
     name: Percent of Cohort Still Active by Traffic Source
     model: thelook_shiggins
@@ -277,8 +279,8 @@
     listen: {}
     row: 13
     col: 12
-    width: 12
-    height: 7
+    width: 1
+    height: 1
   - title: Total Spend by Cohort
     name: Total Spend by Cohort
     model: thelook_shiggins
@@ -349,8 +351,8 @@
     listen: {}
     row: 28
     col: 12
-    width: 12
-    height: 8
+    width: 1
+    height: 1
   - title: Total Sales, Year over Year
     name: Total Sales, Year over Year
     model: thelook_shiggins
@@ -412,8 +414,8 @@
     listen: {}
     row: 4
     col: 0
-    width: 12
-    height: 9
+    width: 1
+    height: 1
   - title: Highest Spending Users
     name: Highest Spending Users
     model: thelook_shiggins
@@ -466,8 +468,8 @@
     colors: [whitesmoke, "#64518A"]
     outer_border_color: "#64518A"
     inner_border_color: ''
-    inner_border_width: 0.6
-    outer_border_width: 2
+    inner_border_width: 1.6
+    outer_border_width: 1
     empty_color: ''
     map_pannable: true
     map_zoomable: true
@@ -492,8 +494,8 @@
     listen: {}
     row: 4
     col: 12
-    width: 12
-    height: 9
+    width: 1
+    height: 1
   - title: User Behaviors by Traffic Source
     name: User Behaviors by Traffic Source
     model: thelook_shiggins
@@ -553,8 +555,8 @@
     listen: {}
     row: 13
     col: 0
-    width: 12
-    height: 7
+    width: 1
+    height: 1
   - title: User Basic Demographic Profile
     name: User Basic Demographic Profile
     model: thelook_shiggins
@@ -599,8 +601,8 @@
     listen: {}
     row: 20
     col: 0
-    width: 12
-    height: 8
+    width: 1
+    height: 1
   - title: Most Viewed Brands Online
     name: Most Viewed Brands Online
     model: thelook_shiggins
@@ -652,8 +654,8 @@
     listen: {}
     row: 20
     col: 12
-    width: 12
-    height: 8
+    width: 1
+    height: 1
   - title: 30 Day Repeat Purchase Rate
     name: 30 Day Repeat Purchase Rate
     model: thelook_shiggins
@@ -687,8 +689,8 @@
     listen: {}
     row: 0
     col: 6
-    width: 6
-    height: 4
+    width: 1
+    height: 1
   - title: Total Order Count
     name: Total Order Count
     model: thelook_shiggins
@@ -741,75 +743,75 @@
     listen: {}
     row: 0
     col: 18
-    width: 6
-    height: 4
-  - title: Orders by Day and Category 1
-    name: Orders by Day and Category 1
-    model: thelook_shiggins
-    explore: order_items
-    type: looker_grid
-    fields: [products.category, order_items.created_date, order_items.count]
-    filters:
-      products.category: Blazers & Jackets,Sweaters,Pants,Shorts,Fashion Hoodies &
-        Sweatshirts,Accessories
-      order_items.created_date: 7 days
-    sorts: [products.category, order_items.created_date desc]
-    limit: 500
-    column_limit: 50
-    row_total: right
-    query_timezone: America/Los_Angeles
-    colors: ["#64518A", "#8D7FB9", "#EA8A2F", "#F2B431", "#2DA5DE", "#57BEBE", "#7F7977",
-      "#B2A898", "#494C52"]
-    y_axis_labels: ["# Order Items"]
-    stacking: normal
-    x_axis_datetime: true
-    hide_points: true
-    hide_legend: false
-    x_axis_datetime_tick_count: 4
-    show_x_axis_label: false
-    show_value_labels: false
-    label_density: 25
-    legend_position: center
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_view_names: true
-    y_axis_combined: true
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_ticks: true
-    x_axis_scale: auto
-    show_null_points: true
-    point_style: none
-    interpolation: linear
-    limit_displayed_rows: false
-    y_axis_scale_mode: linear
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
-    hidden_fields: []
-    y_axes: [{label: Number of Orders, orientation: left, series: [{id: Accessories,
-            name: Accessories, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
-            __LINE_NUM: 195}, {id: Blazers & Jackets, name: Blazers &amp; Jackets,
-            axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
-            __LINE_NUM: 198}, {id: Fashion Hoodies & Sweatshirts, name: Fashion Hoodies
-              &amp; Sweatshirts, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
-            __LINE_NUM: 201}, {id: Pants, name: Pants, axisId: order_items.count,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 204},
-          {id: Shorts, name: Shorts, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
-            __LINE_NUM: 207}, {id: Sweaters, name: Sweaters, axisId: order_items.count,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 210}],
-        showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
-        type: linear, __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 192}]
-    x_axis_reversed: false
-    y_axis_reversed: false
-    note_state: collapsed
-    note_display: hover
-    note_text: ''
-    series_types: {}
-    listen: {}
-    row: 45
-    col: 0
-    width: 24
-    height: 9
+    width: 1
+    height: 1
+  # - title: Orders by Day and Category 1
+  #   name: Orders by Day and Category 1
+  #   model: thelook_shiggins
+  #   explore: order_items
+  #   type: looker_grid
+  #   fields: [products.category, order_items.created_date, order_items.count]
+  #   filters:
+  #     products.category: Blazers & Jackets,Sweaters,Pants,Shorts,Fashion Hoodies &
+  #       Sweatshirts,Accessories
+  #     order_items.created_date: 7 days
+  #   sorts: [products.category, order_items.created_date desc]
+  #   limit: 500
+  #   column_limit: 50
+  #   row_total: right
+  #   query_timezone: America/Los_Angeles
+  #   colors: ["#64518A", "#8D7FB9", "#EA8A2F", "#F2B431", "#2DA5DE", "#57BEBE", "#7F7977",
+  #     "#B2A898", "#494C52"]
+  #   y_axis_labels: ["# Order Items"]
+  #   stacking: normal
+  #   x_axis_datetime: true
+  #   hide_points: true
+  #   hide_legend: false
+  #   x_axis_datetime_tick_count: 4
+  #   show_x_axis_label: false
+  #   show_value_labels: false
+  #   label_density: 25
+  #   legend_position: center
+  #   x_axis_gridlines: false
+  #   y_axis_gridlines: true
+  #   show_view_names: true
+  #   y_axis_combined: true
+  #   show_y_axis_labels: true
+  #   show_y_axis_ticks: true
+  #   y_axis_tick_density: default
+  #   y_axis_tick_density_custom: 5
+  #   show_x_axis_ticks: true
+  #   x_axis_scale: auto
+  #   show_null_points: true
+  #   point_style: none
+  #   interpolation: linear
+  #   limit_displayed_rows: false
+  #   y_axis_scale_mode: linear
+  #   show_totals_labels: false
+  #   show_silhouette: false
+  #   totals_color: "#808080"
+  #   hidden_fields: []
+  #   y_axes: [{label: Number of Orders, orientation: left, series: [{id: Accessories,
+  #           name: Accessories, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+  #           __LINE_NUM: 195}, {id: Blazers & Jackets, name: Blazers &amp; Jackets,
+  #           axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+  #           __LINE_NUM: 198}, {id: Fashion Hoodies & Sweatshirts, name: Fashion Hoodies
+  #             &amp; Sweatshirts, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+  #           __LINE_NUM: 201}, {id: Pants, name: Pants, axisId: order_items.count,
+  #           __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 204},
+  #         {id: Shorts, name: Shorts, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+  #           __LINE_NUM: 207}, {id: Sweaters, name: Sweaters, axisId: order_items.count,
+  #           __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 210}],
+  #       showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
+  #       type: linear, __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 192}]
+  #   x_axis_reversed: false
+  #   y_axis_reversed: false
+  #   note_state: collapsed
+  #   note_display: hover
+  #   note_text: ''
+  #   series_types: {}
+  #   listen: {}
+  #   row: 45
+  #   col: 0
+    width: 1
+    height: 1
