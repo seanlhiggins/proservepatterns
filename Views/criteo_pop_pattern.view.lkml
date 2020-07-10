@@ -1,6 +1,6 @@
 explore: criteo_pop_pattern {}
 view: criteo_pop_pattern {
-  sql_table_name: public.order_items ;;
+  sql_table_name: demo_db.order_items ;;
 
   measure: total_revenue {
     sql: ${TABLE}.sale_price ;;

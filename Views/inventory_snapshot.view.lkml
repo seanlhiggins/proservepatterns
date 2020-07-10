@@ -1,11 +1,11 @@
 view: inventory_snapshot {
   derived_table: {
-    datagroup_trigger: ecommerce_etl
-    sortkeys: ["snapshot_date"]
-    distribution: "product_id"
+    # datagroup_trigger: ecommerce_etl
+    # sortkeys: ["snapshot_date"]
+    # distribution: "product_id"
     sql: with calendar as
       (select distinct date(created_at) as snapshot_date
-      from public.inventory_items
+      from demo_db.inventory_items
       -- where dateadd('day',90,created_at)>=current_date
       )
 
@@ -15,7 +15,7 @@ view: inventory_snapshot {
       ,calendar.snapshot_date
       ,count(*) as number_in_stock
 
-      from public.inventory_items
+      from demo_db.inventory_items
       left join calendar
       on inventory_items.created_at <= calendar.snapshot_date
       and (inventory_items.sold_at >= calendar.snapshot_date OR inventory_items.sold_at is null)

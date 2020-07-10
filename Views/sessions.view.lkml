@@ -1,8 +1,8 @@
 view: sessions {
   derived_table: {
-    sortkeys: ["session_id"]
-    distribution: "session_id"
-    datagroup_trigger: ecommerce_etl
+    # sortkeys: ["session_id"]
+    # distribution: "session_id"
+    # datagroup_trigger: ecommerce_etl
     sql: SELECT
         session_id
         , MIN(created_at) AS session_start
@@ -15,7 +15,7 @@ view: sessions {
         , MAX(user_id) AS session_user_id
         , MIN(id) AS landing_event_id
         , MAX(id) AS bounce_event_id
-      FROM public.events
+      FROM demo_db.events
       GROUP BY session_id
        ;;
   }

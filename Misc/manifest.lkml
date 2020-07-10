@@ -5,7 +5,7 @@
 #
 # local_dependency: {
 #   project: "name_of_other_project"
-# }
+# }/
 
 # localization_settings: {
 #   default_locale: en

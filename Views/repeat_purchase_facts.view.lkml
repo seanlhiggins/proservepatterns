@@ -5,8 +5,8 @@ view: repeat_purchase_facts {
         , COUNT(DISTINCT repeat_order_items.id) AS number_subsequent_orders
         , MIN(repeat_order_items.created_at) AS next_order_date
         , MIN(repeat_order_items.order_id) AS next_order_id
-      FROM public.order_items
-      LEFT JOIN public.order_items repeat_order_items
+      FROM demo_db.order_items
+      LEFT JOIN demo_db.order_items repeat_order_items
         ON order_items.user_id = repeat_order_items.user_id
         AND order_items.created_at < repeat_order_items.created_at
         -- comment
@@ -14,11 +14,11 @@ view: repeat_purchase_facts {
       -- order id |  date 1    | date 2
       --    1     | 2019-01-01 | 2019-01-02
        ;;
-    sortkeys: ["order_id"]
-    distribution: "order_id"
+    # sortkeys: ["order_id"]
+    # distribution: "order_id"
 #     datagroup_trigger: ecommerce_etl
 
-    persist_for: "8 hours"
+    # persist_for: "8 hours"
 #     sql_trigger_value: SELECT max(id) from ETL_LOG ;;
 
   }

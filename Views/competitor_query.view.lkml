@@ -4,10 +4,10 @@ view: competitor_query {
         users.country,
         TRIM(products.brand)  AS brand,
         COUNT(DISTINCT order_items.id ) AS total
-      FROM public.order_items  AS order_items
+      FROM demo_db.order_items  AS order_items
       LEFT OUTER JOIN users on users.id = order_items.user_id
-      LEFT OUTER JOIN public.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
-      LEFT JOIN public.products  AS products ON products.id = inventory_items.product_id
+      LEFT OUTER JOIN demo_db.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
+      LEFT JOIN demo_db.products  AS products ON products.id = inventory_items.product_id
      WHERE {% condition order_items.product_brand_filter %} TRIM(products.brand) {% endcondition %}
       AND  {% condition users.country %}users.country {% endcondition %}
       AND {% condition order_items.created_date %} order_items.created_at {% endcondition %}
@@ -29,10 +29,10 @@ view: competitor_query {
         users.country,
         COUNT(DISTINCT order_items.id ) as total_orders,
         brand.total as brand_total
-      FROM public.order_items  AS order_items
+      FROM demo_db.order_items  AS order_items
       LEFT OUTER JOIN users on users.id = order_items.user_id
-      LEFT OUTER JOIN public.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
-      LEFT JOIN public.products  AS products ON products.id = inventory_items.product_id
+      LEFT OUTER JOIN demo_db.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
+      LEFT JOIN demo_db.products  AS products ON products.id = inventory_items.product_id
       LEFT JOIN brand ON brand.country = users.country
      WHERE
       {% condition order_items.created_date %} order_items.created_at {% endcondition %}

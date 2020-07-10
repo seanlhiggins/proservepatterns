@@ -188,7 +188,7 @@ explore: pop {
 #     sql_table_name: {% if _user_attributes['users_table']=='extended' %}
 #   ${users_extended.SQL_TABLE_NAME}
 #   {% else %}
-#   public.users
+#   demo_db.users
 #   {% endif %} ;;
 #   }
 #

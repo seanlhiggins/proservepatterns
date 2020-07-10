@@ -24,8 +24,8 @@ SELECT
   order_items.created_at AS created_at,
   COALESCE(SUM((order_items.sale_price - inventory_items.cost) ), 0) AS order_gross_margin,--"order_items.total_gross_margin",
   RANK() OVER (PARTITION BY user_id ORDER BY order_items.created_at) as order_sequence_number
-FROM public.order_items  AS order_items
-FULL OUTER JOIN public.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
+FROM demo_db.order_items  AS order_items
+FULL OUTER JOIN demo_db.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
 
 GROUP BY 1,5,6
 ;;

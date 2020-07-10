@@ -1,4 +1,4 @@
-connection: "thelook_events_redshift"
+connection: "snowlooker"
 label: "1) eCommerce with Event Data Shiggins"
 include: "../Views/*.view" # include all the views
 # include: "business_pulse.dashboard"
@@ -10,7 +10,7 @@ aggregate_awareness: yes
 
 
 datagroup: ecommerce_etl {
-  sql_trigger: SELECT max(created_at) FROM public.order_items ;;
+  sql_trigger: SELECT max(created_at) FROM demo_db.order_items ;;
   max_cache_age: "24 hours"}
 
 
@@ -59,7 +59,7 @@ explore: order_items {
 
   join: inventory_items {
     #Left Join only brings in items that have been sold as order_item
-    type: full_outer
+    # type: full_outer
     relationship: one_to_one
     sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
   }
@@ -90,7 +90,7 @@ explore: order_items {
 
   join: repeat_purchase_facts {
     relationship: many_to_one
-    type: full_outer
+    # type: full_outer
     sql_on: ${order_items.order_id} = ${repeat_purchase_facts.order_id} ;;
   }
 
@@ -104,7 +104,7 @@ explore: order_items {
 
 
 datagroup: events_etl {
-  sql_trigger: SELECT max(event_date) FROM public.events ;;
+  sql_trigger: SELECT max(event_date) FROM demo_db.events ;;
   max_cache_age: "1 hour"
 }
 

@@ -146,7 +146,7 @@ view: order_items_brand_by_year {
 #
 #
 # view: order_items_2 {
-#   sql_table_name: public.order_items;;
+#   sql_table_name: demo_db.order_items;;
 #   dimension: user_id {}
 #   #First we create a few parameters. These are going to be default dropdowns to make the explore super simple for users.
 #
@@ -1296,7 +1296,7 @@ view: order_items_brand_by_year {
 #   }
 
  view: order_items {
-    sql_table_name: public.order_items ;;
+    sql_table_name: demo_db.order_items ;;
     # sql_table_name:
     # {% if dimension_selector._parameter_value == 'A' and subdimension_selector._parameter_value == 'A' %} AA {{dimension_selector._parameter_value}}{{subdimension_selector._parameter_value}}
     # {% elsif dimension_selector._parameter_value == 'A' and subdimension_selector._parameter_value == 'B' %} AB {{dimension_selector._parameter_value}}{{subdimension_selector._parameter_value}}
@@ -1340,36 +1340,36 @@ view: order_items_brand_by_year {
     #   ;;
     # }
 
-    dimension: brand {
-#     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{products.header_name._parameter_value }} {% endif %}"
-      sql:
-          CASE WHEN {% condition product_brand_filter %} TRIM(${products.brand}) {% endcondition %}
-          THEN
-          '(1) - ' || TRIM(${products.brand})
-          WHEN {{_user_attributes['is_internal']}} = 1 THEN 'Competitor - ' || TRIM(${products.brand})
-          ELSE 'Competitor ' || TRIM(${competitor_query.rank})
-          END ;;
+#     dimension: brand {
+# #     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{products.header_name._parameter_value }} {% endif %}"
+#       sql:
+#           CASE WHEN {% condition product_brand_filter %} TRIM(${products.brand}) {% endcondition %}
+#           THEN
+#           '(1) - ' || TRIM(${products.brand})
+#           WHEN {{_user_attributes['is_internal']}} = 1 THEN 'Competitor - ' || TRIM(${products.brand})
+#           ELSE 'Competitor ' || TRIM(${competitor_query.rank})
+#           END ;;
 
-        link: {
-          label: "Website"
-          url: "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"
-          icon_url: "http://www.google.com/s2/favicons?domain=www.{{ value | encode_uri }}.com"
-        }
+#         link: {
+#           label: "Website"
+#           url: "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"
+#           icon_url: "http://www.google.com/s2/favicons?domain=www.{{ value | encode_uri }}.com"
+#         }
 
-        link: {
-          label: "Facebook"
-          url: "http://www.google.com/search?q=site:facebook.com+{{ value | encode_uri }}+clothes&btnI"
-          icon_url: "https://upload.wikimedia.org/wikipedia/commons/c/c2/F_icon.svg"
-        }
+#         link: {
+#           label: "Facebook"
+#           url: "http://www.google.com/search?q=site:facebook.com+{{ value | encode_uri }}+clothes&btnI"
+#           icon_url: "https://upload.wikimedia.org/wikipedia/commons/c/c2/F_icon.svg"
+#         }
 
-        link: {
-          label: "{{value}} Analytics Dashboard"
-          url: "/dashboards/8?Brand%20Name={{ value | encode_uri }}"
-          icon_url: "http://www.looker.com/favicon.ico"
-        }
-        # html: <a href = "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"><u>{{rendered_value}}</u></a> ;;
+#         link: {
+#           label: "{{value}} Analytics Dashboard"
+#           url: "/dashboards/8?Brand%20Name={{ value | encode_uri }}"
+#           icon_url: "http://www.looker.com/favicon.ico"
+#         }
+#         # html: <a href = "http://www.google.com/search?q={{ value | encode_uri }}+clothes&btnI"><u>{{rendered_value}}</u></a> ;;
 
-      }
+#       }
     dimension: id {
       primary_key: yes
       type: number

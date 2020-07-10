@@ -7,7 +7,7 @@ view: parameter_intervals {
         SELECT
           user_id
           , DATE_TRUNC('day', created_at) as activity_dt
-        FROM public.order_items
+        FROM demo_db.order_items
         GROUP BY 1, 2
       ),
       events AS (
@@ -287,7 +287,7 @@ measure: user_reactivation_rate {
         SELECT
           user_id
           , DATE_TRUNC('day', created_at) as activity_dt
-        FROM public.order_items
+        FROM demo_db.order_items
         GROUP BY 1, 2
       ),
       events AS (
