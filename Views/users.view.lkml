@@ -11,9 +11,9 @@ public.users
   dimension: id {
     primary_key: yes
     type: date
-    # sql: ${TABLE}.id ;;
+    sql: ${TABLE}.id ;;
     tags: ["user_id"]
-    expression: add_minutes(123,now());;
+
   }
 
   filter: user_id_selector {
