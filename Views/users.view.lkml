@@ -10,7 +10,7 @@ public.users
 
   dimension: id {
     primary_key: yes
-    type: date
+    type: number
     sql: ${TABLE}.id ;;
     tags: ["user_id"]
 
