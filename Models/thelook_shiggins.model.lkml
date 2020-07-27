@@ -1,9 +1,10 @@
 connection: "thelook_events_redshift"
 label: "1) eCommerce with Event Data Shiggins"
 include: "../Views/*.view" # include all the views
-include: "../Dashboards/business_pulse.dashboard"
+include: "../Dashboards/business_pulse*.dashboard"
+include: "../Dashboards/embed*"
 # include: "byoms.dashboard"
-# include: "criteo*.dashboard"
+
 # include: "dynamic_criteo_test.dashboard"
 
 aggregate_awareness: yes
@@ -16,41 +17,29 @@ datagroup: ecommerce_etl {
 
 persist_with: ecommerce_etl
 
-# test: there_is_data {
-#   explore_source: order_items
-#   assert: there_is_no_fanout {
-#     expression: order_items.count = order_facts.count ;;
-#   }
-# }
 
-# explore:  order_items{
-#   join: users {
-#     sql_on: ${users.id} = ${order_items.user_id} ;;
-#   }
-# }
 
-# datagroup: order_items_update {
-#   sql_trigger: SELECT max(date) FROM order_items WHERE date >= yesterday ;;
-# }
-#
-# access_grant: finance_access {
-#   user_attribute: in_finance_group
-#   allowed_values: ["yes"]
-# }
+# Place in `thelook_shiggins` model
+explore: +order_items {
+  aggregate_table: rollup__created_month {
+    query: {
+      dimensions: [created_month, brand]
+      measures: [count, average_sale_price]
+      timezone: "America/Los_Angeles"
+    }
 
-############ Base Explores #############
+    materialization: {
+      datagroup_trigger: ecommerce_etl
+    }
+  }
+}
+
 
 explore: order_items {
 
-#test
-
-
   from: order_items
   label: "(1) Orders, Items and Users"
-  description: "This is another test FAIL IF SHOWING THIS MESSAGE"
   view_name: order_items
-
-
 
   join: order_facts {
     view_label: "Orders"

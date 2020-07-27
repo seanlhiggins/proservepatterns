@@ -17,3 +17,12 @@ localization_settings: {
   default_locale: en
   localization_level: permissive
 }
+
+constant: averate_tat_san_fran_general {
+  value: "Average Turnaround Time"}
+
+visualization: {
+  id: "mult-gauge-custom-viz"
+  file: "multiple_gauge_chart.js"
+  label: "Multiple Gauge Chart"
+}

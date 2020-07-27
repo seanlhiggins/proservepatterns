@@ -1,8 +1,7 @@
 - dashboard: business_pulse
   title: Business_Pulse_Title
   layout: static
-  tile_size: 500
-  width: 1500
+
   description: ''
   embed_style:
     background_color: white
@@ -47,7 +46,7 @@
     width: 1
     height: 1
   - title: Average Order Sale Price
-    name: Average Order Sale Price
+    name: "@{averate_tat_san_fran_general}"
     model: thelook_shiggins
     explore: order_items
     type: single_value

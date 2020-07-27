@@ -15,6 +15,6 @@
     "value": "My Translation",
     "comment": "Define your translated strings with a comment or array of comments as above"
   },
-  "user_created_at": "French Created At",
+  "user_created_at": "@fr_created_at",
   "my.more.programmatic.key": "A Translation"
 }

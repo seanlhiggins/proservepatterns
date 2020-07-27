@@ -1,4 +1,4 @@
-- dashboard: business_pulse
+- dashboard: business_pulse_fr_test
 # Version 1.3
   title: Business Pulse TEST
   layout: newspaper
@@ -11,9 +11,9 @@
     tile_text_color: "#3a4245"
     text_tile_text_color: "#ecf1e8"
   elements:
-  - title: Number of First Purchasers
-    name: Number of First Purchasers
-    model: shiggins_patterns
+  - title: "@{averate_tat_san_fran_general}"
+    name: "@{averate_tat_san_fran_general}"
+    model: thelook_shiggins
     explore: order_items
     type: single_value
     fields: [order_items.first_purchase_count]
@@ -131,18 +131,18 @@
     totals_color: "#808080"
     hidden_fields: []
     y_axes: [{label: Number of Orders, orientation: left, series: [{id: Accessories,
-            name: Accessories, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            name: Accessories, axisId: order_items.count, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 195}, {id: Blazers & Jackets, name: Blazers &amp; Jackets,
-            axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            axisId: order_items.count, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 198}, {id: Fashion Hoodies & Sweatshirts, name: Fashion Hoodies
-              &amp; Sweatshirts, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+              &amp; Sweatshirts, axisId: order_items.count, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 201}, {id: Pants, name: Pants, axisId: order_items.count,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 204},
-          {id: Shorts, name: Shorts, axisId: order_items.count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 204},
+          {id: Shorts, name: Shorts, axisId: order_items.count, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 207}, {id: Sweaters, name: Sweaters, axisId: order_items.count,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 210}],
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 210}],
         showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
-        type: linear, __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 192}]
+        type: linear, __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 192}]
     x_axis_reversed: false
     y_axis_reversed: false
     note_state: collapsed
@@ -203,14 +203,14 @@
     y_axes: [{label: '', maxValue: !!null '', minValue: !!null '', orientation: left,
         showLabels: true, showValues: true, tickDensity: default, tickDensityCustom: 5,
         type: linear, unpinAxis: false, valueFormat: !!null '', series: [{id: events.unique_visitors,
-            name: Unique Visitors, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
-            __LINE_NUM: 304}, {id: events.sessions_count, name: Sessions Count, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
-            __LINE_NUM: 306}], __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            name: Unique Visitors, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
+            __LINE_NUM: 304}, {id: events.sessions_count, name: Sessions Count, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
+            __LINE_NUM: 306}], __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
         __LINE_NUM: 292}, {label: '', maxValue: !!null '', minValue: !!null '', orientation: right,
         showLabels: true, showValues: true, tickDensity: default, tickDensityCustom: 5,
         type: linear, unpinAxis: false, valueFormat: !!null '', series: [{id: sessions.overall_conversion,
-            name: Conversion Rate, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
-            __LINE_NUM: 320}], __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            name: Conversion Rate, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
+            __LINE_NUM: 320}], __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
         __LINE_NUM: 308}]
     hidden_fields: []
     note_state: collapsed
@@ -323,24 +323,24 @@
     limit_displayed_rows: false
     y_axis_scale_mode: linear
     y_axes: [{label: '', orientation: left, series: [{id: 2018-07, name: 2018-07,
-            axisId: total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            axisId: total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 489}, {id: 2018-06, name: 2018-06, axisId: total_sale_price,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 492},
-          {id: 2018-05, name: 2018-05, axisId: total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 492},
+          {id: 2018-05, name: 2018-05, axisId: total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 495}, {id: 2018-04, name: 2018-04, axisId: total_sale_price,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 498},
-          {id: 2018-03, name: 2018-03, axisId: total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 498},
+          {id: 2018-03, name: 2018-03, axisId: total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 501}, {id: 2018-02, name: 2018-02, axisId: total_sale_price,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 504},
-          {id: 2018-01, name: 2018-01, axisId: total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 504},
+          {id: 2018-01, name: 2018-01, axisId: total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 507}, {id: 2017-12, name: 2017-12, axisId: total_sale_price,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 510},
-          {id: 2017-11, name: 2017-11, axisId: total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 510},
+          {id: 2017-11, name: 2017-11, axisId: total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 513}, {id: 2017-10, name: 2017-10, axisId: total_sale_price,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 516},
-          {id: 2017-09, name: 2017-09, axisId: total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 516},
+          {id: 2017-09, name: 2017-09, axisId: total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 519}], showLabels: true, showValues: true, valueFormat: "$0,\\\
-          K\\", unpinAxis: false, tickDensity: default, type: linear, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+          K\\", unpinAxis: false, tickDensity: default, type: linear, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
         __LINE_NUM: 486}]
     x_axis_reversed: false
     y_axis_reversed: false
@@ -352,7 +352,7 @@
     col: 12
     width: 12
     height: 8
-  - title: Total Sales, Year over Year
+  - title: "@{averate_tat_san_fran_general}"
     name: Total Sales, Year over Year
     model: thelook_shiggins
     explore: order_items
@@ -397,13 +397,13 @@
     y_axis_value_format: "$#,##0"
     series_types: {}
     y_axes: [{label: '', orientation: left, series: [{id: '2018', name: '2018', axisId: order_items.total_sale_price,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 596},
-          {id: '2017', name: '2017', axisId: order_items.total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 596},
+          {id: '2017', name: '2017', axisId: order_items.total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 599}, {id: '2016', name: '2016', axisId: order_items.total_sale_price,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 602},
-          {id: '2015', name: '2015', axisId: order_items.total_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 602},
+          {id: '2015', name: '2015', axisId: order_items.total_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 605}], showLabels: true, showValues: true, unpinAxis: false,
-        tickDensity: default, type: linear, valueFormat: "$0,\\K\\", __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+        tickDensity: default, type: linear, valueFormat: "$0,\\K\\", __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
         __LINE_NUM: 593}]
     x_axis_reversed: false
     y_axis_reversed: false
@@ -541,14 +541,14 @@
     show_silhouette: false
     totals_color: "#808080"
     y_axes: [{label: '', orientation: left, series: [{id: order_items.average_sale_price,
-            name: Average Sale Price, axisId: order_items.average_sale_price, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+            name: Average Sale Price, axisId: order_items.average_sale_price, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
             __LINE_NUM: 798}], showLabels: true, showValues: true, unpinAxis: false,
-        tickDensity: default, type: linear, __FILE: shiggins_patterns/business_pulse.dashboard.lookml,
+        tickDensity: default, type: linear, __FILE: thelook_shiggins/business_pulse.dashboard.lookml,
         __LINE_NUM: 795}, {label: !!null '', orientation: right, series: [{id: user_order_facts.average_lifetime_orders,
             name: Average Lifetime Orders, axisId: user_order_facts.average_lifetime_orders,
-            __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 809}],
+            __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 809}],
         showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
-        type: linear, __FILE: shiggins_patterns/business_pulse.dashboard.lookml, __LINE_NUM: 806}]
+        type: linear, __FILE: thelook_shiggins/business_pulse.dashboard.lookml, __LINE_NUM: 806}]
     x_axis_reversed: false
     y_axis_reversed: false
     listen: {}

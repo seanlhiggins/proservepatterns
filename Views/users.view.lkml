@@ -167,7 +167,7 @@ public.users
   ## Other User Information ##
 
   dimension_group: created {
-    label: "user_created_at"
+
     type: time
     timeframes: [time, date, week, month, raw]
     sql: ${TABLE}.created_at ;;
