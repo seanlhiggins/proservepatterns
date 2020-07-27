@@ -36,7 +36,7 @@ explore: +order_items {
 
 
 explore: order_items {
-
+persist_for: "5 minutes"
   from: order_items
   label: "(1) Orders, Items and Users"
   view_name: order_items

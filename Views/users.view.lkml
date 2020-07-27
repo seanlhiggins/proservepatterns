@@ -148,7 +148,7 @@ public.users
 #            ELSE ${TABLE}.country
 #            END
       sql: ${TABLE}.country ;;
-      suggestions: ["Ireland"]
+
   }
 
   dimension: location {
