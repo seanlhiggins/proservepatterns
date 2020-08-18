@@ -592,7 +592,7 @@
   measure: median_sale_price {
     type: median
     value_format_name: usd
-    sql: ${sale_price} ;;
+    sql: ${sale_price}/1000 ;;
     drill_fields: [detail*]
   }
 
