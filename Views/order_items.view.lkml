@@ -2,6 +2,19 @@
 # include: "thelook_shiggins.model.lkml"
 #test comment
 
+view: +order_items {
+  #marketing view
+  measure: new_kpi {
+    sql: 1 ;;
+  }
+}
+
+view: +order_items {
+  #custom stuff
+  dimension: custom_age {
+    sql: age_tier ;;
+  }
+}
 
  view: order_items {
     sql_table_name: public.order_items ;;
@@ -10,6 +23,19 @@
   dimension: date_start_this_period {
     type: date_raw
     sql: {% date_start previous_period_filter %} ;;
+  }
+
+  dimension: liquid {
+    sql:
+    {% if users._in_query %}
+        {% unless users.age._in_query %}
+        0
+        {% else %}
+        1
+        {% endunless %}
+    {% else %}
+    0
+    {% endif %};;
   }
 
   dimension: date_end_this_period {
@@ -248,6 +274,27 @@
       ${TABLE}.created_at ;;
       convert_tz: no
     }
+
+    dimension: is_peak {
+      type: yesno
+      sql: ${created_hour_of_day} > 7 AND ${created_hour_of_day} < 19 ;;
+    }
+
+    measure: orders_on_peak {
+      label: "Avg Price Peak"
+      type: average
+      sql: ${sale_price} ;;
+      filters: [is_peak: "yes"]
+      value_format_name: usd
+    }
+  measure: orders_off_peak {
+    label: "Avg Price Off-Peak"
+    type: average
+    sql: ${sale_price} ;;
+    filters: [is_peak: "no"]
+    value_format_name: usd
+  }
+
       parameter: date_granularity {
         type: unquoted
         allowed_value: { value: "Daily" }

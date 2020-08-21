@@ -1,4 +1,4 @@
-explore: order_items_repurchase_facts{}
+# explore: order_items_repurchase_facts{}
 
 
 view: order_items_repurchase_facts {

@@ -26,14 +26,14 @@ SELECT 19.43, 35 as sort, EXTRACT(week from DATE_ADD('week',1,CURRENT_DATE)) as 
     sql: ${TABLE}.week ;;
   }
 }
-explore: normal_dt_without_filter {
-  cancel_grouping_fields: [normal_dt_without_filter.week_number]
-  view_label: "Dim Date"
-  join: dummy_measures {
-    sql_on: ${normal_dt_without_filter.week} = ${dummy_measures.week} ;;
-    relationship: one_to_one
-  }
-}
+# explore: normal_dt_without_filter {
+#   cancel_grouping_fields: [normal_dt_without_filter.week_number]
+#   view_label: "Dim Date"
+#   join: dummy_measures {
+#     sql_on: ${normal_dt_without_filter.week} = ${dummy_measures.week} ;;
+#     relationship: one_to_one
+#   }
+# }
 view: normal_dt_without_filter {
   derived_table: {
     sql:

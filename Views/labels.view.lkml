@@ -1,4 +1,4 @@
-explore: labels {}
+# explore: labels {}
 view: labels {
   sql_table_name: public.order_items  ;;
 

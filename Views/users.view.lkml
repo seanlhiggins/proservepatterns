@@ -1,6 +1,15 @@
 # view: users_2 {
 #   dimension:id {sql: 1;;}
 #   }
+view: users_by_date_gender {
+  derived_table: {
+    sql_trigger_value: SELECT CURRENT_DATE ;;
+     explore_source: users {
+      column: created_date {}
+      column: count_female_users {}
+     }
+    }
+}
 view: users {
   sql_table_name:
 public.users
@@ -214,6 +223,11 @@ public.users
     drill_fields: [detail*]
   }
 
+  measure: count_female_users {
+    type: count
+    filters: [gender: "Female"]
+  }
+
   measure: count_percent_of_total {
     label: "Count (Percent of Total)"
     type: percent_of_total
@@ -233,6 +247,7 @@ public.users
     default_value: "5"
 
   }
+
 #   measure: count_plus_param {
 #     sql:
 #     {% unless users.adding_to_some_measure._parameter_value == blank %}

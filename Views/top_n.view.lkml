@@ -1,4 +1,4 @@
-explore: top_5_countries {}
+# explore: top_5_countries {}
 view: top_5_countries {
   label: "Country Ranking"
   derived_table: {

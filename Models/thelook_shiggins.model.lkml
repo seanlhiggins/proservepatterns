@@ -6,9 +6,20 @@ include: "../Dashboards/embed*"
 # include: "byoms.dashboard"
 
 # include: "dynamic_criteo_test.dashboard"
-
+label: "This is the original model"
 aggregate_awareness: yes
 
+test: orders_test {
+  explore_source: order_items {
+    column: total_revenue {
+      field: order_items.total_sale_price
+    }
+    filters: [order_items.created_date: "2017"]
+  }
+  assert: revenue_is_expected_value {
+    expression: ${order_items.total_sale_price} > 0 ;;
+  }
+}
 
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
@@ -17,16 +28,27 @@ datagroup: ecommerce_etl {
 
 persist_with: ecommerce_etl
 
-
+access_grant: user_order_products_access {
+  user_attribute: brand
+  allowed_values: ["Levis"]
+}
 
 # Place in `thelook_shiggins` model
 explore: +order_items {
+
+  join: user_order_product {
+    sql_on: 1=1 ;;
+  }
+  query: orders_by_region {
+    dimensions: [users.country]
+    measures: [order_items.count]
+  }
   aggregate_table: rollup__created_month {
     query: {
       dimensions: [created_month, brand]
       measures: [count, average_sale_price]
       timezone: "America/Los_Angeles"
-    }
+    }# test
 
     materialization: {
       datagroup_trigger: ecommerce_etl
@@ -34,8 +56,8 @@ explore: +order_items {
   }
 }
 
-
 explore: order_items {
+
 persist_for: "5 minutes"
   from: order_items
   label: "(1) Orders, Items and Users"
@@ -92,10 +114,25 @@ persist_for: "5 minutes"
 
 }
 
+explore: +order_items {
+  aggregate_table: rollup__created_date {
+    query: {
+      dimensions: [created_date]
+      measures: [count, total_sale_price]
+      timezone: "America/Los_Angeles"
+    }
+
+    materialization: {
+      persist_for: "24 hours"
+    }
+  }
+}
+
 
 datagroup: events_etl {
   sql_trigger: SELECT max(event_date) FROM public.events ;;
   max_cache_age: "1 hour"
+
 }
 
 #########  Event Data Explores #########
@@ -145,7 +182,8 @@ explore: events_shiggins {
     type: left_outer
     relationship: one_to_one
   }
-}
+
+hidden:yes}
 
 explore: sessions {
   label: "(3) Web Session Data"
@@ -185,7 +223,8 @@ explore: sessions {
     sql_on: ${user_order_facts.user_id} = ${users.id} ;;
     view_label: "Users"
   }
-}
+
+hidden:yes}
 
 
 #########  Advanced Extensions #########
@@ -213,7 +252,8 @@ explore: affinity {
     relationship: many_to_one
     sql_on: ${affinity.product_b_id} = ${product_b.id} ;;
   }
-}
+
+hidden:yes}
 
 # explore: orders_with_share_of_wallet_application {
 #   label: "(5) Share of Wallet Analysis"
@@ -273,5 +313,6 @@ explore: inventory_snapshot {
     sql_on: ${products.distribution_center_id}=${distribution_centers.id} ;;
     relationship: many_to_one
   }
-}
+
+hidden:yes}
 ### Multiple extends

@@ -51,4 +51,4 @@ view: transposed_measures {
     value_format_name: usd
   }
 }
-explore: transposed_measures {}
+# explore: transposed_measures {}

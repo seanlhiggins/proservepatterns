@@ -1,4 +1,4 @@
-explore: criteo_pop_pattern {}
+
 view: criteo_pop_pattern {
   sql_table_name: public.order_items ;;
 

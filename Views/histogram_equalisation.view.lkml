@@ -1,4 +1,4 @@
-explore:histogram_equalisation{}
+# explore:histogram_equalisation{}
 view: histogram_equalisation {
   derived_table: {
     sql: SELECT ntile,
