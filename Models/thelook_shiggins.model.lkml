@@ -20,6 +20,7 @@ test: orders_test {
     expression: ${order_items.total_sale_price} > 0 ;;
   }
 }
+# test comment for merged result bug testing
 
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
