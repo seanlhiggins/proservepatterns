@@ -21,7 +21,7 @@ test: orders_test {
   }
 }
 # test comment for merged result bug testing
-
+# another test comment for the same
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
   max_cache_age: "24 hours"}
