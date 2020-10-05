@@ -6,7 +6,7 @@ include: "../Dashboards/embed*"
 # include: "byoms.dashboard"
 
 # include: "dynamic_criteo_test.dashboard"
-label: "This is the original model"
+label: "The Look (Shiggins)"
 aggregate_awareness: yes
 
 test: orders_test {
