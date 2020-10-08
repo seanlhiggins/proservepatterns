@@ -1,3 +1,4 @@
+# THIS COMMENT ONLY EXISTS ON THE DEV BRANCH
 connection: "thelook_events_redshift"
 label: "1) eCommerce with Event Data Shiggins"
 include: "../Views/*.view" # include all the views
