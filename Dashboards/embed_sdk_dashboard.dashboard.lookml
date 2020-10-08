@@ -4,7 +4,7 @@
   elements:
   - title: Total Gross Margin
     name: Total Gross Margin
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: single_value
     fields: [order_items.total_gross_margin, order_items.previous_period]
@@ -36,7 +36,7 @@
     height: 6
   - title: Products Count
     name: Products Count
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: single_value
     fields: [products.count, order_items.previous_period]
@@ -67,7 +67,7 @@
     height: 6
   - title: Active Users
     name: Active Users
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: single_value
     fields: [order_items.previous_period, users.count]
@@ -98,7 +98,7 @@
     height: 6
   - title: Products Count 2
     name: Products Count 2
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: looker_grid
     fields: [products.category, products.count, products.brand_count, order_items.count,
@@ -153,7 +153,7 @@
     height: 6
   - title: Total Sale Price
     name: Total Sale Price
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: single_value
     fields: [order_items.total_sale_price, order_items.previous_period]
@@ -186,7 +186,7 @@
     height: 6
   - title: Active Users 2
     name: Active Users 2
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: looker_column
     fields: [users.count, order_items.created_date, order_items.first_purchase_count]
@@ -259,7 +259,7 @@
     height: 6
   - title: Active Users 3
     name: Active Users 3
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: looker_donut_multiples
     fields: [first_purchase, users.gender, users.count]
@@ -333,7 +333,7 @@
     height: 6
   - title: Total Sale Price 2
     name: Total Sale Price 2
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: looker_line
     fields: [order_items.total_sale_price, order_items.previous_period, order_items.day_in_period]
@@ -420,7 +420,7 @@
     height: 6
   - title: Total Gross Margin 2
     name: Total Gross Margin 2
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     type: looker_column
     fields: [order_items.total_gross_margin, order_items.created_date, order_items.is_returned,
@@ -524,7 +524,7 @@
     default_value: ''
     allow_multiple_values: true
     required: false
-    model: thelook_shiggins
+    model: thelook_shiggins_dev
     explore: order_items
     listens_to_filters: []
     field: users.state
