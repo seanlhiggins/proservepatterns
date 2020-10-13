@@ -28,10 +28,7 @@ datagroup: ecommerce_etl {
 
 persist_with: ecommerce_etl
 
-access_grant: user_order_products_access {
-  user_attribute: brand
-  allowed_values: ["Levis"]
-}
+
 
 # Place in `thelook_shiggins` model
 explore: +order_items {

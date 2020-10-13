@@ -16,7 +16,9 @@ public.users
   ;;
   ## Demographics ##
 
-
+  dimension: days_as_customer {
+    sql: DATEDIFF('day',${created_date},CURRENT_DATE) ;;
+  }
   dimension: id {
     primary_key: yes
     type: number
