@@ -1,3 +1,4 @@
+# THIS COMMENT ONLY EXISTS ON THE PROD BRANCH
 connection: "thelook_events_redshift"
 label: "1) eCommerce with Event Data Shiggins"
 include: "../Views/*.view" # include all the views
@@ -6,7 +7,7 @@ include: "../Dashboards/embed*"
 # include: "byoms.dashboard"
 
 # include: "dynamic_criteo_test.dashboard"
-label: "This is the original model"
+label: "The Look (Shiggins)"
 aggregate_awareness: yes
 
 test: orders_test {
@@ -20,7 +21,8 @@ test: orders_test {
     expression: ${order_items.total_sale_price} > 0 ;;
   }
 }
-
+# test comment for merged result bug testing
+# another test comment for the same
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
   max_cache_age: "24 hours"}

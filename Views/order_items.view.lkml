@@ -37,7 +37,13 @@ view: +order_items {
     0
     {% endif %};;
   }
-
+  dimension: ORDERCANCELED {
+    type: yesno
+    sql: ${TABLE}.ORDERCANCELED  ;;
+    # type: string
+    # sql: case when ${TABLE}.ORDERCANCELED=0 or ${TABLE}.ORDERCANCELED is null then 'No' else 'Yes' End;;
+    label: "Annulee"
+  }
   dimension: date_end_this_period {
     type: date_raw
     sql: {% date_end previous_period_filter %} ;;
