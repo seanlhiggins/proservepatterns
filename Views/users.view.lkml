@@ -21,9 +21,10 @@ public.users
   }
   dimension: id {
     primary_key: yes
-    type: number
+    type: breakingchange
     sql: ${TABLE}.id ;;
     tags: ["user_id"]
+
 
   }
 
