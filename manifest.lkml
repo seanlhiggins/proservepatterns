@@ -13,10 +13,10 @@ application: extension-demo {
 
 }
 
-localization_settings: {
-  default_locale: en
-  localization_level: permissive
-}
+# localization_settings: {
+#   default_locale: en
+#   localization_level: permissive
+# }
 
 constant: averate_tat_san_fran_general {
   value: "Average Turnaround Time"}

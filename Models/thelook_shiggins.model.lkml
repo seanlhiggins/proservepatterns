@@ -32,28 +32,7 @@ persist_with: ecommerce_etl
 
 
 
-# Place in `thelook_shiggins` model
-explore: +order_items {
 
-  join: user_order_product {
-    sql_on: 1=1 ;;
-  }
-  query: orders_by_region {
-    dimensions: [users.country]
-    measures: [order_items.count]
-  }
-  aggregate_table: rollup__created_month {
-    query: {
-      dimensions: [created_month, brand]
-      measures: [count, average_sale_price]
-      timezone: "America/Los_Angeles"
-    }# test
-
-    materialization: {
-      datagroup_trigger: ecommerce_etl
-    }
-  }
-}
 
 explore: order_items {
 

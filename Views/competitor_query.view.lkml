@@ -42,7 +42,7 @@ view: competitor_query {
       )
       ORDER BY 2 asc
 
-      LIMIT 5
+      LIMIT 10
        ;;
 
   }
@@ -53,6 +53,7 @@ view: competitor_query {
   }
 
   dimension: rank {
+    primary_key: yes
     type: number
     sql: ${TABLE}.rank ;;
   }
@@ -67,13 +68,13 @@ view: competitor_query {
     sql: ${TABLE}.brand ;;
   }
 
-  dimension: competitor_total {
-    type: number
+  measure: competitor_total {
+    type: sum
     sql: ${TABLE}.competitor_total ;;
   }
 
-  dimension: own_brand_total {
-    type: number
+  measure: own_brand_total {
+    type: sum
     sql: ${TABLE}.own_brand_total ;;
   }
 
