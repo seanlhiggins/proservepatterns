@@ -31,7 +31,7 @@ FULL OUTER JOIN public.inventory_items  AS inventory_items ON inventory_items.id
 GROUP BY 1,5,6
 ;;
 
-
+distribution_style: all
   }
   dimension: order_id {
     type: number

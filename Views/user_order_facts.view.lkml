@@ -13,7 +13,7 @@ view: user_order_facts {
 
 #       datagroup_trigger: ecommerce_etl
 sql_trigger_value: SELECT CURRENT_DATE ;;
-
+distribution_style: all
   }
 
   dimension: user_id {

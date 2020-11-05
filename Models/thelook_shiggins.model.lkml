@@ -3,26 +3,14 @@ connection: "thelook_events_redshift"
 label: "1) eCommerce with Event Data Shiggins"
 include: "../Views/*.view" # include all the views
 include: "../Dashboards/business_pulse*.dashboard"
-include: "../Dashboards/embed*"
+# include: "../Aggregates/thelook_agg_tables.lkml"
+# include: "../Dashboards/embed*"
 # include: "byoms.dashboard"
 
-# include: "dynamic_criteo_test.dashboard"
 label: "The Look (Shiggins)"
 aggregate_awareness: yes
 
-test: orders_test {
-  explore_source: order_items {
-    column: total_revenue {
-      field: order_items.total_sale_price
-    }
-    filters: [order_items.created_date: "2017"]
-  }
-  assert: revenue_is_expected_value {
-    expression: ${order_items.total_sale_price} > 0 ;;
-  }
-}
-# test comment for merged result bug testing
-# another test comment for the same
+
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
   max_cache_age: "24 hours"}
@@ -36,7 +24,17 @@ persist_with: ecommerce_etl
 
 explore: order_items {
 
-persist_for: "5 minutes"
+  aggregate_table: sets_testing {
+    query: {
+      dimensions: [order_items.created_date]
+      measures: [order_items.total_sale_price]
+      timezone: "America/New_York"
+    }
+    materialization: {
+      sql_trigger_value: SELECT CURRENT_DATE ;;
+    }
+  }
+
   from: order_items
   label: "(1) Orders, Items and Users"
   view_name: order_items
@@ -92,19 +90,6 @@ persist_for: "5 minutes"
 
 }
 
-explore: +order_items {
-  aggregate_table: rollup__created_date {
-    query: {
-      dimensions: [created_date]
-      measures: [count, total_sale_price]
-      timezone: "America/Los_Angeles"
-    }
-
-    materialization: {
-      persist_for: "24 hours"
-    }
-  }
-}
 
 
 datagroup: events_etl {

@@ -1,20 +1,4 @@
-# If necessary, uncomment the line below to include explore_source.
-# include: "thelook_shiggins.model.lkml"
-#test comment
 
-view: +order_items {
-  #marketing view
-  measure: new_kpi {
-    sql: 1 ;;
-  }
-}
-
-view: +order_items {
-  #custom stuff
-  dimension: custom_age {
-    sql: age_tier ;;
-  }
-}
 
  view: order_items {
     sql_table_name: public.order_items ;;
@@ -25,25 +9,7 @@ view: +order_items {
     sql: {% date_start previous_period_filter %} ;;
   }
 
-  dimension: liquid {
-    sql:
-    {% if users._in_query %}
-        {% unless users.age._in_query %}
-        0
-        {% else %}
-        1
-        {% endunless %}
-    {% else %}
-    0
-    {% endif %};;
-  }
-  dimension: ORDERCANCELED {
-    type: yesno
-    sql: ${TABLE}.ORDERCANCELED  ;;
-    # type: string
-    # sql: case when ${TABLE}.ORDERCANCELED=0 or ${TABLE}.ORDERCANCELED is null then 'No' else 'Yes' End;;
-    label: "Annulee"
-  }
+
   dimension: date_end_this_period {
     type: date_raw
     sql: {% date_end previous_period_filter %} ;;
@@ -535,6 +501,7 @@ view: +order_items {
 
   measure: count {
     type: count_distinct
+    # allow_approximate_optimization: yes
     sql: ${id} ;;
     drill_fields: [detail*]
   }
