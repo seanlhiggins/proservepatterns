@@ -153,7 +153,7 @@ public.users
     drill_fields: [city, zip]
   }
 
-  dimension: country_break_change {
+  dimension: country {
     map_layer_name: countries
     drill_fields: [state, city]
     sql: ${TABLE}.country ;;
