@@ -3,6 +3,33 @@
  view: order_items {
     sql_table_name: public.order_items ;;
 
+  dimension: field_name {
+    sql: 1 ;;
+    action: {
+      label: "Label to Appear in Action Menu"
+      url: "https://shiggins.free.beeceptor.com/"
+      icon_url: "https://looker.com/favicon.ico"
+      form_url: "https://shiggins.free.beeceptor.com/my/api/path"
+      param: {
+        name: "name string"
+        value: "{{value}}"
+      }
+      form_param: {
+        name: "name string"
+        type: string
+        label: "possibly-localized-string"
+        option: {
+          name: "name string"
+          label: "possibly-localized-string"
+        }
+        required: yes
+        description: "possibly-localized-string"
+        default: "string"
+      }
+
+    }
+    }
+
     ########## IDs, Foreign Keys, Counts ###########
   dimension: date_start_this_period {
     type: date_raw
