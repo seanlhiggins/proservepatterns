@@ -294,28 +294,23 @@
     value_format_name: usd
   }
 
-      parameter: date_granularity {
-        type: unquoted
-        allowed_value: { value: "Daily" }
-        allowed_value: { value: "Monthly" }
-        allowed_value: { value: "Quarterly" }
-        allowed_value: { value: "Yearly" }
-        }
-      dimension: date_breakdown {
-        label_from_parameter: date_granularity
-        sql:
-               {% if date_granularity._parameter_value == "Daily" %}
-                   ${created_date}::VARCHAR
-               {% elsif date_granularity._parameter_value == "Monthly" %}
-                   ${created_month}::VARCHAR
-                {% elsif date_granularity._parameter_value == "Quarterly" %}
-                   ${created_quarter}::VARCHAR
-                {% elsif date_granularity._parameter_value == "Yearly" %}
-                  ${created_year}::VARCHAR
-              {% else %}
-                   NULL
-               {% endif %};;
-      }
+  parameter: date_granularity {
+    type: unquoted
+    allowed_value: { value: "Daily" }
+    allowed_value: { value: "Monthly" }
+    allowed_value: { value: "Quarterly" }
+    allowed_value: { value: "Yearly" }
+    }
+  dimension: date_breakdown {
+    label_from_parameter: date_granularity
+    sql:
+        {% if date_granularity._parameter_value == "Daily" %}         ${created_date}
+        {% elsif date_granularity._parameter_value == "Monthly" %}    ${created_month}
+        {% elsif date_granularity._parameter_value == "Quarterly" %}  ${created_quarter}
+        {% elsif date_granularity._parameter_value == "Yearly" %}     ${created_year}
+        {% else %}  NULL
+        {% endif %};;
+  }
 
     dimension: date_pivot {
       description: "PIVOT ME!"
