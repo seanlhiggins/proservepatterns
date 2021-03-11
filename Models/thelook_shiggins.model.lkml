@@ -16,11 +16,30 @@ datagroup: ecommerce_etl {
 
 persist_with: ecommerce_etl
 
-
+test: historic_revenue_is_accurate {
+  explore_source: order_items {
+    column: total_revenue {
+      field: order_items.count
+    }
+    filters: [order_items.created_date: "2017"]
+  }
+  assert: revenue_is_expected_value {
+    expression: ${order_items.count} > 0 ;;
+  }
+}
 
 
 
 explore: order_items {
+
+  query: orders_by_date {
+    dimensions: [order_items.created_date]
+    measures: [order_items.count]
+  }
+  query: revenue_by_date {
+    dimensions: [order_items.created_date]
+    measures: [order_items.total_sale_price]
+  }
 
   aggregate_table: sets_testing {
     query: {
@@ -145,7 +164,7 @@ explore: events_shiggins {
   }
 
 hidden:yes}
-
+explore: users {}
 explore: sessions {
   label: "(3) Web Session Data"
 

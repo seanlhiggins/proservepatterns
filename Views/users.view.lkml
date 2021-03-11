@@ -221,6 +221,7 @@ public.users
   measure: count {
     type: count
     drill_fields: [detail*]
+    html: @{impressions_clicks_tooltip} ;;
   }
 
   measure: count_female_users {
