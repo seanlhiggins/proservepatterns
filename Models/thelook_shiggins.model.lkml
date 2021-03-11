@@ -28,6 +28,21 @@ test: historic_revenue_is_accurate {
   }
 }
 
+# Place in `thelook_shiggins` model
+explore: +order_items {
+  aggregate_table: rollup__created_week {
+    query: {
+      dimensions: [created_date]
+      measures: [count]
+      filters: [order_items.created_date: "28 days ago for 28 days"]
+      timezone: "UTC"
+    }
+
+    materialization: {
+      datagroup_trigger: ecommerce_etl
+    }
+  }
+}
 
 
 explore: order_items {
