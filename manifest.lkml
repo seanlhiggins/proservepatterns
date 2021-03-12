@@ -22,7 +22,7 @@ application: data-portal {
   }
 }
 
-constant: snowlooker {
+constant: CONNECTION_NAME {
   value: "snowlooker"
   export: override_required
 }
