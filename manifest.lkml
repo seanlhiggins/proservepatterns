@@ -21,8 +21,8 @@ application: data-portal {
   }
 }
 
-constant: CONNECTION_NAME {
-  value: "choose-connection"
+constant: snowlooker {
+  value: "snowlooker"
   export: override_required
 }
 # # Use local_dependency: To enable referencing of another project
