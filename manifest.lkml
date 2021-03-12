@@ -2,7 +2,7 @@ project_name: "shiggins"
 # project_name: "data-portal"
 
 application: data-portal {
-  label: "Data Portal"
+  label: "Shiggins Test Extension"
   file: "dist/data-portal.js"
   # url: "http://localhost:8080/dist/data-portal.js"
 
