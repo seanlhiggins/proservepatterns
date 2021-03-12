@@ -3,7 +3,8 @@ project_name: "shiggins"
 
 application: data-portal {
   label: "Data Portal"
-  file: "dist/data-portal.js"
+  # file: "dist/data-portal.js"
+  url: "http://localhost:8080/dist/data-portal.js"
 
   entitlements: {
     use_embeds: yes
