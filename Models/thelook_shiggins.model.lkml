@@ -7,7 +7,7 @@ include: "../Dashboards/business_pulse*.dashboard"
 
 label: "The Look (Shiggins)"
 
-
+# new feature Z - 20210323
 
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
