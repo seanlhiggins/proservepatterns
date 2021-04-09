@@ -2,6 +2,31 @@
 project_name: "shiggins"
 # project_name: "data-portal"
 
+application: dash-mgmt {
+  label: "Dashboard Governance"
+  file: "dist/dashboards-mgmt.js"
+  url: "http://localhost:8080/bundle.js"
+
+  entitlements: {
+    use_embeds: yes
+    use_form_submit: yes
+    local_storage: yes
+    core_api_methods: [
+      "me",
+      "all_user_attributes",
+      "user_attribute_user_values",
+      "create_user_attribute",
+      "update_user_attribute",
+      "user_roles",
+      "all_boards",
+      "board",
+      "run_inline_query",
+      "run_query",
+      "dashboard"
+    ]
+  }
+}
+
 application: data-portal {
   label: "Shiggins Test Extension"
   # file: "dist/data-portal.js"
