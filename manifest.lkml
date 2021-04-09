@@ -5,7 +5,7 @@ project_name: "shiggins"
 application: dash-mgmt {
   label: "Dashboard Governance"
   file: "dist/dashboards-mgmt.js"
-  url: "http://localhost:8080/bundle.js"
+  # url: "http://localhost:8080/bundle.js"
 
   entitlements: {
     use_embeds: yes
