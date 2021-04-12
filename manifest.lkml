@@ -4,8 +4,8 @@ project_name: "shiggins"
 visualization: {
   id: "shiggins_scatter"
   label: "Scatter 2"
-  sri_hash: ""
-  url: "https://localhost:8080/dist/scatterplot.js"
+
+  url: "http://localhost:8080/dist/scatterplot.js"
   # file: "dist/scatterplot.js"
   dependencies: ["https://cdn.plot.ly/plotly-latest.min.js"]
 }
