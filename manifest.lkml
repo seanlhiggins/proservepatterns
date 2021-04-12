@@ -1,7 +1,14 @@
 # release 1.0
 project_name: "shiggins"
 # project_name: "data-portal"
-
+visualization: {
+  id: "shiggins_scatter"
+  label: "Scatter 2"
+  sri_hash: ""
+  # url: "https://localhost:8080/dist/scatterplot.js"
+  file: "dist/scatterplot.js"
+  dependencies: ["https://cdn.plot.ly/plotly-latest.min.js"]
+}
 application: dash-mgmt {
   label: "Dashboard Governance"
   file: "dist/dashboards-mgmt.js"
