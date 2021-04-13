@@ -11,7 +11,7 @@ visualization: {
 }
 application: dash-mgmt {
   label: "Dashboard Governance"
-  file: "dist/dashboards-mgmt.js"
+  file: "dist/dashboard-mgmt.js"
   # url: "http://localhost:8080/bundle.js"
 
   entitlements: {
