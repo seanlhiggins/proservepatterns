@@ -11,8 +11,8 @@ visualization: {
 }
 application: dash-mgmt {
   label: "Dashboard Governance"
-  file: "dashboard-mgmt.js"
-  # url: "http://localhost:8080/bundle.js"
+  # file: "dashboard-mgmt.js"
+  url: "http://localhost:8080/bundle.js"
 
   entitlements: {
     use_embeds: yes

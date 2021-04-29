@@ -120,6 +120,11 @@ explore: order_items {
     relationship: many_to_one
   }
 
+  join: order_items_twelve_month_moving_average {
+    sql_on: ${order_items.created_month} = ${order_items_twelve_month_moving_average.created_month} ;;
+    type: left_outer
+    relationship: many_to_one
+  }
 }
 
 

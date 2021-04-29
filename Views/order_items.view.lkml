@@ -1,4 +1,33 @@
+include: "../Models/thelook_shiggins*"
+view: order_items_twelve_month_moving_average {
+  derived_table: {
+    explore_source: order_items {
+      column: created_month {}
+      column: total_sale_price {}
+      column: total_gross_margin {}
+      derived_column: twelve_month_moving_average {
+        sql: AVG({{rolling_metric._parameter_value}}) OVER(ORDER BY ${created_month}
+     ROWS BETWEEN {{ rolling_window._parameter_value}} PRECEDING AND CURRENT ROW ) ;;
+      }
+    bind_all_filters: yes
 
+    }
+
+  }
+  parameter: rolling_window {
+    type: number
+  }
+  parameter: rolling_metric {
+    type: unquoted
+    allowed_value: {label:"Gross Margin" value:"total_gross_margin"}
+    allowed_value: {label:"Total Sale Price" value:"total_sale_price"}
+
+  }
+  dimension: created_month  {type:date_month primary_key:yes hidden:yes}
+
+  measure: twelve_month_moving_average  {type: average value_format_name:usd}
+
+}
 
  view: order_items {
     sql_table_name: public.order_items ;;
@@ -620,6 +649,13 @@
 #
 #         ;;
   }
+
+    measure: cumulative_total_revenue {
+      type: running_total
+      sql: ${total_sale_price} ;;
+      value_format_name: usd
+      direction: "column"
+    }
 
   measure: total_gross_margin {
     type: sum
