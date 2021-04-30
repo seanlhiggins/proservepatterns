@@ -27,14 +27,13 @@ test: historic_revenue_is_accurate {
     expression: ${order_items.count} > 0 ;;
   }
 }
-
 # Place in `thelook_shiggins` model
 explore: +order_items {
-  aggregate_table: rollup__created_week {
+  aggregate_table: rollup__created_date {
     query: {
       dimensions: [created_date]
       measures: [count]
-      filters: [order_items.created_date: "28 days ago for 28 days"]
+      filters: [order_items.created_date: "after 2021/04/01"]
       timezone: "UTC"
     }
 
@@ -43,6 +42,7 @@ explore: +order_items {
     }
   }
 }
+
 
 
 explore: order_items {
@@ -56,16 +56,7 @@ explore: order_items {
     measures: [order_items.total_sale_price]
   }
 
-  aggregate_table: sets_testing {
-    query: {
-      dimensions: [order_items.created_date]
-      measures: [order_items.total_sale_price]
-      timezone: "America/New_York"
-    }
-    materialization: {
-      sql_trigger_value: SELECT CURRENT_DATE ;;
-    }
-  }
+
 
   from: order_items
   label: "(1) Orders, Items and Users"
