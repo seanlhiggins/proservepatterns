@@ -11,11 +11,11 @@ view: users_by_date_gender {
     }
 }
 view: users {
+  label: "Users view"
   sql_table_name:
 public.users
   ;;
   ## Demographics ##
-
   dimension: days_as_customer {
     sql: DATEDIFF('day',${created_date},CURRENT_DATE) ;;
   }
@@ -57,6 +57,7 @@ public.users
   }
 
   dimension: age {
+    view_label: "Age"
     type: number
     sql: ${TABLE}.age ;;
     # required_access_grants: [can_see_pii_fields]

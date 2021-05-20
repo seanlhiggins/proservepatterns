@@ -6,12 +6,13 @@ view: order_items_twelve_month_moving_average {
       column: total_sale_price {}
       column: total_gross_margin {}
       derived_column: twelve_month_moving_average {
-        sql: AVG({{rolling_metric._parameter_value}}) OVER(ORDER BY ${created_month}
-     ROWS BETWEEN {{ rolling_window._parameter_value}} PRECEDING AND CURRENT ROW ) ;;
+        sql: AVG(${returned_total_sale_price}) OVER(ORDER BY ${created_month}
+     ROWS BETWEEN 12 PRECEDING AND CURRENT ROW ) ;;
       }
-    bind_all_filters: yes
+
 
     }
+    persist_for: "1 hours"
 
   }
   parameter: rolling_window {

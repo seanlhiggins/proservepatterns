@@ -32,8 +32,7 @@ explore: +order_items {
   aggregate_table: rollup__created_date {
     query: {
       dimensions: [created_date]
-      measures: [count]
-      filters: [order_items.created_date: "after 2021/04/01"]
+      measures: [count,order_items.average_sale_price]
       timezone: "UTC"
     }
 
@@ -42,6 +41,7 @@ explore: +order_items {
     }
   }
 }
+
 
 
 
@@ -76,6 +76,7 @@ explore: order_items {
   }
 
   join: users {
+    view_label: "Customers"
     relationship: many_to_one
     sql_on:
    ${order_items.user_id} = ${users.id}  ;;
