@@ -31,10 +31,12 @@ test: historic_revenue_is_accurate {
 explore: +order_items {
   aggregate_table: rollup__created_date {
     query: {
-      dimensions: [created_date]
+      dimensions: [created_date,users.country]
       measures: [count,order_items.average_sale_price]
       timezone: "UTC"
+      filters: [order_items.created_date: "after 2021/01/01"]
     }
+
 
     materialization: {
       datagroup_trigger: ecommerce_etl
