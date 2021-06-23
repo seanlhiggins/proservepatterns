@@ -34,7 +34,6 @@ explore: +order_items {
       dimensions: [created_date,users.country]
       measures: [count,order_items.average_sale_price]
       timezone: "UTC"
-      filters: [order_items.created_date: "after 2021/01/01"]
     }
 
 
