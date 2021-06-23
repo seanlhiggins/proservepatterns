@@ -47,6 +47,7 @@ explore: +order_items {
 
 
 explore: order_items {
+  # undoing error commit
 
   query: orders_by_date {
     dimensions: [order_items.created_date]
