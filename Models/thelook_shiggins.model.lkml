@@ -13,7 +13,7 @@ datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
   max_cache_age: "24 hours"}
 
-
+#sifdopasnfidosapnf
 persist_with: ecommerce_etl
 
 test: historic_revenue_is_accurate {
