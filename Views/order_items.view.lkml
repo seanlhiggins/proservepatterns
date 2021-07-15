@@ -30,35 +30,104 @@ view: order_items_twelve_month_moving_average {
 
 }
 
+view: order_items_dynamic_table_1 {
+  derived_table: {
+    sql: SELECT
+    (TO_CHAR(TO_DATE(order_items.created_at ), 'YYYY-MM-DD')) as CREATED_AT,
+    order_items.status,
+    order_items.sale_price,
+    order_items.inventory_item_id,
+    TRIM(products.brand)
+      AS BRAND
+FROM public.order_items  AS order_items
+FULL OUTER JOIN public.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
+LEFT JOIN public.products  AS products ON products.id = inventory_items.product_id
+WHERE ((order_items.status ) = 'Complete' OR (order_items.status ) = 'Cancelled') AND ((TRIM(products.brand)
+     ) = 'Allegra K' OR (TRIM(products.brand)
+     ) = 'Levi''s' OR (TRIM(products.brand)
+     ) = 'Carhartt' OR (TRIM(products.brand)
+     ) = 'North River')
+GROUP BY
+    (TO_DATE(order_items.created_at )),
+    2,
+    3,
+    4,
+    5
+ORDER BY
+    1 DESC ;;
+    persist_for: "6 hours"
+    }
+}
+view: order_items_dynamic_table_2 {
+  derived_table: {
+    sql:SELECT
+    (TO_CHAR(TO_DATE(order_items.created_at ), 'YYYY-MM-DD'))  as CREATED_AT,
+    order_items.status,
+    order_items.sale_price,
+    order_items.inventory_item_id
+
+FROM public.order_items  AS order_items
+FULL OUTER JOIN public.inventory_items  AS inventory_items ON inventory_items.id = order_items.inventory_item_id
+LEFT JOIN public.products  AS products ON products.id = inventory_items.product_id
+WHERE ((order_items.status ) <> 'Complete' AND (order_items.status ) <> 'Cancelled' OR (order_items.status ) IS NULL) AND ((TRIM(products.brand)
+     ) <> 'Allegra K' AND (TRIM(products.brand)
+     ) <> 'Levi''s' AND (TRIM(products.brand)
+     ) <> 'Carhartt' AND (TRIM(products.brand)
+     ) <> 'North River' OR (TRIM(products.brand)
+     ) IS NULL)
+GROUP BY
+    (TO_DATE(order_items.created_at )),
+    2,
+    3,
+    4
+ORDER BY
+    1 DESC ;;
+  persist_for: "6 hours"
+  }
+
+}
+
  view: order_items {
-    sql_table_name: public.order_items ;;
-
-  dimension: field_name {
-    sql: 1 ;;
-    action: {
-      label: "Label to Appear in Action Menu"
-      url: "https://shiggins.free.beeceptor.com/"
-      icon_url: "https://looker.com/favicon.ico"
-      form_url: "https://shiggins.free.beeceptor.com/my/api/path"
-      param: {
-        name: "name string"
-        value: "{{value}}"
-      }
-      form_param: {
-        name: "name string"
-        type: string
-        label: "possibly-localized-string"
-        option: {
-          name: "name string"
-          label: "possibly-localized-string"
-        }
-        required: yes
-        description: "possibly-localized-string"
-        default: "string"
-      }
-
+  # view_label: "This is the View label"
+  # sql_table_name:
+  derived_table: {
+    sql: SELECT * FROM
+  {% if products.brand._in_query %}
+  ${order_items_dynamic_table_1.SQL_TABLE_NAME} --this table has brand information
+  {% else %}
+  ${order_items_dynamic_table_2.SQL_TABLE_NAME} --this table does not have brand information
+  {% endif %}
+  ;;
+    persist_for: "6 hours"
     }
-    }
+
+  # dimension: field_name {
+  #   label: ""
+  #   sql: {{field_name.to_s}} ;;
+  #   action: {
+  #     label: "Label to Appear in Action Menu"
+  #     url: "https://shiggins.free.beeceptor.com/"
+  #     icon_url: "https://looker.com/favicon.ico"
+  #     form_url: "https://shiggins.free.beeceptor.com/my/api/path"
+  #     param: {
+  #       name: "name string"
+  #       value: "{{value}}"
+  #     }
+  #     form_param: {
+  #       name: "name string"
+  #       type: string
+  #       label: "possibly-localized-string"
+  #       option: {
+  #         name: "name string"
+  #         label: "possibly-localized-string"
+  #       }
+  #       required: yes
+  #       description: "possibly-localized-string"
+  #       default: "string"
+  #     }
+
+  #   }
+  #   }
 
     ########## IDs, Foreign Keys, Counts ###########
   dimension: date_start_this_period {
