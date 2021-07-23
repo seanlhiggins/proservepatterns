@@ -119,6 +119,25 @@ explore: order_items {
     type: left_outer
     relationship: many_to_one
   }
+
+  join: order_items_country_average {
+    view_label: "Averages"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${users.country} = ${order_items_country_average.country} ;;
+  }
+  join: order_items_region_average {
+    view_label: "Averages"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${users.state} = ${order_items_region_average.state} ;;
+  }
+  join: order_items_brand_average {
+    view_label: "Averages"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${products.brand} = ${order_items_brand_average.brand} ;;
+  }
 }
 
 

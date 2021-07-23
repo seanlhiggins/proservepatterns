@@ -89,17 +89,23 @@ ORDER BY
 
  view: order_items {
   # view_label: "This is the View label"
-  # sql_table_name:
-  derived_table: {
-    sql: SELECT * FROM
+  sql_table_name:
   {% if products.brand._in_query %}
-  ${order_items_dynamic_table_1.SQL_TABLE_NAME} --this table has brand information
+  public.products
   {% else %}
-  ${order_items_dynamic_table_2.SQL_TABLE_NAME} --this table does not have brand information
-  {% endif %}
-  ;;
-    persist_for: "6 hours"
-    }
+  public.order_items
+  {% endif %};;
+
+  # derived_table: {
+  #   sql: SELECT * FROM
+  # {% if products.brand._in_query %}
+  # ${order_items_dynamic_table_1.SQL_TABLE_NAME} --this table has brand information
+  # {% else %}
+  # ${order_items_dynamic_table_2.SQL_TABLE_NAME} --this table does not have brand information
+  # {% endif %}
+  # ;;
+  #   persist_for: "6 hours"
+  #   }
 
   # dimension: field_name {
   #   label: ""
@@ -932,3 +938,46 @@ ORDER BY
       fields: [id, order_id, status, created_date, returned_date, sale_price, products.brand, products.item_name, users.portrait, users.name, users.email]
     }
   }
+
+view: order_items_country_average {
+  derived_table: {
+    explore_source: order_items {
+      column: country {field:users.country }
+      column: average_sale_price {}
+      bind_filters: {
+        to_field: users.country
+        from_field: users.country
+      }
+    }
+  }
+  dimension: country {primary_key:yes hidden:yes}
+  measure: average_sale_price {label: "Country Avg Sale Price" type: average value_format_name: usd}
+}
+view: order_items_region_average {
+  derived_table: {
+    explore_source: order_items {
+      column: state {field: users.state}
+      column: average_sale_price {}
+      bind_filters: {
+        to_field: users.state
+        from_field: users.state
+      }
+    }
+  }
+  dimension: state {primary_key:yes hidden:yes}
+  measure: average_sale_price {label: "State Avg Sale Price" type: average value_format_name: usd}
+}
+view: order_items_brand_average {
+  derived_table: {
+    explore_source: order_items {
+      column: brand {field:products.brand}
+      column: average_sale_price {}
+      bind_filters: {
+        to_field: products.brand
+        from_field: products.brand
+      }
+    }
+  }
+  dimension: brand {primary_key:yes hidden:yes}
+  measure: average_sale_price {label: "Brand Avg Sale Price" type: average value_format_name: usd}
+}
