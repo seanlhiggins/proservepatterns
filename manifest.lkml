@@ -1,4 +1,7 @@
 # release 1.0
+constant: connex {
+  value: "snowlooker"
+}
 project_name: "shiggins"
 # project_name: "data-portal"
 visualization: {

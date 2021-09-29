@@ -90,20 +90,9 @@ ORDER BY
  view: order_items {
   # view_label: "This is the View label"
   sql_table_name:
-  {% if products.brand._in_query %}
-  public.products
-  {% else %}
-  public.order_items
-  {% endif %};;
+  public.order_items;;
 
   # derived_table: {
-  #   sql: SELECT * FROM
-  # {% if products.brand._in_query %}
-  # ${order_items_dynamic_table_1.SQL_TABLE_NAME} --this table has brand information
-  # {% else %}
-  # ${order_items_dynamic_table_2.SQL_TABLE_NAME} --this table does not have brand information
-  # {% endif %}
-  # ;;
   #   persist_for: "6 hours"
   #   }
 
@@ -233,6 +222,13 @@ ORDER BY
     #   {% if users.traffic_source._is_selected %}|| ' ' || ${users.traffic_source}  ||''{% else %} '' {% endif %}
     #   ;;
     # }
+
+
+    dimension: weekday_weekend {
+      type: number
+      sql: ${created_day_of_week_index} ;;
+      html:  {{created_date._value}} ;;
+    }
 
     dimension: brand {
 #     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{products.header_name._parameter_value }} {% endif %}"
@@ -373,7 +369,7 @@ ORDER BY
 
     dimension_group: created {
       type: time
-      timeframes: [time, hour, date, week, month, year, hour_of_day, quarter,day_of_week, day_of_month, month_num, month_name, raw, week_of_year]
+      timeframes: [time, hour, date, week, month, year, hour_of_day, quarter,day_of_week,day_of_week_index, day_of_month, month_num, month_name, raw, week_of_year]
       sql:
       ${TABLE}.created_at ;;
       convert_tz: no
