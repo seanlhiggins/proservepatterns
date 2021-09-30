@@ -225,10 +225,22 @@ ORDER BY
 
 
     dimension: weekday_weekend {
-      type: number
-      sql: ${created_day_of_week_index} ;;
-      html:  {{created_date._value}} ;;
+      type: date
+      sql: ${created_date} ;;
+
     }
+
+    dimension: is_last_day_of_month {
+      type: number
+      sql:    CASE WHEN last_day(${created_raw}) = ${created_date} THEN 1 ELSE 0 END
+ ;;
+    }
+
+  dimension: is_weekday {
+    type: number
+    sql: CASE WHEN  EXTRACT(DOW FROM ${created_raw}) NOT IN (0,6) THEN 1 ELSE 0 END
+      ;;
+  }
 
     dimension: brand {
 #     label: "{% if products.header_name._parameter_value == 'Customer_A' %} Customer A's {{_field._name}} {% elsif products.header_name._parameter_value == 'Customer_B' %} Customer B's {{_field._name}} {% else %} {{products.header_name._parameter_value }} {% endif %}"

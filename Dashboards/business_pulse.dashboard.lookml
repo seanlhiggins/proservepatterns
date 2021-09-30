@@ -1,5 +1,5 @@
 - dashboard: business_pulse
-  extends: [sample,sample2]
+
   title: Business_Pulse_Title
   layout: static
 
