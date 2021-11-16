@@ -1,18 +1,23 @@
+include: "//shiggins_pii/pii_model*"
 
-connection: "snowlooker"
+
 label: "1) eCommerce with Event Data Shiggins"
 include: "../Views/*.view" # include all the views
 include: "../Dashboards/*.dashboard"
-# test
+
 
 label: "The Look (Shiggins)"
 
 # new feature Z - 20210323
 
+
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
   max_cache_age: "24 hours"}
 
+explore: order_items_pii_2 {
+  from: order_items_pii
+}
 
 persist_with: ecommerce_etl
 

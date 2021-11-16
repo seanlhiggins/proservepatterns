@@ -1,9 +1,22 @@
+local_dependency: {
+  project: "shiggins_pii"
+}
+
+
+
+
+
+
+
+
+
 # release 1.0
 constant: connex {
   value: "snowlooker"
 }
 project_name: "shiggins"
 # project_name: "data-portal"
+
 visualization: {
   id: "shiggins_scatter"
   label: "Scatter 2"
@@ -14,8 +27,8 @@ visualization: {
 }
 application: dash-mgmt {
   label: "Dashboard Governance"
-  # file: "dashboard-mgmt.js"
-  url: "http://localhost:8080/bundle.js"
+  file: "dashboard-mgmt.js"
+  # url: "http://localhost:8080/bundle.js"
 
   entitlements: {
     use_embeds: yes
