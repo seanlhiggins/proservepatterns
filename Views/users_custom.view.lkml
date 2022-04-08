@@ -1,20 +1,15 @@
-# view: users_2 {
-#   dimension:id {sql: 1;;}
-#   }
-view: users_by_date_gender {
-  derived_table: {
-    sql_trigger_value: SELECT CURRENT_DATE ;;
-     explore_source: users {
-      column: created_date {}
-      column: count_female_users {}
-     }
-    }
-}
+
 view: users {
   label: "Users view"
   sql_table_name:
 public.users
   ;;
+
+  ### maps ###
+  dimension: ireland_butt {
+    sql: ${TABLE}.country ;;
+    map_layer_name: butt
+  }
   ## Demographics ##
   dimension: days_as_customer {
     sql: DATEDIFF('day',${created_date},CURRENT_DATE) ;;
@@ -24,6 +19,7 @@ public.users
     type: number
     sql: ${TABLE}.id ;;
     tags: ["user_id"]
+
 
 
   }

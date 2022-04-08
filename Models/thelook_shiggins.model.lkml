@@ -1,5 +1,5 @@
 include: "//shiggins_pii/pii_model*"
-
+connection: "thelook_bq"
 
 label: "1) eCommerce with Event Data Shiggins"
 include: "../Views/*.view" # include all the views
@@ -9,7 +9,10 @@ include: "../Dashboards/*.dashboard"
 label: "The Look (Shiggins)"
 
 # new feature Z - 20210323
-
+map_layer: butt {
+  file: "../map.topojson"
+  property_key: "butt"
+}
 
 datagroup: ecommerce_etl {
   sql_trigger: SELECT max(created_at) FROM public.order_items ;;
