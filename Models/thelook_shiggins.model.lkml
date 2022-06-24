@@ -15,7 +15,7 @@ map_layer: butt {
 }
 
 datagroup: ecommerce_etl {
-  sql_trigger: SELECT max(created_at) FROM public.order_items ;;
+  sql_trigger: SELECT CURRENT_DATE ;;
   max_cache_age: "24 hours"}
 
 explore: order_items_pii_2 {
