@@ -14,7 +14,7 @@ view: order_facts {
 #       }
 #     }
 #ndt build failing with blank from clause...
-sql_trigger_value: SELECT CURRENT_DATE ;;
+datagroup_trigger: ecommerce_etl ;;
 sql:
 SELECT
   order_items.order_id  AS order_id,
